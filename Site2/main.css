@@ -1,0 +1,217 @@
+body{
+    font-family: NouvelR;
+}
+nav{
+    width: 240px;
+    background-color: #222;
+    height: 100%;
+    position: fixed;
+    color: white;
+}
+nav li{
+    border-bottom: 1px solid grey;
+    padding: 20px;
+}
+
+#contactList{
+    margin-left: 240px;
+    display: grid;
+}
+.c1{
+    outline: 1px solid black;
+    position: relative;
+    border-radius: 0.5em;
+    margin: 10px;
+    border-bottom: 10px solid #fcd205;
+}
+.c2 {
+    display: flex;
+    cursor: pointer;
+    padding: 10px;
+    justify-content: space-between; /* Put space between the title and the arrow */
+}
+.c2 h1, #addNewKeyBtn{
+    font-family: NouvelRBold;
+}
+.c3 {
+    max-height: 0; /* Start collapsed */
+    opacity: 0; /* Start invisible */
+    overflow: hidden; /* Hide overflowing content */
+    transition: max-height 0.5s ease, opacity 0.5s ease; /* Smooth transition */
+}
+
+.c3.active {
+    max-height: 200px; /* Adjust this to fit your content */
+    opacity: 1; /* Fully visible */
+}
+.c3 p{
+    padding: 0px 0px 10px 10px;
+}
+
+.action-buttons {
+    display: inline-flex; /* Inline-flex to make sure it fits around the arrow */
+}
+.action-buttons .edit-btn, .arrowButton{
+    background-color: #53565a;
+    text-align: center;
+    width: 25px;
+    color: white;
+    margin: 0 0 0 10px;
+    border: 0;
+    transition: all 0.2s;
+    border-radius: 2px;
+}
+.action-buttons .edit-btn i,.arrowButton i{
+    font-size: 0.7em;
+    vertical-align: middle;
+
+}
+.action-buttons .edit-btn:hover, .arrowButton:hover{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background-color: #696d72;
+    outline: solid 1.5px #fcd205;
+}
+.arrow {
+    transition: transform 0.3s ease; /* Smooth rotation transition */
+    transform: rotate(180deg);
+}
+/* Rotation for the arrow when it's toggled */
+.arrow.rotated {
+    transform: rotate(90deg); /* Rotate the arrow 90 degrees */
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark background with opacity */
+    padding-top: 50px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Modal content */
+.modal-content {
+    background-color: white;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+    width: 50%; /* Adjust based on your design */
+    max-width: 500px; /* Ensure modal doesn't grow too large */
+    animation: fadeIn 0.5s ease-out;
+    max-height: 70vh; /* Limit the height of the modal */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max-height */
+}
+
+
+/* Animation for modal fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Input field style inside modal */
+.editable-field input {
+    width: 95%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Styling the labels */
+.editable-field label {
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 14px;
+    display: block;
+}
+
+/* Save button style */
+#saveChangesBtn {
+    display: block;
+    width: 100%; /* Makes button take the full width of the modal */
+    background-color: #fcd205; /* Green color */
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px; /* Adds space between input fields and button */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Save button hover effect */
+#saveChangesBtn:hover {
+    background-color: #f1d236;
+}
+
+#addNewKeyBtn {
+    display: block;
+    color: black;
+    padding: 12px;
+    background-color: white;
+    border: 1px solid #f1d236;
+    border-radius: 5px;
+    margin-top: 20px; /* Adds space between input fields and button */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Adds margin between editable fields */
+.editable-field select, 
+.editable-field input {
+    display: block; /* Ensure each element is on its line */
+    width: 50%; /* Consistent sizing */
+    margin-top: 5px;
+    margin-bottom: 10px; /* Add spacing between dropdown and input */
+}
+
+.editable-field label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+
+.input-container {
+    display: flex; /* Align input and cross side by side */
+    align-items: center; /* Align cross vertically with the input */
+}
+
+.input-container input {
+    flex: 1; /* Allow the input field to take up remaining space */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.input-container .remove-btn, .editable-field .remove-btn {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px; /* Space between input and cross */
+}
+
+.input-container .remove-btn:hover {
+    color: darkred;
+}
+
+#new-key{
+    margin: 10px 0;
+}
