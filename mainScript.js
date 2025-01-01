@@ -21,70 +21,255 @@ let RenaultSupport = {
         let contactSection = document.getElementById("contactList");
         contactSection.innerHTML = ""; // Clear the existing list before rendering
     
-        // Loop through each contact and create HTML
-        this.contacts.forEach((contact, index) => {
-            let contactHTML = `
-                <article class='c1' data-id="${contact.title}">
-                    <div class='c2' onclick="localStorage.setItem('targetPage','${contact.title}')">
-                        <h1>${contact.title}</h1>
-                        <div class="action-buttons">
-                            <button class="edit-btn" data-id="${contact.title}"><i class="fa-regular fa-pen-to-square"></i></button>
-                            <button class="arrowButton"><i class=" arrow fa-solid fa-arrow-right"></i></button>
-                        </div>
-                    </div>
-                    <div class='c3 hidden'>
-            `;
+        // Add the search bar, "Add New Contact", and "Delete" buttons at the top of the list
+        const buttonsHTML = `
+            <div id="contactButtons">
+                <input type="text" id="searchBar" placeholder="Search contacts..." />
+                <div>
+                <button id="addContactBtn"><i class="fa-solid fa-arrow-down"></i> Add</button>
+                <button id="deleteSelectedBtn"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                </div>
+            </div>
+        `;
+        contactSection.insertAdjacentHTML("afterbegin", buttonsHTML);
     
-            const sortedContactInfo = contact.contact.sort((a, b) => {
-                if (a.Link) return 1;
-                if (b.Link) return -1;
-                return 0; // Otherwise, keep the original order
-            });
-    
-            // Loop through each key in the sorted contact info
-            sortedContactInfo.forEach(item => {
-                for (let key in item) {
-                    let value = item[key];
-                    // If the key is 'Link', make the value a clickable link
-                    if (key === "Link" && value) {
-                        value = `<a href="${value}" target="_blank">${value}</a>`;
-                    }
-    
-                    // Append each field to the contactHTML
-                    contactHTML += `
-                        <p class="editable-text" data-key="${key}">
-                            <strong>${key}:</strong> ${value}
-                        </p>
-                    `;
-                }
-            });
-    
-            contactHTML += `</div></article>`;
-            contactSection.insertAdjacentHTML("beforeend", contactHTML);
+        // Add event listener for the "Add New Contact" button
+        document.getElementById('addContactBtn').addEventListener('click', () => {
+            this.addNewContactForm(); // Call function to add new contact form
         });
     
-        // Set up edit button actions and arrow toggle
-        const c2Elements = contactSection.querySelectorAll('.c2');
-        c2Elements.forEach((c2, index) => {
-            const arrow = c2.querySelector('.arrow');
-            const editButton = c2.querySelector('.edit-btn');
-    
-            // Toggle the visibility of c3 and rotate the arrow
-            c2.addEventListener('click', () => {
-                const c3 = contactSection.querySelectorAll('.c3')[index];
-                c3.classList.toggle('active');
-                arrow.classList.toggle('rotated');
-            });
-    
-            // Prevent arrow functionality when "Edit" button is clicked
-            editButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent toggle when editing
-                const contactTitle = editButton.dataset.id;
-                this.openEditModal(contactTitle); // Open modal to edit values
-            });
+        // Add event listener for the "Delete Selected Contacts" button
+        document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
+            this.deleteSelectedContacts(); // Call function to delete selected contacts
         });
+    
+        // Add event listener for the search bar to filter contacts
+        document.getElementById('searchBar').addEventListener('input', (e) => {
+            this.filterContacts(e.target.value); // Call function to filter contacts based on search query
+        });
+    
+        // Initially display all contacts
+        this.displayContacts(this.contacts);
     },
     
+// Function to filter contacts based on the search query
+filterContacts(query) {
+    // Convert query to lowercase for case-insensitive comparison
+    const filteredContacts = this.contacts.filter(contact => 
+        contact.title.toLowerCase().includes(query.toLowerCase())
+    );
+
+    // Display the filtered contacts
+    this.displayContacts(filteredContacts);
+},
+
+  // Function to display contacts
+// Function to display contacts
+displayContacts(contactsToDisplay) {
+    const contactSection = document.getElementById("contactList");
+
+    // Clear the existing contact list
+    contactSection.querySelectorAll('.c1').forEach(contact => contact.remove());
+
+    // Loop through each contact and create HTML
+    contactsToDisplay.forEach((contact, index) => {
+        let contactHTML = `
+            <article class='c1' data-id="${contact.title}">
+                <div class='c2'>
+                <div class='c2Title'>
+                    <input type="checkbox" class="delete-checkbox" data-id="${contact.title}" />
+                    <h1>${contact.title}</h1>
+                </div>
+                    <div class="action-buttons">
+                        <button class="edit-btn" data-id="${contact.title}"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="arrowButton"><i class=" arrow fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class='c3 hidden'>
+        `;
+
+        const sortedContactInfo = contact.contact.sort((a, b) => {
+            if (a.Link) return 1;
+            if (b.Link) return -1;
+            return 0; // Otherwise, keep the original order
+        });
+
+        // Loop through each key in the sorted contact info
+        sortedContactInfo.forEach(item => {
+            for (let key in item) {
+                let value = item[key];
+                // If the key is 'Link', make the value a clickable link
+                if (key === "Link" && value) {
+                    value = `<a href="${value}" target="_blank">${value}</a>`;
+                }
+
+                // Append each field to the contactHTML
+                contactHTML += `
+                    <p class="editable-text" data-key="${key}">
+                        <strong>${key}:</strong> ${value}
+                    </p>
+                `;
+            }
+        });
+
+        contactHTML += `</div></article>`;
+        contactSection.insertAdjacentHTML("beforeend", contactHTML);
+    });
+
+    // Set up edit button actions and arrow toggle
+    const c2Elements = contactSection.querySelectorAll('.c2');
+    c2Elements.forEach((c2, index) => {
+        const arrow = c2.querySelector('.arrow');
+        const editButton = c2.querySelector('.edit-btn');
+
+        // Toggle the visibility of c3 and rotate the arrow
+        c2.addEventListener('click', () => {
+            const c3 = contactSection.querySelectorAll('.c3')[index];
+            c3.classList.toggle('active');
+            arrow.classList.toggle('rotated');
+        });
+
+        // Prevent arrow functionality when "Edit" button is clicked
+        editButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent toggle when editing
+            const contactTitle = editButton.dataset.id;
+            this.openEditModal(contactTitle); // Open modal to edit values
+        });
+    });
+},
+
+    async deleteSelectedContacts() {
+        // Get all checked checkboxes
+        const checkboxes = document.querySelectorAll('.delete-checkbox:checked');
+        
+        // If no checkboxes are selected, show an alert
+        if (checkboxes.length === 0) {
+            alert("Please select at least one contact to delete.");
+            return;
+        }
+    
+        // Create an array to hold the titles of the selected contacts to delete
+        const contactsToDelete = Array.from(checkboxes).map(checkbox => checkbox.dataset.id);
+    
+        // Filter out the contacts that are checked from the `contacts` array
+        this.contacts = this.contacts.filter(contact => !contactsToDelete.includes(contact.title));
+    
+        // Send updated data to the server
+        try {
+            const response = await fetch('http://localhost:3000/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.contacts),
+            });
+    
+            if (response.ok) {
+                console.log("Selected contacts deleted successfully.");
+                this.getContactList(); // Re-render the contact list
+            } else {
+                console.error("Failed to delete contacts.");
+            }
+        } catch (error) {
+            console.error("Error while deleting contacts:", error);
+        }
+    },
+    
+    
+
+    addNewContactForm() {
+        // Get the contact list section where the new contact form will appear
+        const contactSection = document.getElementById("contactList");
+    
+        // Create a new contact form HTML
+        const newContactFormHTML = `
+            <article class='c1 new-contact'>
+                <div class='c2'>
+                    <h1>
+                        <input type="text" id="newContactTitle" placeholder="Enter contact title" required />
+                    </h1>
+                    <div class="action-buttons">
+                        <button id="saveNewContactBtn"><i class="fa-solid fa-check"></i></button>
+                        <button id="cancelNewContactBtn"><i class="fa-solid fa-times"></i></button>
+                    </div>
+                </div>
+            </article>
+        `;
+    
+        // Insert the new contact form at the bottom of the contact list
+        contactSection.insertAdjacentHTML("beforeend", newContactFormHTML);
+    
+        // Add event listeners to handle save and cancel
+        document.getElementById('saveNewContactBtn').addEventListener('click', () => {
+            this.saveNewContact();
+        });
+    
+        document.getElementById('cancelNewContactBtn').addEventListener('click', () => {
+            this.cancelNewContact();
+        });
+    },
+
+    async saveNewContact() {
+        const titleInput = document.getElementById("newContactTitle");
+        const contactSection = document.getElementById("contactList");
+    
+        // Validate input
+        if (!titleInput.value.trim()) {
+            alert("Please enter a contact title.");
+            return;
+        }
+    
+        const newContact = {
+            title: titleInput.value,
+            contact: []
+        };
+    
+        // Get the new contact information from the form fields
+        const fields = contactSection.querySelectorAll(".editable-field");
+        fields.forEach(field => {
+            const select = field.querySelector('select');
+            const input = field.querySelector('input');
+            const key = select ? select.value : field.dataset.key;
+            const value = input ? input.value : '';
+    
+            if (key && value) {
+                newContact.contact.push({ [key]: value });
+            }
+        });
+    
+        // Add the new contact to the contacts array
+        this.contacts.push(newContact);
+    
+        // Send updated data to the server
+        try {
+            const response = await fetch('http://localhost:3000/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.contacts),
+            });
+    
+            if (response.ok) {
+                console.log("New contact added successfully.");
+                this.getContactList(); // Re-render the contact list
+            } else {
+                console.error("Failed to update contacts.");
+            }
+        } catch (error) {
+            console.error("Error while updating contacts:", error);
+        }
+    },
+    
+    cancelNewContact() {
+        const contactSection = document.getElementById("contactList");
+        const newContactForm = contactSection.querySelector(".new-contact");
+        if (newContactForm) {
+            newContactForm.remove();
+        }
+    },
+    
+
 
     // Open the edit modal and populate it with the contact's data
     openEditModal(contactTitle) {
@@ -142,7 +327,7 @@ let RenaultSupport = {
         const newFieldHTML = document.createElement('div');
         newFieldHTML.classList.add('editable-field'); // Ensuring it's in the same class
         newFieldHTML.dataset.key = "new-key";
-    
+
         newFieldHTML.innerHTML = `
             <select id="new-key" name="new-key">
                 <option value="Link">Link</option>
@@ -156,22 +341,22 @@ let RenaultSupport = {
                 <button type="button" class="remove-btn">✖</button>
             </div>
         `;
-    
+
         // Add event listener for the dropdown change
         newFieldHTML.querySelector('select').addEventListener('change', (e) => {
             const selectedKey = e.target.value;
             const inputContainer = newFieldHTML.querySelector('.input-container');
             inputContainer.innerHTML = ''; // Clear current input
-    
 
-                // Render normal input field
-                inputContainer.innerHTML = `
+
+            // Render normal input field
+            inputContainer.innerHTML = `
                     <input type="text" id="new-value" name="new-value" placeholder="Enter value" />
                     <button type="button" class="remove-btn">✖</button>
                 `;
-            
+
         });
-    
+
         // Find the "Save Changes" button
         const saveButton = modalContent.querySelector('#saveChangesBtn');
         if (saveButton) {
@@ -179,71 +364,73 @@ let RenaultSupport = {
             saveButton.parentNode.insertBefore(newFieldHTML, saveButton);
         }
     },
-    
+
     // Save the changes made in the modal
-// Save the changes made in the modal
-// Save the changes made in the modal
-async saveModalChanges(contactTitle) {
-    const modalContent = document.getElementById("modalContent");
-    const fields = modalContent.querySelectorAll(".editable-field");
+    // Save the changes made in the modal
+    // Save the changes made in the modal
+    async saveModalChanges(contactTitle) {
+        const modalContent = document.getElementById("modalContent");
+        const fields = modalContent.querySelectorAll(".editable-field");
 
-    // Find the contact to update
-    const contact = this.contacts.find(c => c.title === contactTitle);
-    if (!contact) {
-        console.error("Contact not found");
-        return;
-    }
-
-    // Update the contact array with new values
-    contact.contact = []; // Clear the old contact data
-    let validLink = true; // Flag to track link validation
-
-   fields.forEach(field => {
-    const select = field.querySelector('select');
-    const input = field.querySelector('input');
-    const key = select ? select.value : field.dataset.key;  // Get key from dropdown or dataset
-    let value = input ? input.value : '';
-
-
-    if (key === "Link" && value) {
-        // Validate the URL format
-        const isValidURL = /^https?:\/\//.test(value);
-        if (!isValidURL) {
-            validLink = false; // Mark as invalid if URL is not valid
+        // Find the contact to update
+        const contact = this.contacts.find(c => c.title === contactTitle);
+        if (!contact) {
+            console.error("Contact not found");
+            return;
         }
-    }
 
-    if (key && value) {
-        contact.contact.push({ [key]: value }); // Add updated key-value pair
-    }
-});
+        // Update the contact array with new values
+        contact.contact = []; // Clear the old contact data
+        let validLink = true; // Flag to track link validation
+
+        fields.forEach(field => {
+            const select = field.querySelector('select');
+            const input = field.querySelector('input');
+            const key = select ? select.value : field.dataset.key; // Get key from dropdown or dataset
+            let value = input ? input.value : '';
 
 
-    // If link is invalid, show a prompt and don't save
-    if (!validLink) {
-        alert("Please provide a valid URL for the 'Link' field (e.g., http:// or https://).");
-        return; // Prevent saving changes
-    }
+            if (key === "Link" && value) {
+                // Validate the URL format
+                const isValidURL = /^https?:\/\//.test(value);
+                if (!isValidURL) {
+                    validLink = false; // Mark as invalid if URL is not valid
+                }
+            }
 
-    // Send updated data to the server
-    try {
-        const response = await fetch('http://localhost:3000/update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.contacts), // Send the updated contacts array
+            if (key && value) {
+                contact.contact.push({
+                    [key]: value
+                }); // Add updated key-value pair
+            }
         });
 
-        if (response.ok) {
-            console.log("Data successfully updated on the server.");
-        } else {
-            console.error("Failed to update data on the server.");
+
+        // If link is invalid, show a prompt and don't save
+        if (!validLink) {
+            alert("Please provide a valid URL for the 'Link' field (e.g., http:// or https://).");
+            return; // Prevent saving changes
         }
-    } catch (error) {
-        console.error("Error while updating data on the server:", error);
-    }
-},
+
+        // Send updated data to the server
+        try {
+            const response = await fetch('http://localhost:3000/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.contacts), // Send the updated contacts array
+            });
+
+            if (response.ok) {
+                console.log("Data successfully updated on the server.");
+            } else {
+                console.error("Failed to update data on the server.");
+            }
+        } catch (error) {
+            console.error("Error while updating data on the server:", error);
+        }
+    },
 
 
     // Add remove button functionality

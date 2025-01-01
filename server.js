@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-
+app.use(express.json());  // Add this line to parse incoming JSON data
 
 // Path to the JSON file
 const jsonFilePath = path.join(__dirname, 'contact.json');
@@ -22,9 +22,14 @@ app.get('/data', (req, res) => {
     });
 });
 
-// Route to update data in the JSON files
+// Route to update data in the JSON file
 app.post('/update', (req, res) => {
     const updatedData = req.body;
+
+    // Check if the data is valid
+    if (!updatedData) {
+        return res.status(400).send('No data provided or invalid data format');
+    }
 
     // Write the updated data back to the file
     fs.writeFile(jsonFilePath, JSON.stringify(updatedData, null, 4), (err) => {
@@ -41,4 +46,3 @@ app.post('/update', (req, res) => {
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
-

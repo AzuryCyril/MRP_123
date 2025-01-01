@@ -22,7 +22,7 @@ nav li{
     position: relative;
     border-radius: 0.5em;
     margin: 10px;
-    border-bottom: 10px solid #fcd205;
+    border-bottom: 10px solid #fc3;
 }
 .c2 {
     display: flex;
@@ -48,11 +48,12 @@ nav li{
     padding: 0px 0px 10px 10px;
 }
 
-.action-buttons {
+.action-buttons, .c2Title {
     display: inline-flex; /* Inline-flex to make sure it fits around the arrow */
 }
-.action-buttons .edit-btn, .arrowButton{
+.action-buttons .edit-btn, .arrowButton, #saveNewContactBtn, #cancelNewContactBtn {
     background-color: #53565a;
+    cursor: pointer;
     text-align: center;
     width: 25px;
     color: white;
@@ -66,12 +67,12 @@ nav li{
     vertical-align: middle;
 
 }
-.action-buttons .edit-btn:hover, .arrowButton:hover{
+.action-buttons .edit-btn:hover, .arrowButton:hover,#saveNewContactBtn:hover, #cancelNewContactBtn:hover{
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     background-color: #696d72;
-    outline: solid 1.5px #fcd205;
+    outline: solid 1.5px #fc3;
 }
 .arrow {
     transition: transform 0.3s ease; /* Smooth rotation transition */
@@ -143,7 +144,7 @@ nav li{
 #saveChangesBtn {
     display: block;
     width: 100%; /* Makes button take the full width of the modal */
-    background-color: #fcd205; /* Green color */
+    background-color: #fc3; /* Green color */
     color: white;
     padding: 12px;
     font-size: 18px;
@@ -156,7 +157,7 @@ nav li{
 
 /* Save button hover effect */
 #saveChangesBtn:hover {
-    background-color: #f1d236;
+    background-color: #fc3;
 }
 
 #addNewKeyBtn {
@@ -164,7 +165,7 @@ nav li{
     color: black;
     padding: 12px;
     background-color: white;
-    border: 1px solid #f1d236;
+    border: 1px solid #fc3;
     border-radius: 5px;
     margin-top: 20px; /* Adds space between input fields and button */
     cursor: pointer;
@@ -214,4 +215,31 @@ nav li{
 
 #new-key{
     margin: 10px 0;
+}
+#addContactBtn,#deleteSelectedBtn{
+    border: 0;
+    background-color: #fc3;
+    color: black;
+    font-family: NouvelRBold;
+    font-size: 10px;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+#addContactBtn:hover,#deleteSelectedBtn:hover{
+    outline: 1px solid#53565a;
+}
+#contactButtons{
+    display: inline-flex;
+    justify-content: space-between;
+    margin: 10px 10px 0 10px;
+}
+#searchBar{
+    border-radius: 2px;
+    border: 1px solid #fc3;
+    font-family: NouvelR;
+}
+#searchBar:focus{
+    outline: 1px solid #fc3;
 }
