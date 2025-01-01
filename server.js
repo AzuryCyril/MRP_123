@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());  // Add this line to parse incoming JSON data
 
 // Path to the JSON file
-const jsonFilePath = path.join(__dirname, 'contact.json');
+const jsonFilePath = path.join(__dirname, 'contactList.json');
 
 // Route to fetch data from the JSON file
 app.get('/data', (req, res) => {
