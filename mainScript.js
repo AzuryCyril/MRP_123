@@ -35,11 +35,9 @@ let RenaultSupport = {
                     <div class='c3 hidden'>
             `;
     
-            // Sort fields to ensure "Link" and "Attachment(s)" are always last
             const sortedContactInfo = contact.contact.sort((a, b) => {
-                // Ensure "Link" and "Attachment(s)" are last
-                if (a.Link || a["Attachment(s)"]) return 1;
-                if (b.Link || b["Attachment(s)"]) return -1;
+                if (a.Link) return 1;
+                if (b.Link) return -1;
                 return 0; // Otherwise, keep the original order
             });
     
@@ -152,7 +150,6 @@ let RenaultSupport = {
                 <option value="Contact person email">Contact person email</option>
                 <option value="Contact person backup">Contact person backup</option>
                 <option value="Assignment group">Assignment group</option>
-                <option value="Attachment(s)">Attachment(s)</option>
             </select>
             <div class="input-container">
                 <input type="text" id="new-value" name="new-value" placeholder="Enter value" />
@@ -166,25 +163,13 @@ let RenaultSupport = {
             const inputContainer = newFieldHTML.querySelector('.input-container');
             inputContainer.innerHTML = ''; // Clear current input
     
-            if (selectedKey === 'Attachment(s)') {
-                // Render file upload button
-                inputContainer.innerHTML = `
-                    <button type="button" class="upload-btn">Upload Files</button>
-                    <span class="file-names"></span>
-                    <button type="button" class="remove-btn">✖</button>
-                `;
-    
-                // Add event listener to the upload button
-                inputContainer.querySelector('.upload-btn').addEventListener('click', () => {
-                    this.handleFileUpload(inputContainer);
-                });
-            } else {
+
                 // Render normal input field
                 inputContainer.innerHTML = `
                     <input type="text" id="new-value" name="new-value" placeholder="Enter value" />
                     <button type="button" class="remove-btn">✖</button>
                 `;
-            }
+            
         });
     
         // Find the "Save Changes" button
@@ -195,47 +180,6 @@ let RenaultSupport = {
         }
     },
     
- // Function to handle file upload
-async handleFileUpload(container) {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.multiple = true; // Allow multiple files
-    fileInput.accept = '.pdf, .doc, .docx, .jpg, .jpeg, .png'; // Restrict file types
-    fileInput.style.display = 'none'; // Hide the input field
-
-    // Add change event listener
-    fileInput.addEventListener('change', async (e) => {
-        const files = Array.from(fileInput.files);
-        const fileNames = files.map(file => file.name).join(', ');
-        container.querySelector('.file-names').textContent = fileNames;
-
-        // Upload each file to the server (which then pushes it to GitHub)
-        for (const file of files) {
-            const formData = new FormData();
-            formData.append('attachment', file);
-
-            try {
-                const response = await fetch('http://localhost:3000/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-                const data = await response.json();
-                if (data.filePath) {
-                    console.log('File uploaded to GitHub:', data.filePath);
-                    // You can store this URL in the contact object or display it
-                }
-            } catch (error) {
-                console.error('Error uploading file:', error);
-            }
-        }
-    });
-
-    // Trigger file input dialog
-    fileInput.click();
-},
-    
-
-
     // Save the changes made in the modal
 // Save the changes made in the modal
 // Save the changes made in the modal
@@ -260,12 +204,7 @@ async saveModalChanges(contactTitle) {
     const key = select ? select.value : field.dataset.key;  // Get key from dropdown or dataset
     let value = input ? input.value : '';
 
-    if (key === "Attachment(s)") {
-        // Handle attachments
-        const container = field.querySelector('.input-container');
-        const files = container.dataset.files ? JSON.parse(container.dataset.files) : [];
-        value = files; // Save file metadata
-    }
+
     if (key === "Link" && value) {
         // Validate the URL format
         const isValidURL = /^https?:\/\//.test(value);
