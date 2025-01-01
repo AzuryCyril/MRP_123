@@ -371,25 +371,24 @@ displayContacts(contactsToDisplay) {
     async saveModalChanges(contactTitle) {
         const modalContent = document.getElementById("modalContent");
         const fields = modalContent.querySelectorAll(".editable-field");
-
+    
         // Find the contact to update
         const contact = this.contacts.find(c => c.title === contactTitle);
         if (!contact) {
             console.error("Contact not found");
             return;
         }
-
+    
         // Update the contact array with new values
         contact.contact = []; // Clear the old contact data
         let validLink = true; // Flag to track link validation
-
+    
         fields.forEach(field => {
             const select = field.querySelector('select');
             const input = field.querySelector('input');
             const key = select ? select.value : field.dataset.key; // Get key from dropdown or dataset
             let value = input ? input.value : '';
-
-
+    
             if (key === "Link" && value) {
                 // Validate the URL format
                 const isValidURL = /^https?:\/\//.test(value);
@@ -397,21 +396,20 @@ displayContacts(contactsToDisplay) {
                     validLink = false; // Mark as invalid if URL is not valid
                 }
             }
-
+    
             if (key && value) {
                 contact.contact.push({
                     [key]: value
                 }); // Add updated key-value pair
             }
         });
-
-
+    
         // If link is invalid, show a prompt and don't save
         if (!validLink) {
             alert("Please provide a valid URL for the 'Link' field (e.g., http:// or https://).");
             return; // Prevent saving changes
         }
-
+    
         // Send updated data to the server
         try {
             const response = await fetch('http://localhost:3000/update', {
@@ -421,9 +419,10 @@ displayContacts(contactsToDisplay) {
                 },
                 body: JSON.stringify(this.contacts), // Send the updated contacts array
             });
-
+    
             if (response.ok) {
                 console.log("Data successfully updated on the server.");
+                this.closeModal(); // Close the modal after saving the changes
             } else {
                 console.error("Failed to update data on the server.");
             }
@@ -431,6 +430,14 @@ displayContacts(contactsToDisplay) {
             console.error("Error while updating data on the server:", error);
         }
     },
+    
+    // Function to close the modal
+    closeModal() {
+        const modal = document.getElementById("editModal");
+        modal.style.display = "none"; // Hide the modal
+        document.getElementById("modalContent").innerHTML = ""; // Clear the modal content
+    },
+    
 
 
     // Add remove button functionality
