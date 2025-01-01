@@ -422,6 +422,7 @@ displayContacts(contactsToDisplay) {
     
             if (response.ok) {
                 console.log("Data successfully updated on the server.");
+                this.updateContactInDOM(contactTitle); // Update contact in the DOM
                 this.closeModal(); // Close the modal after saving the changes
             } else {
                 console.error("Failed to update data on the server.");
@@ -430,6 +431,52 @@ displayContacts(contactsToDisplay) {
             console.error("Error while updating data on the server:", error);
         }
     },
+    
+    // Function to update the contact data in the DOM
+    updateContactInDOM(contactTitle) {
+        const contact = this.contacts.find(c => c.title === contactTitle);
+        if (!contact) {
+            console.error("Contact not found");
+            return;
+        }
+    
+        // Find the contact's article element by title
+        const contactElement = document.querySelector(`article[data-id="${contactTitle}"]`);
+        if (!contactElement) {
+            console.error("Contact element not found in DOM");
+            return;
+        }
+    
+        // Update the contact details in the c3 section
+        const c3 = contactElement.querySelector('.c3');
+        c3.innerHTML = ''; // Clear the existing contact details
+    
+        // Re-render the contact information
+        const sortedContactInfo = contact.contact.sort((a, b) => {
+            if (a.Link) return 1;
+            if (b.Link) return -1;
+            return 0; // Otherwise, keep the original order
+        });
+    
+        // Loop through each key in the sorted contact info
+        sortedContactInfo.forEach(item => {
+            for (let key in item) {
+                let value = item[key];
+                // If the key is 'Link', make the value a clickable link
+                if (key === "Link" && value) {
+                    value = `<a href="${value}" target="_blank">${value}</a>`;
+                }
+    
+                // Append each field to the c3
+                c3.innerHTML += `
+                    <p class="editable-text" data-key="${key}">
+                        <strong>${key}:</strong> ${value}
+                    </p>
+                `;
+            }
+        });
+    },
+    
     
     // Function to close the modal
     closeModal() {
