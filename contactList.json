@@ -1,7 +1,11 @@
 [
     {
         "title": "TLD/CLIP",
-        "contact": []
+        "contact": [
+            {
+                "Contact person": "sss"
+            }
+        ]
     },
     {
         "title": "d",
