@@ -2,20 +2,9 @@ body{
     font-family: NouvelR;
     zoom: 150%;
 }
-nav{
-    width: 240px;
-    background-color: #222;
-    height: 100%;
-    position: fixed;
-    color: white;
-}
-nav li{
-    border-bottom: 1px solid grey;
-    padding: 20px;
-}
 
 #contactList{
-    margin-left: 240px;
+    margin-left: 200px;
     display: grid;
 }
 .c1{
@@ -32,7 +21,7 @@ nav li{
     justify-content: space-between; /* Put space between the title and the arrow */
 }
 .c2 h1, #addNewKeyBtn{
-    font-family: NouvelRBold;
+    font-family: NouvelR;
 }
 .c3 {
     max-height: 0; /* Start collapsed */
