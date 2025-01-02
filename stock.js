@@ -63,7 +63,7 @@ function openUserModal(userData) {
             <p><strong>Name:</strong> ${userData.userFirstName} ${userData.userLastName}</p>
             <p><strong>Email:</strong> ${userData.userEmail}</p>
             <p><strong>Computer ID:</strong> ${userData.computerID}</p>
-            <p><strong>Dotation Check:</strong> ${userData.dotationCheck}</p>
+            <p><strong>Dotation Check:</strong> ${userData.dotationCheck ? 'Yes' : 'No'}</p>
         </div>
     `;
     
@@ -73,9 +73,37 @@ function openUserModal(userData) {
         userData.moreInfo.forEach(info => {
             modalHTML += '<div class="user-info">';
             Object.keys(info).forEach(key => {
-                modalHTML += `
-                    <p><strong>${key}:</strong> ${info[key]}</p>
-                `;
+                if (key === 'materials') {
+                    // Display materials with icons and checkboxes
+                    modalHTML += '<div class="materials">';
+                    info[key].forEach(material => {
+                        modalHTML += `
+                            <div class="material">
+                                <label>
+                                    <i class="fa fa-phone"></i> Phone
+                                    <input type="checkbox" ${material.phone ? 'checked' : ''} disabled />
+                                </label>
+                                <label>
+                                    <i class="fa fa-plug"></i> Charger
+                                    <input type="checkbox" ${material.charger ? 'checked' : ''} disabled />
+                                </label>
+                                <label>
+                                    <i class="fa fa-key"></i> Token
+                                    <input type="checkbox" ${material.token ? 'checked' : ''} disabled />
+                                </label>
+                                <label>
+                                    <i class="fa fa-headphones"></i> Headset
+                                    <input type="checkbox" ${material.headset ? 'checked' : ''} disabled />
+                                </label>
+                            </div>
+                        `;
+                    });
+                    modalHTML += '</div>';
+                } else {
+                    modalHTML += `
+                        <p><strong>${key}:</strong> ${info[key]}</p>
+                    `;
+                }
             });
             modalHTML += '</div>';
         });

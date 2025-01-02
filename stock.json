@@ -17,7 +17,7 @@
                 "phone": "0476248017",
                 "materials":[
                     {
-                        "phone": true,
+                        "phone": false,
                         "charger": true,
                         "token": true,
                         "headset": true
