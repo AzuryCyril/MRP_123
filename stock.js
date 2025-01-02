@@ -109,13 +109,16 @@ function openUserModal(userData) {
         });
     }
     
-    // Insert the generated content into the modal
-    modalContent.innerHTML = modalHTML;
+    // Insert the generated content into the modal content area
+    modalContent.innerHTML = `
+        <span class="close-btn">&times;</span> <!-- Close button -->
+        ${modalHTML}
+    `;
 
     // Display the modal
     modal.style.display = 'block';
 
-    // Add event listener to close modal
+    // Add event listener to close modal when the close button is clicked
     const closeBtn = document.querySelector('.close-btn');
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
