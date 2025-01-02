@@ -14,7 +14,9 @@
                 "Status": "Prestataire",
                 "Sociétés": "Dilaco",
                 "Manager": "Ahmed Abatane",
-                "phone": "0476248017",
+                "StartingDate": "02/01/25",
+                "EndDate": "02/05/25",
+                "Phone": "0476248017",
                 "materials":[
                     {
                         "phone": false,
