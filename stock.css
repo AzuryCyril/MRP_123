@@ -138,3 +138,44 @@ tbody tr:hover {
 .materials{
     margin: 10px 0 0 0;
 }
+/* Styling for the header cell container */
+#userTable th {
+    cursor: pointer;
+    position: relative;
+    padding-right: 35px; /* Space for the + button */
+}
+
+/* Styling the "+" button inside the header */
+.add-column-btn {
+    background-color: #fc3;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px; /* Align the button to the right */
+    top: 50%;
+    transform: translateY(-50%); /* Center the button vertically */
+}
+
+.add-column-btn:hover {
+    background-color: #ffa500;
+}
+/* Add styles for the sort icon */
+/* Hide the icon by default */
+th .sort-icon {
+    display: none;
+    position: absolute;
+    top: 50%;  /* Center the icon vertically */
+    margin-left: 5px;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: grey;
+}
+
+/* Show the icon when hovering over the header */
+th:hover .sort-icon {
+    display: inline; /* Show the icon */
+    color: grey;     /* Change color on hover */
+}

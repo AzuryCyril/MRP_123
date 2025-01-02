@@ -13,7 +13,7 @@
                 "Direction": "DSI",
                 "Status": "Prestataire",
                 "Sociétés": "Dilaco",
-                "Manager": "Ahmed Abatane",
+                "Manager": "bhmed Abatane",
                 "StartingDate": "02/01/25",
                 "EndDate": "02/05/25",
                 "Phone": "0476248017",
@@ -32,7 +32,7 @@
     {
         "userIPN": "pb00762",
         "userFirstName": "Passeleur",
-        "userLastName": "Cyril",
+        "userLastName": "Ayril",
         "userEmail": "cyril.passeleur-extern@renault.be",
         "computerID": "belh100500",
         "dotationCheck": true,
