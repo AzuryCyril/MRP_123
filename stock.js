@@ -226,14 +226,18 @@ function populateTableWithNewColumn(data, tbody, headers, newColumn) {
 function openUserModal(userData) {
     const modal = document.getElementById('userModal');
     const modalContent = document.getElementById('modalContent');
+    
+    // Create modal HTML content
     let modalHTML = `
         <span class="close-btn">&times;</span>
-        <p><strong>User ID:</strong> ${userData.userIPN}</p>
-        <p><strong>Name:</strong> ${userData.userFirstName} ${userData.userLastName}</p>
-        <p><strong>Email:</strong> ${userData.userEmail}</p>
-        <p><strong>Computer ID:</strong> ${userData.computerID}</p>
-        <p><strong>Dotation Check:</strong> ${userData.dotationCheck ? 'Yes' : 'No'}</p>
+        <p><strong>User ID:</strong> <span id="userID">${userData.userIPN}</span></p>
+        <p><strong>Name:</strong> <span id="userName">${userData.userFirstName} ${userData.userLastName}</span></p>
+        <p><strong>Email:</strong> <span id="userEmail">${userData.userEmail}</span></p>
+        <p><strong>Computer ID:</strong> <span id="computerID">${userData.computerID}</span></p>
+        <p><strong>Dotation Check:</strong> <span id="dotationCheck">${userData.dotationCheck ? '✔' : ''}</span></p>
     `;
+    
+    // Add More Info
     if (userData.moreInfo) {
         modalHTML += '<h3>More Information:</h3>';
         userData.moreInfo.forEach(info => {
@@ -242,19 +246,176 @@ function openUserModal(userData) {
                 if (key === 'materials') {
                     modalHTML += '<div class="materials">';
                     modalHTML += `
-                        <label><i class="fa fa-phone"></i> Phone: <input type="checkbox" ${info.materials[0].phone ? 'checked' : ''} disabled /></label>
-                        <label><i class="fa fa-plug"></i> Charger: <input type="checkbox" ${info.materials[0].charger ? 'checked' : ''} disabled /></label>
-                        <label><i class="fa fa-key"></i> Token: <input type="checkbox" ${info.materials[0].token ? 'checked' : ''} disabled /></label>
-                        <label><i class="fa fa-headphones"></i> Headset: <input type="checkbox" ${info.materials[0].headset ? 'checked' : ''} disabled /></label>
+                        <label><i class="fa fa-phone"></i> Phone: <span id="phone">${info.materials[0].phone ? '✔' : ''}</span></label>
+                        <label><i class="fa fa-plug"></i> Charger: <span id="charger">${info.materials[0].charger ? '✔' : ''}</span></label>
+                        <label><i class="fa fa-key"></i> Token: <span id="token">${info.materials[0].token ? '✔' : ''}</span></label>
+                        <label><i class="fa fa-headphones"></i> Headset: <span id="headset">${info.materials[0].headset ? '✔' : ''}</span></label>
                     `;
                     modalHTML += '</div>';
                 } else {
-                    modalHTML += `<p><strong>${key}:</strong> ${info[key]}</p>`;
+                    modalHTML += `<p><strong>${key}:</strong> <span id="${key}">${info[key]}</span></p>`;
                 }
             }
             modalHTML += '</div>';
         });
     }
+
+    // Add the Edit and Save buttons
+    modalHTML += `
+        <button id="editButton">Edit</button>
+        <button id="saveButton" style="display: none;">Save</button>
+    `;
+
     modalContent.innerHTML = modalHTML;
     modal.style.display = 'block';
+
+    // Add event listener for the close button
+    const closeButton = modal.querySelector('.close-btn');
+    closeButton.addEventListener('click', () => closeModal(modal));
+
+    // Add event listener for closing the modal when clicking outside of it
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeModal(modal);
+        }
+    });
+
+    // Edit button functionality
+    const editButton = modal.querySelector('#editButton');
+    const saveButton = modal.querySelector('#saveButton');
+
+    editButton.addEventListener('click', () => {
+        // Convert text to input fields for editing
+        makeEditable(userData);
+        // Show Save button, hide Edit button
+        editButton.style.display = 'none';
+        saveButton.style.display = 'inline';
+    });
+
+    // Save button functionality
+    saveButton.addEventListener('click', () => {
+        saveChanges(userData);
+        // Re-convert input fields back to text with updated values
+        revertToText(userData);
+        // Keep the modal open after saving
+    });
 }
+
+// Function to make fields editable
+function makeEditable(userData) {
+    // Convert span values into input fields for editing
+    document.getElementById('userID').innerHTML = `<input type="text" value="${userData.userIPN}" />`;
+    document.getElementById('userName').innerHTML = `
+        <input type="text" value="${userData.userFirstName}" />
+        <input type="text" value="${userData.userLastName}" />
+    `;
+    document.getElementById('userEmail').innerHTML = `<input type="email" value="${userData.userEmail}" />`;
+    document.getElementById('computerID').innerHTML = `<input type="text" value="${userData.computerID}" />`;
+
+    // Dotation Check becomes a checkbox input
+    document.getElementById('dotationCheck').innerHTML = `<input type="checkbox" ${userData.dotationCheck ? 'checked' : ''} />`;
+
+    // Update "More Information" fields (if any)
+    if (userData.moreInfo) {
+        userData.moreInfo.forEach(info => {
+            for (const key in info) {
+                if (key === 'materials') {
+                    // Show checkboxes for materials
+                    document.getElementById('phone').innerHTML = `<input type="checkbox" ${info.materials[0].phone ? 'checked' : ''} />`;
+                    document.getElementById('charger').innerHTML = `<input type="checkbox" ${info.materials[0].charger ? 'checked' : ''} />`;
+                    document.getElementById('token').innerHTML = `<input type="checkbox" ${info.materials[0].token ? 'checked' : ''} />`;
+                    document.getElementById('headset').innerHTML = `<input type="checkbox" ${info.materials[0].headset ? 'checked' : ''} />`;
+                } else {
+                    document.getElementById(key).innerHTML = `<input type="text" value="${info[key]}" />`;
+                }
+            }
+        });
+    }
+}
+
+// Function to save the changes made in the modal
+function saveChanges(userData) {
+    // Retrieve edited values and update userData
+    userData.userIPN = document.querySelector('#userID input').value;
+    userData.userFirstName = document.querySelector('#userName input:nth-child(1)').value;
+    userData.userLastName = document.querySelector('#userName input:nth-child(2)').value;
+    userData.userEmail = document.querySelector('#userEmail input').value;
+    userData.computerID = document.querySelector('#computerID input').value;
+    userData.dotationCheck = document.querySelector('#dotationCheck input').checked;
+
+    // Update "More Information" (if any)
+    if (userData.moreInfo) {
+        userData.moreInfo.forEach(info => {
+            for (const key in info) {
+                if (key === 'materials') {
+                    info.materials[0].phone = document.getElementById('phone').querySelector('input').checked;
+                    info.materials[0].charger = document.getElementById('charger').querySelector('input').checked;
+                    info.materials[0].token = document.getElementById('token').querySelector('input').checked;
+                    info.materials[0].headset = document.getElementById('headset').querySelector('input').checked;
+                } else {
+                    info[key] = document.getElementById(key).querySelector('input').value;
+                }
+            }
+        });
+    }
+
+    // Send the updated data to the server
+    fetch('http://localhost:3000/updateUserData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response from the server if needed
+        console.log('Data updated successfully', data);
+        // Optionally, re-render the table or reload the data
+        location.reload(); // Reload the page to get the updated JSON data
+    })
+    .catch(error => {
+        console.error('Error updating data:', error);
+    });
+}
+
+
+// Function to revert inputs back to text after saving
+function revertToText(userData) {
+    // Convert input fields back to text
+    document.getElementById('userID').innerHTML = userData.userIPN;
+    document.getElementById('userName').innerHTML = `${userData.userFirstName} ${userData.userLastName}`;
+    document.getElementById('userEmail').innerHTML = userData.userEmail;
+    document.getElementById('computerID').innerHTML = userData.computerID;
+    document.getElementById('dotationCheck').innerHTML = userData.dotationCheck ? '✔' : '';
+
+    // Update "More Information" fields (if any)
+    if (userData.moreInfo) {
+        userData.moreInfo.forEach(info => {
+            for (const key in info) {
+                if (key === 'materials') {
+                    document.getElementById('phone').innerHTML = info.materials[0].phone ? '✔' : '';
+                    document.getElementById('charger').innerHTML = info.materials[0].charger ? '✔' : '';
+                    document.getElementById('token').innerHTML = info.materials[0].token ? '✔' : '';
+                    document.getElementById('headset').innerHTML = info.materials[0].headset ? '✔' : '';
+                } else {
+                    document.getElementById(key).innerHTML = info[key];
+                }
+            }
+        });
+    }
+
+    // Hide Save button, show Edit button again
+    const editButton = document.querySelector('#editButton');
+    const saveButton = document.querySelector('#saveButton');
+    editButton.style.display = 'inline';
+    saveButton.style.display = 'none';
+}
+
+// Function to close the modal
+function closeModal(modal) {
+    modal.style.display = 'none';
+    // Don't clear the modal content so it can be reused
+}
+
+
