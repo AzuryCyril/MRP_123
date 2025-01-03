@@ -63,6 +63,7 @@ tbody tr:hover {
 
 /* Modal content */
 .modal-content {
+    position: relative;
     background-color: #f9f9f9;
     padding: 30px;
     margin: 5% auto;
@@ -74,13 +75,11 @@ tbody tr:hover {
 
 /* Close button (x) */
 .close-btn {
-    color: #aaa;
-    font-size: 30px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 20px;
+   /* Button color */
+    color: black;
+    border: none;
     cursor: pointer;
+    font-size: 30px;
 }
 
 .close-btn:hover,
@@ -178,4 +177,26 @@ th .sort-icon {
 th:hover .sort-icon {
     display: inline; /* Show the icon */
     color: grey;     /* Change color on hover */
+}
+.modal-buttons {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    text-align: right; /* Align buttons to the right */
+}
+
+.edit-btn, .save-btn {
+    background-color: #fc3; /* Button color */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    vertical-align: bottom;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 8px; /* Space between buttons */
+}
+
+.edit-btn:hover, .save-btn:hover {
+    background-color: rgb(218, 178, 58); /* Hover effect */
 }

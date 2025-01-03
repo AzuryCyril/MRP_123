@@ -226,18 +226,23 @@ function populateTableWithNewColumn(data, tbody, headers, newColumn) {
 function openUserModal(userData) {
     const modal = document.getElementById('userModal');
     const modalContent = document.getElementById('modalContent');
-    
+
     // Create modal HTML content
     let modalHTML = `
-        <span class="close-btn">&times;</span>
-        <p><strong>User ID:</strong> <span id="userID">${userData.userIPN}</span></p>
-        <p><strong>Name:</strong> <span id="userName">${userData.userFirstName} ${userData.userLastName}</span></p>
-        <p><strong>Email:</strong> <span id="userEmail">${userData.userEmail}</span></p>
-        <p><strong>Computer ID:</strong> <span id="computerID">${userData.computerID}</span></p>
-        <p><strong>Dotation Check:</strong> <span id="dotationCheck">${userData.dotationCheck ? '✔' : ''}</span></p>
-    `;
     
-    // Add More Info
+    <div class="modal-buttons">
+    
+        <button id="editButton" class="edit-btn">Edit</button>
+        <button id="saveButton" class="save-btn" style="display: none;">Save</button>
+        <span class="close-btn">&times;</span>
+    </div>
+    <p><strong>User ID:</strong> <span id="userID">${userData.userIPN}</span></p>
+    <p><strong>Name:</strong> <span id="userName">${userData.userFirstName} ${userData.userLastName}</span></p>
+    <p><strong>Email:</strong> <span id="userEmail">${userData.userEmail}</span></p>
+    <p><strong>Computer ID:</strong> <span id="computerID">${userData.computerID}</span></p>
+    <p><strong>Dotation Check:</strong> <span id="dotationCheck">${userData.dotationCheck ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></p>
+`;
+
     if (userData.moreInfo) {
         modalHTML += '<h3>More Information:</h3>';
         userData.moreInfo.forEach(info => {
@@ -246,11 +251,11 @@ function openUserModal(userData) {
                 if (key === 'materials') {
                     modalHTML += '<div class="materials">';
                     modalHTML += `
-                        <label><i class="fa fa-phone"></i> Phone: <span id="phone">${info.materials[0].phone ? '✔' : ''}</span></label>
-                        <label><i class="fa fa-plug"></i> Charger: <span id="charger">${info.materials[0].charger ? '✔' : ''}</span></label>
-                        <label><i class="fa fa-key"></i> Token: <span id="token">${info.materials[0].token ? '✔' : ''}</span></label>
-                        <label><i class="fa fa-headphones"></i> Headset: <span id="headset">${info.materials[0].headset ? '✔' : ''}</span></label>
-                    `;
+                    <label><i class="fa fa-phone"></i> Phone: <span id="phone">${info.materials[0].phone ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></label>
+                    <label><i class="fa fa-plug"></i> Charger: <span id="charger">${info.materials[0].charger ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></label>
+                    <label><i class="fa fa-key"></i> Token: <span id="token">${info.materials[0].token ? `<input type="checkbox" checked disabled>` : '<input type="checkbox" disabled>'}</span></label>
+                    <label><i class="fa fa-headphones"></i> Headset: <span id="headset">${info.materials[0].headset ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></label>
+                `;
                     modalHTML += '</div>';
                 } else {
                     modalHTML += `<p><strong>${key}:</strong> <span id="${key}">${info[key]}</span></p>`;
@@ -260,11 +265,9 @@ function openUserModal(userData) {
         });
     }
 
+
     // Add the Edit and Save buttons
-    modalHTML += `
-        <button id="editButton">Edit</button>
-        <button id="saveButton" style="display: none;">Save</button>
-    `;
+    modalHTML += `<button id="saveButton" style="display: none;">Save</button>`;
 
     modalContent.innerHTML = modalHTML;
     modal.style.display = 'block';
@@ -304,7 +307,7 @@ function openUserModal(userData) {
 // Function to make fields editable
 function makeEditable(userData) {
     // Convert span values into input fields for editing
-    document.getElementById('userID').innerHTML = `<input type="text" value="${userData.userIPN}" />`;
+
     document.getElementById('userName').innerHTML = `
         <input type="text" value="${userData.userFirstName}" />
         <input type="text" value="${userData.userLastName}" />
@@ -336,7 +339,6 @@ function makeEditable(userData) {
 // Function to save the changes made in the modal
 function saveChanges(userData) {
     // Retrieve edited values and update userData
-    userData.userIPN = document.querySelector('#userID input').value;
     userData.userFirstName = document.querySelector('#userName input:nth-child(1)').value;
     userData.userLastName = document.querySelector('#userName input:nth-child(2)').value;
     userData.userEmail = document.querySelector('#userEmail input').value;
@@ -361,22 +363,22 @@ function saveChanges(userData) {
 
     // Send the updated data to the server
     fetch('http://localhost:3000/updateUserData', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response from the server if needed
-        console.log('Data updated successfully', data);
-        // Optionally, re-render the table or reload the data
-        location.reload(); // Reload the page to get the updated JSON data
-    })
-    .catch(error => {
-        console.error('Error updating data:', error);
-    });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            console.log('Data updated successfully', data);
+            // Optionally, re-render the table or reload the data
+            location.reload(); // Reload the page to get the updated JSON data
+        })
+        .catch(error => {
+            console.error('Error updating data:', error);
+        });
 }
 
 
@@ -387,17 +389,29 @@ function revertToText(userData) {
     document.getElementById('userName').innerHTML = `${userData.userFirstName} ${userData.userLastName}`;
     document.getElementById('userEmail').innerHTML = userData.userEmail;
     document.getElementById('computerID').innerHTML = userData.computerID;
-    document.getElementById('dotationCheck').innerHTML = userData.dotationCheck ? '✔' : '';
+
+    // For the dotation check, show a checkbox (disabled) with checked or unchecked
+    document.getElementById('dotationCheck').innerHTML = `
+        <input type="checkbox" disabled ${userData.dotationCheck ? 'checked' : ''}>
+    `;
 
     // Update "More Information" fields (if any)
     if (userData.moreInfo) {
         userData.moreInfo.forEach(info => {
             for (const key in info) {
                 if (key === 'materials') {
-                    document.getElementById('phone').innerHTML = info.materials[0].phone ? '✔' : '';
-                    document.getElementById('charger').innerHTML = info.materials[0].charger ? '✔' : '';
-                    document.getElementById('token').innerHTML = info.materials[0].token ? '✔' : '';
-                    document.getElementById('headset').innerHTML = info.materials[0].headset ? '✔' : '';
+                    document.getElementById('phone').innerHTML = `
+                        <input type="checkbox" disabled ${info.materials[0].phone ? 'checked' : ''}>
+                    `;
+                    document.getElementById('charger').innerHTML = `
+                        <input type="checkbox" disabled ${info.materials[0].charger ? 'checked' : ''}>
+                    `;
+                    document.getElementById('token').innerHTML = `
+                        <input type="checkbox" disabled ${info.materials[0].token ? 'checked' : ''}>
+                    `;
+                    document.getElementById('headset').innerHTML = `
+                        <input type="checkbox" disabled ${info.materials[0].headset ? 'checked' : ''}>
+                    `;
                 } else {
                     document.getElementById(key).innerHTML = info[key];
                 }
@@ -412,10 +426,9 @@ function revertToText(userData) {
     saveButton.style.display = 'none';
 }
 
+
 // Function to close the modal
 function closeModal(modal) {
     modal.style.display = 'none';
     // Don't clear the modal content so it can be reused
 }
-
-

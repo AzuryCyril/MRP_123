@@ -14,13 +14,13 @@
         "Status": "Prestataire",
         "Sociétés": "Dilaco",
         "Manager": "Ahmed Abatane",
-        "phone": "on",
+        "PhoneNumber": "0476248017",
         "materials": [
           {
             "phone": true,
-            "charger": true,
-            "token": true,
-            "headset": true
+            "charger": false,
+            "token": false,
+            "headset": false
           }
         ]
       }
@@ -35,13 +35,13 @@
     "dotationCheck": true,
     "moreInfo": [
       {
-        "Entité": "RBL",
+        "Entité": "RBLL",
         "Localisation": "Drogenbos",
         "Direction": "DSI",
         "Status": "Prestataire",
         "Sociétés": "Dilaco",
-        "Manager": "Ahmed Abatane",
-        "phone": "on",
+        "Manager": "Bhmed Abatane",
+        "PhoneNumber": "0476248017",
         "materials": [
           {
             "phone": true,
