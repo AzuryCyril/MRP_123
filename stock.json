@@ -40,6 +40,8 @@
         "Direction": "DSI",
         "Status": "Prestataire",
         "Sociétés": "Dilaco",
+        "StartingDate": "01/02/2025",
+        "EndDate": "02/02/2025",
         "Manager": "Bhmed Abatane",
         "PhoneNumber": "0476248017",
         "materials": [
