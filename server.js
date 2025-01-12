@@ -42,8 +42,8 @@ app.post('/update', (req, res) => {
     });
 });
 
-app.get('/stock.json', (req, res) => {
-    fs.readFile(path.join(__dirname, 'stock.json'), 'utf8', (err, data) => {
+app.get('/personnel.json', (req, res) => {
+    fs.readFile(path.join(__dirname, 'personnel.json'), 'utf8', (err, data) => {
         if (err) {
             return res.status(500).send('Error reading file');
         }
@@ -55,21 +55,21 @@ app.get('/stock.json', (req, res) => {
 app.post('/updateUserData', (req, res) => {
     const updatedUserData = req.body;
 
-    // Read the current stock data from the JSON file
-    fs.readFile(path.join(__dirname, 'stock.json'), 'utf8', (err, data) => {
+    // Read the current personnel data from the JSON file
+    fs.readFile(path.join(__dirname, 'personnel.json'), 'utf8', (err, data) => {
         if (err) {
             return res.status(500).send('Error reading file');
         }
 
-        const stockData = JSON.parse(data);
-        const userIndex = stockData.findIndex(user => user.userIPN === updatedUserData.userIPN);
+        const personnelData = JSON.parse(data);
+        const userIndex = personnelData.findIndex(user => user.userIPN === updatedUserData.userIPN);
 
         if (userIndex !== -1) {
             // Update the existing user data
-            stockData[userIndex] = updatedUserData;
+            personnelData[userIndex] = updatedUserData;
 
             // Write the updated data back to the file
-            fs.writeFile(path.join(__dirname, 'stock.json'), JSON.stringify(stockData, null, 2), 'utf8', (err) => {
+            fs.writeFile(path.join(__dirname, 'personnel.json'), JSON.stringify(personnelData, null, 2), 'utf8', (err) => {
                 if (err) {
                     return res.status(500).send('Error writing file');
                 }

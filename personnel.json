@@ -1,7 +1,7 @@
 [
   {
     "userIPN": "pb00762",
-    "userFirstName": "Passeleurr",
+    "userFirstName": "Passeleur",
     "userLastName": "AAyril",
     "userEmail": "cyril.passeleur-extern@renault.be",
     "computerID": "belh100500",
@@ -18,7 +18,7 @@
         "materials": [
           {
             "phone": true,
-            "charger": false,
+            "charger": true,
             "token": false,
             "headset": false
           }
@@ -31,7 +31,7 @@
     "userFirstName": "Passeleur",
     "userLastName": "Ayril",
     "userEmail": "cyril.passeleur-extern@renault.be",
-    "computerID": "belh100500",
+    "computerID": "belh100400",
     "dotationCheck": true,
     "moreInfo": [
       {

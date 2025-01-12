@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="common.css">
-    <link rel="stylesheet" href="stock.css">
+    <link rel="stylesheet" href="personnel.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="stock.js"></script>
+    <script type="module" src="personnel.js"></script>
     <title>Document</title>
 </head>
 <header>
@@ -40,33 +40,28 @@
         </ul>
     </nav>
 
-  
-    <div class="tabs">
-        <button class="tablink" onclick="openTab(event, 'PC')">PC</button>
-        <button class="tablink" onclick="openTab(event, 'Mobile')">Mobile</button>
-        <button class="tablink" onclick="openTab(event, 'Home')">Home</button>
-    </div>
-
-    <div id="PC" class="tabcontent">
-        <table id="pcTable">
-            <thead></thead>
-            <tbody></tbody>
+    <div class="container">
+        <h1>User Data</h1>
+        <table id="userTable">
+            <thead>
+                <!-- Table headers will be dynamically generated -->
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically generated -->
+            </tbody>
         </table>
     </div>
 
-    <div id="Mobile" class="tabcontent">
-        <table id="mobileTable">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
+    <!-- Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content" id="modalContent">
+            <span class="close-btn">&times;</span> <!-- Close button -->
+            <!-- Modal content will be dynamically inserted here -->
+        </div>
     </div>
 
-    <div id="Home" class="tabcontent">
-        <table id="homeTable">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-    </div>
+
+
 
 </body>
 
