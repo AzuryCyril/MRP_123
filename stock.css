@@ -124,3 +124,20 @@ tbody tr:nth-child(even) {
 #submitButton:hover {
     background-color: #0056b3;
 }
+#modal .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+#modal label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+#modal select {
+    padding: 5px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}

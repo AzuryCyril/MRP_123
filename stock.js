@@ -13,6 +13,31 @@ document.addEventListener('DOMContentLoaded', () => {
             content.style.display = 'none';
         }
     });
+
+    // Add event listener for closing modal
+    const closeModalButton = document.getElementById('closeModal');
+    closeModalButton.addEventListener('click', closeModal);
+
+    // Add event listener for submitting modal form
+    const submitButton = document.getElementById('submitButton');
+    submitButton.addEventListener('click', () => {
+        const selectedUserIPN = document.getElementById('userIPNSelect').value;
+        const phoneChecked = document.getElementById('phoneCheckbox').checked;
+        const chargerChecked = document.getElementById('chargerCheckbox').checked;
+        const tokenChecked = document.getElementById('tokenCheckbox').checked;
+        const headsetChecked = document.getElementById('headsetCheckbox').checked;
+        const infoSelect = document.getElementById('infoSelect').value;
+
+        console.log('Selected UserIPN:', selectedUserIPN);
+        console.log('Phone:', phoneChecked);
+        console.log('Charger:', chargerChecked);
+        console.log('Token:', tokenChecked);
+        console.log('Headset:', headsetChecked);
+        console.log('Info:', infoSelect);
+
+        // Close the modal after submission
+        closeModal();
+    });
 });
 
 // Function to fetch data and populate the corresponding table
@@ -49,11 +74,11 @@ function fetchData(tabName, jsonFile) {
                     });
 
                     // Add "USE" button to each row (without "Action" column header)
-                    const buttonCell = document.createElement('div');
+                    const buttonCell = document.createElement('td');
                     const useButton = document.createElement('button');
                     useButton.textContent = 'Use';
                     useButton.classList.add('use-button');
-                    useButton.addEventListener('click', () => openModal());
+                    useButton.addEventListener('click', () => openModal(item['computerID'])); // Pass computerID to the modal
                     buttonCell.appendChild(useButton);
                     row.appendChild(buttonCell);
 
@@ -81,9 +106,13 @@ function openTab(evt, tabName) {
 }
 
 // Function to open modal and populate dropdown
-function openModal() {
+function openModal(computerID) {
     const modal = document.getElementById('modal');
     const userInputDropdown = document.getElementById('userIPNSelect');
+    const modalComputerIDTitle = document.getElementById('modalComputerIDTitle');
+
+    // Set the Computer ID title in the modal
+    modalComputerIDTitle.textContent = `Computer ID: ${computerID}`;
 
     // Fetch UserIPN data from personnel.json
     fetch('personnel.json')
@@ -111,28 +140,3 @@ function closeModal() {
     const modal = document.getElementById('modal');
     modal.style.display = 'none';
 }
-
-// Add event listeners for modal functionality
-document.addEventListener('DOMContentLoaded', () => {
-    const closeModalButton = document.getElementById('closeModal');
-    closeModalButton.addEventListener('click', closeModal);
-
-    const submitButton = document.getElementById('submitButton');
-    submitButton.addEventListener('click', () => {
-        const selectedUserIPN = document.getElementById('userIPNSelect').value;
-        const phoneChecked = document.getElementById('phoneCheckbox').checked;
-        const chargerChecked = document.getElementById('chargerCheckbox').checked;
-        const tokenChecked = document.getElementById('tokenCheckbox').checked;
-        const headsetChecked = document.getElementById('headsetCheckbox').checked;
-
-        console.log('Selected UserIPN:', selectedUserIPN);
-        console.log('Phone:', phoneChecked);
-        console.log('Charger:', chargerChecked);
-        console.log('Token:', tokenChecked);
-        console.log('Headset:', headsetChecked);
-
-        // Close the modal after submission
-        closeModal();
-    });
-});
-

@@ -72,7 +72,7 @@
     <div id="modal" class="modal">
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
-            <h3>Select User</h3>
+            <h3 id="modalComputerIDTitle">Computer ID: </h3> <!-- Title will be dynamically updated -->
             <label for="userIPNSelect">Choose a User:</label>
             <select id="userIPNSelect">
                 <!-- Options will be dynamically populated -->
@@ -84,10 +84,21 @@
                 <label><input type="checkbox" id="tokenCheckbox"> Token</label><br>
                 <label><input type="checkbox" id="headsetCheckbox"> Headset</label>
             </div>
-            <button id="submitButton">Submit</button>
+
+            <div class="form-group">
+                <label for="infoSelect">Info:</label>
+                <select id="infoSelect">
+                    <option value="start">Start</option>
+                    <option value="switch">Switch</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="datePicker">Starting Date:</label>
+                <input type="date" id="datePicker">
+            </div>
+            <button id="submitButton">Generate</button>
         </div>
     </div>
-    
 
 </body>
 
