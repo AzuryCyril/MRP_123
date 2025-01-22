@@ -14,6 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const infoSelect = document.getElementById('infoSelect');
+    const dateField = document.getElementById('dateField');
+    const dateLabel = document.getElementById('dateLabel');
+    const datePicker = document.getElementById('datePicker');
+
+    // Add event listener to the "Info" select field
+    infoSelect.addEventListener('change', () => {
+        const selectedValue = infoSelect.value;
+
+        if (selectedValue === 'start') {
+            dateLabel.textContent = 'Starting on:';
+            dateField.style.display = 'block'; // Show the date field
+        } else if (selectedValue === 'switch') {
+            dateLabel.textContent = 'Switched on:';
+            dateField.style.display = 'block'; // Show the date field
+        } else {
+            dateField.style.display = 'none'; // Hide the date field
+        }
+    });
     // Add event listener for closing modal
     const closeModalButton = document.getElementById('closeModal');
     closeModalButton.addEventListener('click', closeModal);

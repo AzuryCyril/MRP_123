@@ -84,21 +84,24 @@
                 <label><input type="checkbox" id="tokenCheckbox"> Token</label><br>
                 <label><input type="checkbox" id="headsetCheckbox"> Headset</label>
             </div>
-
+            <!-- Info Field -->
             <div class="form-group">
                 <label for="infoSelect">Info:</label>
                 <select id="infoSelect">
+                    <option value="neutral" selected>--</option>
                     <option value="start">Start</option>
                     <option value="switch">Switch</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="datePicker">Starting Date:</label>
+            <!-- Dynamic Date Field -->
+            <div class="form-group" id="dateField" style="display: none;">
+                <label id="dateLabel" for="datePicker"></label>
                 <input type="date" id="datePicker">
             </div>
-            <button id="submitButton">Generate</button>
+            <button id="submitButton">Submit</button>
         </div>
     </div>
+    
 
 </body>
 
