@@ -290,7 +290,7 @@ function openModal(computerID, model) {
             // Add "Neutral" option
             const neutralOption = document.createElement('option');
             neutralOption.value = '';
-            neutralOption.textContent = 'Neutral'; // Or any text you prefer
+            neutralOption.textContent = '--'; // Or any text you prefer
             userInputDropdown.appendChild(neutralOption);
 
             // Add options dynamically from personnel.json
@@ -391,3 +391,30 @@ function closeModal() {
     const modal = document.getElementById('modal');
     modal.style.display = 'none';
 }
+
+
+
+fetch('personnel.json')
+.then(response => response.json())
+.then(data => {
+    // Initialize counts
+    let phoneCount = 0;
+    let chargerCount = 0;
+    let tokenCount = 0;
+    let headsetCount = 0;
+
+    // Loop through each user and count the materials
+    data.forEach(person => {
+        if (person.moreInfo[0].materials[0].phone) phoneCount++;
+        if (person.moreInfo[0].materials[0].charger) chargerCount++;
+        if (person.moreInfo[0].materials[0].token) tokenCount++;
+        if (person.moreInfo[0].materials[0].headset) headsetCount++;
+    });
+
+    // Update the counts in the fixed bar
+    document.getElementById('phoneCount').textContent = "( " + phoneCount + " )";
+    document.getElementById('chargerCount').textContent = "( " + chargerCount + " )";
+    document.getElementById('tokenCount').textContent = "( " + tokenCount + " )";
+    document.getElementById('headsetCount').textContent = "( " + headsetCount + " )";
+})
+.catch(error => console.error('Error fetching personnel data:', error));
