@@ -141,3 +141,8 @@ tbody tr:nth-child(even) {
     border-radius: 4px;
     background-color: #fff;
 }
+#submitButton:disabled {
+    background-color: #ddd; /* Light grey background */
+    color: #777;            /* Darker grey text */
+    cursor: not-allowed;    /* Show a 'not-allowed' cursor */
+}

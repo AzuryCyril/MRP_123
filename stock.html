@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="stock.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>  
     <script src="stock.js"></script>
     <title>Document</title>
 </head>
@@ -40,7 +42,7 @@
         </ul>
     </nav>
 
-  
+
     <div class="tabs">
         <button class="tablink" onclick="openTab(event, 'PC')">PC</button>
         <button class="tablink" onclick="openTab(event, 'Mobile')">Mobile</button>
@@ -72,36 +74,55 @@
     <div id="modal" class="modal">
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
-            <h3 id="modalComputerIDTitle">Computer ID: </h3> <!-- Title will be dynamically updated -->
-            <label for="userIPNSelect">Choose a User:</label>
-            <select id="userIPNSelect">
-                <!-- Options will be dynamically populated -->
-            </select>
-            <h3>Materials</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="phoneCheckbox"> Phone</label><br>
-                <label><input type="checkbox" id="chargerCheckbox"> Charger</label><br>
-                <label><input type="checkbox" id="tokenCheckbox"> Token</label><br>
-                <label><input type="checkbox" id="headsetCheckbox"> Headset</label>
-            </div>
-            <!-- Info Field -->
-            <div class="form-group">
-                <label for="infoSelect">Info:</label>
-                <select id="infoSelect">
-                    <option value="neutral" selected>--</option>
-                    <option value="start">Start</option>
-                    <option value="switch">Switch</option>
+            <h3 id="modalComputerIDTitle"></h3> <!-- Title dynamically updated -->
+            <h3 id="modelComputer"></h3>
+            <!-- Step 1: Choose a User -->
+            <div id="step1">
+                <label for="userIPNSelect">Choose a User:</label>
+                <select id="userIPNSelect">
+                    <!-- Options will be dynamically populated -->
                 </select>
             </div>
-            <!-- Dynamic Date Field -->
-            <div class="form-group" id="dateField" style="display: none;">
-                <label id="dateLabel" for="datePicker"></label>
-                <input type="date" id="datePicker">
+    
+            <!-- Step 2: Materials -->
+            <div id="step2" style="display: none;">
+                <h3>Materials</h3>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="phoneCheckbox"> Phone</label><br>
+                    <label><input type="checkbox" id="chargerCheckbox"> Charger</label><br>
+                    <label><input type="checkbox" id="tokenCheckbox"> Token</label><br>
+                    <label><input type="checkbox" id="headsetCheckbox"> Headset</label>
+                </div>
             </div>
-            <button id="submitButton">Submit</button>
+    
+            <!-- Step 3: Info -->
+            <div id="step3" style="display: none;">
+                <label for="infoSelect">Info:</label>
+                <select id="infoSelect">
+                    <option value="">Neutral</option>
+                    <option value="Start">Start</option>
+                    <option value="Switch">Switch</option>
+                </select>
+    
+                <div id="dateField" style="display: none;">
+                    <label id="dateLabel" for="datePicker"></label>
+                    <input type="date" id="datePicker">
+                </div>
+    
+                <div id="switchDropdown" style="display: none;">
+                    <label for="switchDropdownSelect">Switch Computer:</label>
+                    <select id="switchDropdownSelect">
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                </div>
+            </div>
+    
+            <!-- Submit Button -->
+            <button id="submitButton" disabled>Submit</button>
         </div>
     </div>
     
+
 
 </body>
 

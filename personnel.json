@@ -2,9 +2,9 @@
   {
     "userIPN": "pb00762",
     "userFirstName": "Passeleur",
-    "userLastName": "AAyril",
+    "userLastName": "Ayril",
     "userEmail": "cyril.passeleur-extern@renault.be",
-    "computerID": "belh100500",
+    "computerID": "BELH100500",
     "dotationCheck": true,
     "moreInfo": [
       {
@@ -31,7 +31,7 @@
     "userFirstName": "Passeleur",
     "userLastName": "Ayril",
     "userEmail": "cyril.passeleur-extern@renault.be",
-    "computerID": "belh100400",
+    "computerID": "BELH100400",
     "dotationCheck": true,
     "moreInfo": [
       {
@@ -42,7 +42,7 @@
         "Sociétés": "Dilaco",
         "StartingDate": "01/02/2025",
         "EndDate": "02/02/2025",
-        "Manager": "Bhmed Abatane",
+        "Manager": "Ahmed Abatane",
         "PhoneNumber": "0476248017",
         "materials": [
           {
