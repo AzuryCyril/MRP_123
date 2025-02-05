@@ -412,9 +412,9 @@ fetch('personnel.json')
     });
 
     // Update the counts in the fixed bar
-    document.getElementById('phoneCount').textContent = "( " + phoneCount + " )";
-    document.getElementById('chargerCount').textContent = "( " + chargerCount + " )";
-    document.getElementById('tokenCount').textContent = "( " + tokenCount + " )";
-    document.getElementById('headsetCount').textContent = "( " + headsetCount + " )";
+    document.getElementById('phoneCount').textContent = "( " + phoneCount + " in use )";
+    document.getElementById('chargerCount').textContent = "( " + chargerCount + " in use )";
+    document.getElementById('tokenCount').textContent = "( " + tokenCount + " in use )";
+    document.getElementById('headsetCount').textContent = "( " + headsetCount + " in use )";
 })
 .catch(error => console.error('Error fetching personnel data:', error));

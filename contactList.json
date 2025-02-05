@@ -1,17 +1,29 @@
 [
     {
-        "title": "TLD/CLIP",
+        "title": "SalesForce",
         "contact": [
             {
-                "Contact person": "ssss"
+                "Contact person": "Gisele Meremans"
+            },
+            {
+                "Contact person email": "gisele.meremans-extern@renault.be"
+            },
+            {
+                "Link": "https://renaultbenelux.my.site.com/BeluxNetwork"
+            },
+            {
+                "Link": "https://renaultbenelux.lightning.force.com/"
             }
         ]
     },
     {
-        "title": "s",
+        "title": "CSB",
         "contact": [
             {
-                "Contact person": "ss"
+                "Contact person": "Vincent De-Wit"
+            },
+            {
+                "Contact person email": "vincent.dewit@renault.be"
             }
         ]
     }
