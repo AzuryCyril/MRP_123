@@ -181,3 +181,20 @@ tbody tr:nth-child(even) {
     margin-top: 5px;
     font-size: 14px;
 }
+
+.tooltip {
+    position: absolute;
+    bottom: 40px;  /* Adjust as needed */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    display: none;  /* Hidden by default */
+    z-index: 10;
+}
+
+.material-item:hover .tooltip {
+    display: block; /* Show tooltip on hover */
+}

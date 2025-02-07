@@ -395,26 +395,43 @@ function closeModal() {
 
 
 fetch('personnel.json')
-.then(response => response.json())
-.then(data => {
-    // Initialize counts
-    let phoneCount = 0;
-    let chargerCount = 0;
-    let tokenCount = 0;
-    let headsetCount = 0;
+    .then(response => response.json())
+    .then(data => {
+        let phoneCount = 0, chargerCount = 0, tokenCount = 0, headsetCount = 0;
+        let phoneUsers = [], chargerUsers = [], tokenUsers = [], headsetUsers = [];
 
-    // Loop through each user and count the materials
-    data.forEach(person => {
-        if (person.moreInfo[0].materials[0].phone) phoneCount++;
-        if (person.moreInfo[0].materials[0].charger) chargerCount++;
-        if (person.moreInfo[0].materials[0].token) tokenCount++;
-        if (person.moreInfo[0].materials[0].headset) headsetCount++;
-    });
+        data.forEach(person => {
+            let fullName = `${person.userFirstName} ${person.userLastName} (${person.userIPN})`;
 
-    // Update the counts in the fixed bar
-    document.getElementById('phoneCount').textContent = "( " + phoneCount + " in use )";
-    document.getElementById('chargerCount').textContent = "( " + chargerCount + " in use )";
-    document.getElementById('tokenCount').textContent = "( " + tokenCount + " in use )";
-    document.getElementById('headsetCount').textContent = "( " + headsetCount + " in use )";
-})
-.catch(error => console.error('Error fetching personnel data:', error));
+            if (person.moreInfo[0].materials[0].phone) {
+                phoneCount++;
+                phoneUsers.push(fullName);
+            }
+            if (person.moreInfo[0].materials[0].charger) {
+                chargerCount++;
+                chargerUsers.push(fullName);
+            }
+            if (person.moreInfo[0].materials[0].token) {
+                tokenCount++;
+                tokenUsers.push(fullName);
+            }
+            if (person.moreInfo[0].materials[0].headset) {
+                headsetCount++;
+                headsetUsers.push(fullName);
+            }
+        });
+
+        // Update numbers
+        document.getElementById('phoneCount').textContent = phoneCount;
+        document.getElementById('chargerCount').textContent = chargerCount;
+        document.getElementById('tokenCount').textContent = tokenCount;
+        document.getElementById('headsetCount').textContent = headsetCount;
+
+        // Update tooltips with user details
+        document.getElementById('phoneTooltip').innerHTML = phoneUsers.length ? phoneUsers.join('<br>') : 'No users';
+        document.getElementById('chargerTooltip').innerHTML = chargerUsers.length ? chargerUsers.join('<br>') : 'No users';
+        document.getElementById('tokenTooltip').innerHTML = tokenUsers.length ? tokenUsers.join('<br>') : 'No users';
+        document.getElementById('headsetTooltip').innerHTML = headsetUsers.length ? headsetUsers.join('<br>') : 'No users';
+        
+    })
+    .catch(error => console.error('Error loading personnel data:', error));
