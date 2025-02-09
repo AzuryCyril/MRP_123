@@ -1,0 +1,75 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAt0x4UEocfK2skKuABAwym2fG_o4nP1bs",
+    authDomain: "test-1aaff.firebaseapp.com",
+    projectId: "test-1aaff",
+    storageBucket: "test-1aaff.firebasestorage.app",
+    messagingSenderId: "153349488252",
+    appId: "1:153349488252:web:c6339f2c475d79d1f093f9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+
+
+
+  export async function fetchPersonnel() {
+    try {
+        const personnelCollection = collection(db, 'personnel'); // Reference to 'personnel' collection
+        const personnelSnapshot = await getDocs(personnelCollection); // Fetch the documents in the collection
+        const personnelList = personnelSnapshot.docs.map(doc => doc.data()); // Get the document data
+
+        return personnelList;
+    } catch (error) {
+        console.error("Error fetching personnel data:", error);
+    }
+}
+
+export async function updateUserInFirebase(userIPN, updatedUserData) {
+    try {
+        // Reference to the specific document in the 'personnel' collection
+        const userDocRef = doc(db, 'personnel', userIPN); // Assuming userIPN is the document ID
+
+        // Update the document with new data
+        await updateDoc(userDocRef, updatedUserData);
+
+        console.log('User data updated successfully in Firebase!');
+    } catch (error) {
+        console.error('Error updating user in Firebase:', error);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+  // Generic function to fetch dynamic count for any material
+export const getMaterialDynamicCount = async (materialName) => {
+    try {
+        const docRef = doc(db, "materialAmount", materialName); // Material name determines the document
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data().count;  // Assuming 'count' holds the value
+        } else {
+            console.log(`No such document for ${materialName}!`);
+            return 0;
+        }
+    } catch (error) {
+        console.error(`Error fetching ${materialName} count: `, error);
+        return 0;
+    }
+};
+export async function updateMaterialDynamicCount(material, count) {
+    const materialDoc = doc(db, 'materialAmount', material);
+    await setDoc(materialDoc, { count: count }, { merge: true });
+}

@@ -11,7 +11,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>  
-    <script src="stock.js"></script>
+
+    <script type="module" src="database.js"></script>
+
+    <script type="module" src="stock.js"></script>
+    
     <title>Document</title>
 </head>
 <header>
@@ -125,27 +129,48 @@
     <div id="materialBar" class="material-bar">
         <div class="material-item" id="phoneItem">
             <i class="fa fa-phone"></i>
+            <div class="counter">
+                <button class="count-btn" id="phoneMinus">-</button>
+                <div id="phoneDynamicCount" class="material-count">0</div>
+                <button class="count-btn" id="phonePlus">+</button>
+            </div>
             <div id="phoneCount" class="material-count">0</div>
             <div class="tooltip" id="phoneTooltip"></div>
         </div>
+        
         <div class="material-item" id="chargerItem">
             <i class="fa fa-plug"></i>
+            <div class="counter">
+                <button class="count-btn" id="chargerMinus">-</button>
+                <div id="chargerDynamicCount" class="material-count">0</div>
+                <button class="count-btn" id="chargerPlus">+</button>
+            </div>
             <div id="chargerCount" class="material-count">0</div>
             <div class="tooltip" id="chargerTooltip"></div>
         </div>
+    
         <div class="material-item" id="tokenItem">
             <i class="fa fa-key"></i>
+            <div class="counter">
+                <button class="count-btn" id="tokenMinus">-</button>
+                <div id="tokenDynamicCount" class="material-count">0</div>
+                <button class="count-btn" id="tokenPlus">+</button>
+            </div>
             <div id="tokenCount" class="material-count">0</div>
             <div class="tooltip" id="tokenTooltip"></div>
         </div>
+    
         <div class="material-item" id="headsetItem">
             <i class="fa fa-headphones"></i>
+            <div class="counter">
+                <button class="count-btn" id="headsetMinus">-</button>
+                <div id="headsetDynamicCount" class="material-count">0</div>
+                <button class="count-btn" id="headsetPlus">+</button>
+            </div>
             <div id="headsetCount" class="material-count">0</div>
             <div class="tooltip" id="headsetTooltip"></div>
         </div>
     </div>
-    
-
 </body>
 
 </html>

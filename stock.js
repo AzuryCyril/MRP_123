@@ -394,6 +394,71 @@ function closeModal() {
 
 
 
+
+
+// stock.js or the script where you manage the data
+
+import { getMaterialDynamicCount, updateMaterialDynamicCount } from './database.js';
+
+async function fetchAndDisplayCounts() {
+    // List of materials and their corresponding element IDs
+    const materials = [
+        { name: 'phone', elementId: 'phoneDynamicCount' },
+        { name: 'charger', elementId: 'chargerDynamicCount' },
+        { name: 'token', elementId: 'tokenDynamicCount' },
+        { name: 'headset', elementId: 'headsetDynamicCount' },
+    ];
+
+    // Loop through each material, fetch count from Firebase, and update the DOM
+    for (const material of materials) {
+        const count = await getMaterialDynamicCount(material.name);
+        document.getElementById(material.elementId).textContent = count;
+    }
+}
+
+// Fetch and display counts when the page loads
+fetchAndDisplayCounts();
+
+// Handle "+" and "-" button clicks for updating counts
+function addEventListenersToButtons() {
+    const materials = [
+        { name: 'phone', elementId: 'phoneDynamicCount' },
+        { name: 'charger', elementId: 'chargerDynamicCount' },
+        { name: 'token', elementId: 'tokenDynamicCount' },
+        { name: 'headset', elementId: 'headsetDynamicCount' },
+    ];
+
+    materials.forEach(material => {
+        // Get the current count from the DOM
+        const countElement = document.getElementById(material.elementId);
+        
+        // Plus button event listener
+        document.getElementById(`${material.name}Plus`).addEventListener('click', async () => {
+            let currentCount = parseInt(countElement.textContent) || 0;
+            currentCount++;
+            countElement.textContent = currentCount; // Update DOM count
+            await updateMaterialDynamicCount(material.name, currentCount); // Update Firebase count
+        });
+
+        // Minus button event listener
+        document.getElementById(`${material.name}Minus`).addEventListener('click', async () => {
+            let currentCount = parseInt(countElement.textContent) || 0;
+            if (currentCount > 0) {
+                currentCount--;
+                countElement.textContent = currentCount; // Update DOM count
+                await updateMaterialDynamicCount(material.name, currentCount); // Update Firebase count
+            }
+        });
+    });
+}
+
+// Call the function to add event listeners for the buttons
+addEventListenersToButtons();
+
+
+
+
+// Fetch personnel.json and update UI
 fetch('personnel.json')
     .then(response => response.json())
     .then(data => {
@@ -421,17 +486,18 @@ fetch('personnel.json')
             }
         });
 
-        // Update numbers
-        document.getElementById('phoneCount').textContent = phoneCount;
-        document.getElementById('chargerCount').textContent = chargerCount;
-        document.getElementById('tokenCount').textContent = tokenCount;
-        document.getElementById('headsetCount').textContent = headsetCount;
+        // Update material counts
+        document.getElementById('phoneCount').textContent = "( " + phoneCount + " in use )";
+        document.getElementById('chargerCount').textContent = "( " + chargerCount + " in use )";
+        document.getElementById('tokenCount').textContent = "( " + tokenCount + " in use )";
+        document.getElementById('headsetCount').textContent = "( " + headsetCount + " in use )";
 
         // Update tooltips with user details
         document.getElementById('phoneTooltip').innerHTML = phoneUsers.length ? phoneUsers.join('<br>') : 'No users';
         document.getElementById('chargerTooltip').innerHTML = chargerUsers.length ? chargerUsers.join('<br>') : 'No users';
         document.getElementById('tokenTooltip').innerHTML = tokenUsers.length ? tokenUsers.join('<br>') : 'No users';
         document.getElementById('headsetTooltip').innerHTML = headsetUsers.length ? headsetUsers.join('<br>') : 'No users';
-        
     })
     .catch(error => console.error('Error loading personnel data:', error));
+
+    
