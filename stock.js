@@ -1,3 +1,4 @@
+import { getMaterialDynamicCount, updateMaterialDynamicCount, fetchPersonnel } from './database.js';
 // Declare materialCheckboxes globally so they can be accessed in various functions
 let materialCheckboxes;
 
@@ -107,8 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function fetchUserInfo(userIPN) {
-        const response = await fetch('personnel.json');
-        const personnelData = await response.json();
+        const personnelData = await fetchPersonnel();
         const user = personnelData.find(person => person.userIPN === userIPN);
         return user || {}; // Return the user data or an empty object if not found
     }
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add Manager info to the second page
-    secondPage.drawText(`${userInfo.moreInfo[0]?.Manager || 'N/A'}`, {x: secondPagePositions.manager.x, y: secondPagePositions.manager.y, size: 10});
+    secondPage.drawText(`${userInfo.moreInfo?.Manager || 'N/A'}`, {x: secondPagePositions.manager.x, y: secondPagePositions.manager.y, size: 10});
     secondPage.drawText(`${userInfo.userFirstName} ${userInfo.userLastName}`, { x: secondPagePositions.userName.x, y: secondPagePositions.userName.y, size: 10 });
     
 
@@ -268,7 +268,7 @@ function openTab(evt, tabName) {
 }
 
 // Function to open modal and populate dropdown
-function openModal(computerID, model) {
+async function openModal(computerID, model) {
     const modal = document.getElementById('modal');
     const userInputDropdown = document.getElementById('userIPNSelect');
     const modalComputerIDTitle = document.getElementById('modalComputerIDTitle');
@@ -276,14 +276,12 @@ function openModal(computerID, model) {
     const step2 = document.getElementById('step2');
     const step3 = document.getElementById('step3');
     const submitButton = document.getElementById('submitButton');
-
+    const data = await fetchPersonnel();
     // Set the Computer ID title in the modal
     modalComputerIDTitle.textContent = `${computerID}`;
     modelComputer.textContent = `${model}`;
-    // Fetch UserIPN data from personnel.json
-    fetch('personnel.json')
-        .then(response => response.json())
-        .then(data => {
+    
+
             // Clear any existing options
             userInputDropdown.innerHTML = '';
 
@@ -293,15 +291,14 @@ function openModal(computerID, model) {
             neutralOption.textContent = '--'; // Or any text you prefer
             userInputDropdown.appendChild(neutralOption);
 
-            // Add options dynamically from personnel.json
+         
             data.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.userIPN;
                 option.textContent = `${person.userIPN} - ${person.userFirstName} ${person.userLastName}`;
                 userInputDropdown.appendChild(option);
             });
-        })
-        .catch(error => console.error('Error fetching personnel data:', error));
+ 
 
     // Reset the modal steps
     resetModalSteps();
@@ -366,24 +363,19 @@ function validateForm() {
 }
 
 // Function to populate switch dropdown with computerIDs
-function populateSwitchDropdown() {
+async function populateSwitchDropdown() {
     const switchDropdown = document.getElementById('switchDropdownSelect');
-
-    fetch('personnel.json')
-        .then(response => response.json())
-        .then(data => {
+    const data = await fetchPersonnel();
             // Clear existing options
             switchDropdown.innerHTML = '';
 
-            // Populate with computerIDs from personnel.json
+        
             data.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.computerID;
                 option.textContent = person.computerID;
                 switchDropdown.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error fetching computerID data:', error));
+            });   
 }
 
 // Function to close modal
@@ -398,7 +390,7 @@ function closeModal() {
 
 // stock.js or the script where you manage the data
 
-import { getMaterialDynamicCount, updateMaterialDynamicCount } from './database.js';
+
 
 async function fetchAndDisplayCounts() {
     // List of materials and their corresponding element IDs
@@ -455,32 +447,27 @@ function addEventListenersToButtons() {
 // Call the function to add event listeners for the buttons
 addEventListenersToButtons();
 
-
-
-
-// Fetch personnel.json and update UI
-fetch('personnel.json')
-    .then(response => response.json())
-    .then(data => {
-        let phoneCount = 0, chargerCount = 0, tokenCount = 0, headsetCount = 0;
+async function fetchCurrentMaterialHolders(){
+    const data = await fetchPersonnel();
+    let phoneCount = 0, chargerCount = 0, tokenCount = 0, headsetCount = 0;
         let phoneUsers = [], chargerUsers = [], tokenUsers = [], headsetUsers = [];
 
         data.forEach(person => {
             let fullName = `${person.userFirstName} ${person.userLastName} (${person.userIPN})`;
 
-            if (person.moreInfo[0].materials[0].phone) {
+            if (person.moreInfo.materials.phone) {
                 phoneCount++;
                 phoneUsers.push(fullName);
             }
-            if (person.moreInfo[0].materials[0].charger) {
+            if (person.moreInfo.materials.charger) {
                 chargerCount++;
                 chargerUsers.push(fullName);
             }
-            if (person.moreInfo[0].materials[0].token) {
+            if (person.moreInfo.materials.token) {
                 tokenCount++;
                 tokenUsers.push(fullName);
             }
-            if (person.moreInfo[0].materials[0].headset) {
+            if (person.moreInfo.materials.headset) {
                 headsetCount++;
                 headsetUsers.push(fullName);
             }
@@ -497,7 +484,6 @@ fetch('personnel.json')
         document.getElementById('chargerTooltip').innerHTML = chargerUsers.length ? chargerUsers.join('<br>') : 'No users';
         document.getElementById('tokenTooltip').innerHTML = tokenUsers.length ? tokenUsers.join('<br>') : 'No users';
         document.getElementById('headsetTooltip').innerHTML = headsetUsers.length ? headsetUsers.join('<br>') : 'No users';
-    })
-    .catch(error => console.error('Error loading personnel data:', error));
 
-    
+} 
+fetchCurrentMaterialHolders();
