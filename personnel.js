@@ -1,16 +1,18 @@
 import { fetchPersonnel, updateUserInFirebase } from "./database.js";
-
-document.addEventListener('DOMContentLoaded', async () => {
+fetchTable()
+async function fetchTable(){
     try {
         // Fetch the personnel data from Firebase
         const data = await fetchPersonnel();
-
+        console.log(data)
         const table = document.getElementById('userTable');
+        document.querySelector('thead').innerHTML = "";
+        document.querySelector('tbody').innerHTML = "";
         const thead = table.querySelector('thead');
         const tbody = table.querySelector('tbody');
 
         // Collect all keys except "moreInfo"
-        const headers = Object.keys(data[0]).filter(key => key !== 'moreInfo');
+        const headers = ["userIPN", "userFirstName", "userLastName", "userEmail", "computerID", "dotationCheck"];
 
         // Generate headers dynamically
         const headerRow = document.createElement('tr');
@@ -48,27 +50,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Generate rows dynamically
         populateTable(data, headers, tbody);
+         // Add extra columns from addedColumns
+         addedColumns.forEach((col) => {
+            const th = document.createElement('th');
+            th.textContent = col;
+            thead.querySelector('tr').appendChild(th);
+        });
 
+                // Ensure the "+" button stays in the last column header
+        const lastHeaderWithButton = thead.querySelector('tr').lastElementChild;
+        lastHeaderWithButton.appendChild(addButton);
     } catch (error) {
         console.error('Error fetching personnel data:', error);
     }
-});
+}
 
-// Function to sort the table by column
+
+let sortOrder = 'desc'; // Default sort order (ascending)
+
 function sortTableByColumn(data, header, tbody, headers) {
-    const sortedData = [...data];
+    // Toggle the sorting order each time the header is clicked
+    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
 
-    // Sort by the column data (alphabetically)
-    sortedData.sort((a, b) => {
-        let valueA = getDataForSorting(a, header);
-        let valueB = getDataForSorting(b, header);
-
-        if (valueA < valueB) return -1;
-        if (valueA > valueB) return 1;
+    // Sort the data based on the column and sort order
+    const sortedData = data.sort((a, b) => {
+        // Compare values based on the current sorting order
+        if (a[header] < b[header]) {
+            return sortOrder === 'asc' ? -1 : 1;
+        }
+        if (a[header] > b[header]) {
+            return sortOrder === 'asc' ? 1 : -1;
+        }
         return 0;
     });
 
-    // Re-populate the table with the sorted data
+    // Re-populate the table rows after sorting
     populateTable(sortedData, headers, tbody);
 }
 
@@ -104,15 +120,22 @@ function populateTable(data, headers, tbody) {
             row.appendChild(cell);
         });
 
+        addedColumns.forEach((column) => {
+            const extraCell = document.createElement('td');
+            extraCell.textContent = item.moreInfo ? item.moreInfo[column] || 'N/A' : 'N/A';
+            row.appendChild(extraCell);
+        });
         tbody.appendChild(row);
     });
 }
+
+let addedColumns = [];
 
 // Function to create the "+" button
 function createAddColumnButton(data, table, thead, tbody, headers) {
     const addButton = document.createElement('button');
     addButton.textContent = '+';
-    addButton.classList.add('add-column-btn'); // Apply CSS class for button styling
+    addButton.classList.add('add-column-btn');
     addButton.setAttribute('aria-label', 'Add a new column');
     addButton.addEventListener('click', () => openColumnModal(data, table, thead, tbody, headers));
 
@@ -153,15 +176,15 @@ function openColumnModal(data, table, thead, tbody, headers) {
     addButton.style.marginLeft = '10px';
     addButton.addEventListener('click', () => {
         const selectedKey = select.value;
-        if (!headers.includes(selectedKey)) {
-            headers.push(selectedKey);
+        if (!headers.includes(selectedKey) && !addedColumns.includes(selectedKey)) {  // Avoid duplicates
+            addedColumns.push(selectedKey);  // Save the added column
 
             // Add new column header
             const th = document.createElement('th');
             th.textContent = selectedKey;
 
             // Add sorting functionality for the new column
-            addSortingToNewColumn(th, selectedKey, data, tbody, headers);
+            //addSortingToNewColumn(th, selectedKey, data, tbody, headers);
 
             thead.querySelector('tr').appendChild(th);
 
@@ -195,30 +218,31 @@ function openColumnModal(data, table, thead, tbody, headers) {
 }
 
 // Function to add sorting functionality to newly added column
-function addSortingToNewColumn(th, selectedKey, data, tbody, headers) {
-    const sortIcon = document.createElement('i');
-    sortIcon.classList.add('fa-solid', 'fa-arrows-up-down', 'sort-icon');
-    th.appendChild(sortIcon);
+// function addSortingToNewColumn(th, selectedKey, data, tbody, headers) {
+//     const sortIcon = document.createElement('i');
+//     sortIcon.classList.add('fa-solid', 'fa-arrows-up-down', 'sort-icon');
+//     th.appendChild(sortIcon);
 
-    // Add sorting functionality for the new column
-    th.addEventListener('click', () => {
-        sortTableByColumn(data, selectedKey, tbody, headers);
-    });
+//     // Add sorting functionality for the new column
+//     th.addEventListener('click', () => {
+//         sortTableByColumn(data, selectedKey, tbody, headers);
+//     });
 
-    // Add hover effect for the sort icon
-    th.addEventListener('mouseenter', () => {
-        sortIcon.style.display = 'inline'; // Show icon on hover
-    });
-    th.addEventListener('mouseleave', () => {
-        sortIcon.style.display = 'none'; // Hide icon when not hovered
-    });
-}
+//     // Add hover effect for the sort icon
+//     th.addEventListener('mouseenter', () => {
+//         sortIcon.style.display = 'inline'; // Show icon on hover
+//     });
+//     th.addEventListener('mouseleave', () => {
+//         sortIcon.style.display = 'none'; // Hide icon when not hovered
+//     });
+// }
 
-// Function to populate the table rows with the new column data
 function populateTableWithNewColumn(data, tbody, headers, newColumn) {
-    tbody.querySelectorAll('tr').forEach((row, index) => {
+    // Populate the table with the new column's data
+    data.forEach((rowData, index) => {
+        const row = tbody.querySelectorAll('tr')[index];
         const cell = document.createElement('td');
-        const moreInfo = data[index].moreInfo;
+        const moreInfo = rowData.moreInfo;
         cell.textContent = moreInfo[newColumn] || 'N/A';
         row.appendChild(cell);
     });
@@ -396,7 +420,7 @@ async function saveChanges(userData) {
 
         // Revert to text view after saving changes
         revertToText(userData);
-
+        fetchTable()
         // Optionally, provide feedback for the user here (e.g., alert or success message)
         console.log('Changes saved successfully!');
     } catch (error) {
