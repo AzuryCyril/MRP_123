@@ -1,4 +1,4 @@
-import { getMaterialDynamicCount, updateMaterialDynamicCount, fetchPersonnel } from './database.js';
+import { getMaterialDynamicCount, updateMaterialDynamicCount, fetchPersonnel, fetchStockPC } from './database.js';
 // Declare materialCheckboxes globally so they can be accessed in various functions
 let materialCheckboxes;
 
@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch data for each category when the page loads
     fetchData('PC', 'stockPC.json');
-    fetchData('Mobile', 'stockMobile.json');
-    fetchData('Home', 'stockHome.json');
+  
 
     // Show the PC tab by default when the page loads
     document.getElementById('PC').style.display = 'block';
@@ -203,10 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Function to fetch data and populate the corresponding table
-function fetchData(tabName, jsonFile) {
-    fetch(jsonFile)
-        .then(response => response.json())
-        .then(data => {
+async function fetchData(tabName, jsonFile) {
+    const data = await fetchStockPC();
+    console.log(data)
             const table = document.querySelector(`#${tabName} table`);
             const tableHead = table.querySelector('thead');
             const tableBody = table.querySelector('tbody');
@@ -247,8 +245,7 @@ function fetchData(tabName, jsonFile) {
                     tableBody.appendChild(row);
                 });
             }
-        })
-        .catch(error => console.error('Error fetching data:', error));
+      
 }
 
 // Function to handle tab switching

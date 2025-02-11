@@ -16,6 +16,18 @@ import { getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc  } fr
 
 
 
+  export async function fetchStockPC() {
+    try {
+        const personnelCollection = collection(db, 'stockPc'); // Reference to 'personnel' collection
+        const personnelSnapshot = await getDocs(personnelCollection); // Fetch the documents in the collection
+        const personnelList = personnelSnapshot.docs.map(doc => doc.data()); // Get the document data
+
+        return personnelList;
+    } catch (error) {
+        console.error("Error fetching personnel data:", error);
+    }
+}
+
   export async function fetchPersonnel() {
     try {
         const personnelCollection = collection(db, 'personnel'); // Reference to 'personnel' collection
