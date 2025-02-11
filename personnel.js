@@ -1,525 +1,421 @@
-import { fetchPersonnel, updateUserInFirebase } from "./database.js";
-fetchTable()
-async function fetchTable(){
+import { fetchPersonnel } from "./database.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await fetchTable();
+});
+
+// Store added columns so they persist after updates
+let addedColumns = [];
+
+async function fetchTable() {
     try {
-        // Fetch the personnel data from Firebase
+        // Fetch data from Firebase
         const data = await fetchPersonnel();
-        console.log(data)
-        const table = document.getElementById('userTable');
-        document.querySelector('thead').innerHTML = "";
-        document.querySelector('tbody').innerHTML = "";
-        const thead = table.querySelector('thead');
-        const tbody = table.querySelector('tbody');
+        if (!data || data.length === 0) return;
 
-        // Collect all keys except "moreInfo"
-        const headers = ["userIPN", "userFirstName", "userLastName", "userEmail", "computerID", "dotationCheck"];
+        const table = document.getElementById("userTable");
+        const thead = table.querySelector("thead");
+        const tbody = table.querySelector("tbody");
 
-        // Generate headers dynamically
-        const headerRow = document.createElement('tr');
-        headers.forEach((header, index) => {
-            const th = document.createElement('th');
+        // Reset table content
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+
+        // Default headers (excluding 'moreInfo')
+        let headers = ["userIPN", "userFirstName", "userLastName", "userEmail", "computerID", "dotationCheck"];
+
+        // Append any previously added columns
+        headers = [...headers, ...addedColumns];
+
+        // Generate table headers
+        const headerRow = document.createElement("tr");
+        headers.forEach(header => {
+            const th = document.createElement("th");
             th.textContent = header;
 
-            // Add sorting icon when hovering over headers
-            const sortIcon = document.createElement('i');
-            sortIcon.classList.add('fa-solid', 'fa-arrows-up-down', 'sort-icon');
+            // Add sorting functionality
+            const sortIcon = document.createElement("i");
+            sortIcon.classList.add("fa-solid", "fa-arrows-up-down", "sort-icon");
             th.appendChild(sortIcon);
 
-            // Add click event listener for sorting by column
-            th.addEventListener('click', () => {
-                sortTableByColumn(data, header, tbody, headers);
-            });
-
-            // Add event listeners for hover effect
-            th.addEventListener('mouseenter', () => {
-                sortIcon.style.display = 'inline'; // Show icon on hover
-            });
-            th.addEventListener('mouseleave', () => {
-                sortIcon.style.display = 'none'; // Hide icon when not hovered
-            });
+            th.addEventListener("click", () => sortTableByColumn(data, header, tbody, headers));
 
             headerRow.appendChild(th);
         });
 
-        // Initially add the "+" button to the last header
-        const addButton = createAddColumnButton(data, table, thead, tbody, headers);
-        const lastHeader = headerRow.querySelector('th:last-child');
-        lastHeader.appendChild(addButton);
+        // Add "+" button to the last header
+        const addButton = createAddColumnButton(data);
+        headerRow.lastElementChild.appendChild(addButton);
 
         thead.appendChild(headerRow);
 
-        // Generate rows dynamically
+        // Populate table rows
         populateTable(data, headers, tbody);
-         // Add extra columns from addedColumns
-         addedColumns.forEach((col) => {
-            const th = document.createElement('th');
-            th.textContent = col;
-            thead.querySelector('tr').appendChild(th);
-        });
 
-                // Ensure the "+" button stays in the last column header
-        const lastHeaderWithButton = thead.querySelector('tr').lastElementChild;
-        lastHeaderWithButton.appendChild(addButton);
     } catch (error) {
-        console.error('Error fetching personnel data:', error);
+        console.error("Error fetching personnel data:", error);
     }
 }
 
-
-let sortOrder = 'desc'; // Default sort order (ascending)
-
-function sortTableByColumn(data, header, tbody, headers) {
-    // Toggle the sorting order each time the header is clicked
-    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-
-    // Sort the data based on the column and sort order
-    const sortedData = data.sort((a, b) => {
-        // Compare values based on the current sorting order
-        if (a[header] < b[header]) {
-            return sortOrder === 'asc' ? -1 : 1;
-        }
-        if (a[header] > b[header]) {
-            return sortOrder === 'asc' ? 1 : -1;
-        }
-        return 0;
-    });
-
-    // Re-populate the table rows after sorting
-    populateTable(sortedData, headers, tbody);
-}
-
-// Helper function to retrieve data for sorting, handling nested 'moreInfo'
-function getDataForSorting(item, header) {
-    // Check if the header belongs to 'moreInfo'
-    if (item.moreInfo && item.moreInfo[0] && item.moreInfo[0][header]) {
-        return item.moreInfo[0][header] || ''; // Return data from 'moreInfo'
-    }
-
-    return item[header] || ''; // Return regular column data
-}
-
-// Function to populate the table rows
 function populateTable(data, headers, tbody) {
-    tbody.innerHTML = ''; // Clear existing rows
-    data.forEach(item => {
+    data.forEach(userData => {
         const row = document.createElement('tr');
+
         headers.forEach(header => {
             const cell = document.createElement('td');
-            
-            if (header === 'userIPN') {
-                const userIDLink = document.createElement('a');
-                userIDLink.href = '#';
-                userIDLink.textContent = item[header];
-                userIDLink.addEventListener('click', () => openUserModal(item));
-                cell.appendChild(userIDLink);
+
+            // Special case for UserIPN to make it clickable
+            if (header === "userIPN") {
+                const link = document.createElement('a');
+                link.textContent = userData[header] || 'N/A';
+                link.href = '#';
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openUserInfoModal(userData);  // Open the modal with full user info
+                });
+                cell.appendChild(link);
+            } else if (header === "dotationCheck") {
+                // Handle checkbox for "dotationCheck"
+                const checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+                checkbox.checked = userData[header] || false;
+                checkbox.disabled = true;  // Make it read-only in table
+                cell.appendChild(checkbox);
             } else {
-                const cellData = getDataForSorting(item, header); // Get data considering 'moreInfo'
-                cell.textContent = cellData || 'N/A';
+                // Check if the header exists in the userData or inside moreInfo
+                if (header in userData) {
+                    cell.textContent = userData[header] || 'N/A';
+                } else if (userData.moreInfo && userData.moreInfo[header] !== undefined) {
+                    cell.textContent = userData.moreInfo[header] || 'N/A';
+                } else {
+                    cell.textContent = 'N/A'; // Default to 'N/A' if no data exists
+                }
             }
 
             row.appendChild(cell);
         });
 
-        addedColumns.forEach((column) => {
-            const extraCell = document.createElement('td');
-            extraCell.textContent = item.moreInfo ? item.moreInfo[column] || 'N/A' : 'N/A';
-            row.appendChild(extraCell);
-        });
         tbody.appendChild(row);
     });
 }
 
-let addedColumns = [];
 
-// Function to create the "+" button
+import { updateUserInFirebase } from "./database.js"; // Import Firebase function
+
+function openUserInfoModal(userData) {
+    const modal = document.createElement('div');
+    modal.classList.add("user-info-modal-overlay");
+
+    const modalContent = document.createElement('div');
+    modalContent.classList.add("user-info-modal-content");
+
+    // Close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = "Close";
+    closeButton.classList.add("user-info-modal-close");
+    closeButton.addEventListener("click", () => {
+        modal.classList.add("fade-out");
+        setTimeout(() => document.body.removeChild(modal), 300);
+    });
+
+    // Edit button
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.classList.add("user-info-modal-edit");
+
+    // Save button (hidden initially)
+    const saveButton = document.createElement("button");
+    saveButton.textContent = "Save";
+    saveButton.classList.add("user-info-modal-save");
+    saveButton.style.display = "none";
+
+    // Container for user information
+    const userInfo = document.createElement('div');
+    userInfo.classList.add('user-info');
+
+    // Define order of fields
+    const fieldOrder = ["userIPN", "userFirstName", "userLastName", "userEmail", "computerID", "dotationCheck"];
+
+    // Store input fields for reference when saving
+    const inputFields = {};
+
+    fieldOrder.forEach(key => {
+        const fieldContainer = document.createElement('div');
+        fieldContainer.classList.add("user-info-field");
+    
+        const label = document.createElement('label');
+        label.textContent = `${key}:`;
+    
+        if (key === "userIPN") {
+            // Display UserIPN as non-editable text
+            const textSpan = document.createElement('span');
+            textSpan.textContent = userData[key] || "N/A";
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(textSpan);
+        } else if (key === "dotationCheck") {
+            // For dotationCheck, create a checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = "checkbox";
+            checkbox.checked = userData[key] || false;
+            checkbox.disabled = true;  // Optionally, make it non-editable initially
+            inputFields[key] = checkbox;
+    
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(checkbox);
+        } else {
+            // Editable fields
+            const input = document.createElement('input');
+            input.type = "text";
+            input.value = userData[key] || "";
+            input.disabled = true;
+            inputFields[key] = input;
+    
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+        }
+    
+        userInfo.appendChild(fieldContainer);
+    });
+
+    // Handle "moreInfo" fields
+    if (userData.moreInfo && typeof userData.moreInfo === 'object') {
+        const moreInfoSection = document.createElement('div');
+        moreInfoSection.classList.add('more-info');
+
+        const moreInfoOrder = ["Entité", "Localisation", "Direction", "Status", "Sociétés", "Manager", "PhoneNumber", "materials"];
+        
+        moreInfoOrder.forEach(moreInfoKey => {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.classList.add("user-info-field");
+
+            const label = document.createElement('label');
+            label.textContent = `${moreInfoKey}:`;
+
+            if (moreInfoKey === "materials") {
+                // Handle checkboxes for materials
+                const materialsContainer = document.createElement('div');
+                materialsContainer.classList.add("materials-container");
+
+                const icons = {
+                    "phone": "📱",
+                    "charger": "🔌",
+                    "token": "🔑",
+                    "headset": "🎧"
+                };
+
+                userData.moreInfo.materials && Object.keys(icons).forEach(material => {
+                    const checkboxLabel = document.createElement('label');
+                    checkboxLabel.innerHTML = `${icons[material]} `;
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = "checkbox";
+                    checkbox.checked = userData.moreInfo.materials[material] || false;
+                    checkbox.disabled = true;
+
+                    checkboxLabel.appendChild(checkbox);
+                    materialsContainer.appendChild(checkboxLabel);
+                    
+                    inputFields[moreInfoKey] = inputFields[moreInfoKey] || {};
+                    inputFields[moreInfoKey][material] = checkbox;
+                });
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(materialsContainer);
+            } else {
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = userData.moreInfo[moreInfoKey] || "";
+                input.disabled = true;
+                inputFields[moreInfoKey] = input;
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(input);
+            }
+
+            moreInfoSection.appendChild(fieldContainer);
+        });
+
+        userInfo.appendChild(moreInfoSection);
+    }
+
+    // Enable editing (except for UserIPN)
+    editButton.addEventListener("click", () => {
+        Object.keys(inputFields).forEach(key => {
+            if (typeof inputFields[key] === 'object' && !inputFields[key].type) {
+                Object.values(inputFields[key]).forEach(subField => subField.disabled = false);
+            } else {
+                inputFields[key].disabled = false;
+            }
+        });
+        editButton.style.display = "none";
+        saveButton.style.display = "inline-block";
+    });
+
+    saveButton.addEventListener("click", async () => {
+        const updatedUserData = { moreInfo: {} };
+    
+        // Loop through each input field to collect updated values
+        Object.keys(inputFields).forEach(key => {
+            if (key === "userIPN") {
+                // UserIPN should not be editable, so skip updating it
+                return;
+            }
+            
+            if (userData.hasOwnProperty(key)) {
+                // If it's a direct user field (not in "moreInfo"), update it directly
+                updatedUserData[key] = inputFields[key].value;
+            } else if (userData.moreInfo && userData.moreInfo.hasOwnProperty(key)) {
+                // If it's a "moreInfo" field, update it under moreInfo
+                updatedUserData.moreInfo[key] = inputFields[key].value;
+            }
+        });
+    
+        // Handle "dotationCheck" checkbox separately (if it's in the modal)
+        if (inputFields["dotationCheck"]) {
+            updatedUserData["dotationCheck"] = inputFields["dotationCheck"].checked;
+        }
+    
+        // Handle "materials" checkbox separately
+        updatedUserData.moreInfo.materials = {};
+        if (inputFields["materials"]) {
+            Object.keys(inputFields["materials"]).forEach(materialKey => {
+                updatedUserData.moreInfo.materials[materialKey] = inputFields["materials"][materialKey].checked;
+            });
+        }
+    
+        console.log("Final Updated Data:", updatedUserData);
+    
+        try {
+            // Update the user in Firebase
+            await updateUserInFirebase(userData.userIPN, updatedUserData);
+            console.log("User data successfully updated in Firebase!");
+    
+            // After successful save, refresh the table to reflect changes
+            fetchTable();
+        } catch (error) {
+            console.error("Error updating user data:", error);
+        }
+    
+        // Disable fields again after saving
+        Object.values(inputFields).forEach(field => {
+            if (typeof field === 'object' && !field.type) {
+                Object.values(field).forEach(subField => subField.disabled = true);
+            } else {
+                field.disabled = true;
+            }
+        });
+    
+        // Hide save button and show edit button again
+        editButton.style.display = "inline-block";
+        saveButton.style.display = "none";
+    });
+
+    // Append elements
+    modalContent.appendChild(closeButton);
+    modalContent.appendChild(editButton);
+    modalContent.appendChild(saveButton);
+    modalContent.appendChild(userInfo);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    setTimeout(() => modal.classList.add("fade-in"), 0);
+}
+
+
+
+
 function createAddColumnButton(data, table, thead, tbody, headers) {
     const addButton = document.createElement('button');
     addButton.textContent = '+';
     addButton.classList.add('add-column-btn');
     addButton.setAttribute('aria-label', 'Add a new column');
-    addButton.addEventListener('click', () => openColumnModal(data, table, thead, tbody, headers));
+
+    // Prevent the click from triggering the sorting function
+    addButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Stops event from reaching the <th>
+        addButton.disabled = true;  // Disable the "+" button when modal opens
+        openColumnModal(data, table, thead, tbody, headers, addButton);
+    });
 
     return addButton;
 }
 
-// Function to open the modal for adding a new column
-function openColumnModal(data, table, thead, tbody, headers) {
-    const modal = document.createElement('div');
-    modal.style.position = 'fixed';
-    modal.style.top = '50%';
-    modal.style.left = '50%';
-    modal.style.transform = 'translate(-50%, -50%)';
-    modal.style.padding = '20px';
-    modal.style.backgroundColor = '#fff';
-    modal.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-    modal.style.zIndex = '1000';
+// Open modal for adding a new column
+function openColumnModal(data) {
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
 
-    const modalContent = document.createElement('div');
+    const modalContent = document.createElement("div");
+    modalContent.classList.add("modal-content");
 
-    const title = document.createElement('h3');
-    title.textContent = 'Add Column';
+    const title = document.createElement("h3");
+    title.textContent = "Add Column";
     modalContent.appendChild(title);
 
-    const select = document.createElement('select');
-    const moreInfoKeys = Object.keys(data[0].moreInfo);
-    
+    const select = document.createElement("select");
+    const moreInfoKeys = Object.keys(data[0].moreInfo || {});
+
     moreInfoKeys.forEach(key => {
-        const option = document.createElement('option');
-        option.value = key;
-        option.textContent = key;
-        select.appendChild(option);
+        if (!addedColumns.includes(key)) {
+            const option = document.createElement("option");
+            option.value = key;
+            option.textContent = key;
+            select.appendChild(option);
+        }
     });
+
     modalContent.appendChild(select);
 
-    const addButton = document.createElement('button');
-    addButton.textContent = 'Add Column';
-    addButton.style.marginLeft = '10px';
-    addButton.addEventListener('click', () => {
+    const addButton = document.createElement("button");
+    addButton.textContent = "Add Column";
+    addButton.addEventListener("click", () => {
         const selectedKey = select.value;
-        if (!headers.includes(selectedKey) && !addedColumns.includes(selectedKey)) {  // Avoid duplicates
-            addedColumns.push(selectedKey);  // Save the added column
-
-            // Add new column header
-            const th = document.createElement('th');
-            th.textContent = selectedKey;
-
-            // Add sorting functionality for the new column
-            //addSortingToNewColumn(th, selectedKey, data, tbody, headers);
-
-            thead.querySelector('tr').appendChild(th);
-
-            // Remove the existing "+" button and add it to the new column
-            const existingButton = document.querySelector('.add-column-btn');
-            if (existingButton) existingButton.remove(); // Remove the previous "+" button
-
-            const lastHeader = thead.querySelector('tr').lastElementChild;
-            const newAddButton = createAddColumnButton(data, table, thead, tbody, headers);
-            lastHeader.appendChild(newAddButton);
-
-            // Update table rows with the new column data
-            populateTableWithNewColumn(data, tbody, headers, selectedKey);
+        if (selectedKey && !addedColumns.includes(selectedKey)) {
+            addedColumns.push(selectedKey);
+            fetchTable(); // Refresh table with new column
         }
-
-        // Close the modal
-        document.body.removeChild(modal);
+        closeModal(modal);
     });
+
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "Cancel";
+    closeButton.addEventListener("click", () => {
+        closeModal(modal);
+    });
+
     modalContent.appendChild(addButton);
-
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Cancel';
-    closeButton.style.marginLeft = '10px';
-    closeButton.addEventListener('click', () => {
-        document.body.removeChild(modal);
-    });
     modalContent.appendChild(closeButton);
-
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
+
+    // Trigger the show class to animate the modal
+    setTimeout(() => {
+        modal.classList.add("show");
+    }, 10); // Give a slight delay to trigger the transition
 }
 
-// Function to add sorting functionality to newly added column
-// function addSortingToNewColumn(th, selectedKey, data, tbody, headers) {
-//     const sortIcon = document.createElement('i');
-//     sortIcon.classList.add('fa-solid', 'fa-arrows-up-down', 'sort-icon');
-//     th.appendChild(sortIcon);
-
-//     // Add sorting functionality for the new column
-//     th.addEventListener('click', () => {
-//         sortTableByColumn(data, selectedKey, tbody, headers);
-//     });
-
-//     // Add hover effect for the sort icon
-//     th.addEventListener('mouseenter', () => {
-//         sortIcon.style.display = 'inline'; // Show icon on hover
-//     });
-//     th.addEventListener('mouseleave', () => {
-//         sortIcon.style.display = 'none'; // Hide icon when not hovered
-//     });
-// }
-
-function populateTableWithNewColumn(data, tbody, headers, newColumn) {
-    // Populate the table with the new column's data
-    data.forEach((rowData, index) => {
-        const row = tbody.querySelectorAll('tr')[index];
-        const cell = document.createElement('td');
-        const moreInfo = rowData.moreInfo;
-        cell.textContent = moreInfo[newColumn] || 'N/A';
-        row.appendChild(cell);
-    });
-}
-
-// Function to open the modal to show user data
-function openUserModal(userData) {
-    console.log(userData);  // Log the whole object to check its contents
-    console.log(userData.moreInfo);  // Log just the 'moreInfo' part to ensure it's an object
-
-    const modal = document.getElementById('userModal');
-    const modalContent = document.getElementById('modalContent');
-
-    // Create modal HTML content
-    let modalHTML = `
-    <div class="modal-buttons">
-        <button id="editButton" class="edit-btn">Edit</button>
-        <button id="saveButton" class="save-btn" style="display: none;">Save</button>
-        <span class="close-btn">&times;</span>
-    </div>
-    <p><strong>User ID:</strong> <span id="userID">${userData.userIPN}</span></p>
-    <p><strong>Name:</strong> <span id="userName">${userData.userFirstName} ${userData.userLastName}</span></p>
-    <p><strong>Email:</strong> <span id="userEmail">${userData.userEmail}</span></p>
-    <p><strong>Computer ID:</strong> <span id="computerID">${userData.computerID}</span></p>
-    <p><strong>Dotation Check:</strong> <span id="dotationCheck">${userData.dotationCheck ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></p>
-`;
-
-    // Check if moreInfo exists and is an object
-    if (userData.moreInfo && typeof userData.moreInfo === 'object') {
-        modalHTML += '<h3>More Information:</h3>';
-        for (const key in userData.moreInfo) {
-            if (userData.moreInfo.hasOwnProperty(key)) {
-                const value = userData.moreInfo[key];
-                if (key === 'materials' && typeof value === 'object') {
-                    modalHTML += '<div class="materials">';
-                    modalHTML += `
-                    <label><i class="fa fa-phone"></i> Phone: <span id="phone">${value.phone ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></label>
-                    <label><i class="fa fa-plug"></i> Charger: <span id="charger">${value.charger ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></label>
-                    <label><i class="fa fa-key"></i> Token: <span id="token">${value.token ? `<input type="checkbox" checked disabled>` : '<input type="checkbox" disabled>'}</span></label>
-                    <label><i class="fa fa-headphones"></i> Headset: <span id="headset">${value.headset ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" disabled>'}</span></label>
-                    `;
-                    modalHTML += '</div>';
-                } else {
-                    modalHTML += `<p><strong>${key}:</strong> <span id="${key}">${value}</span></p>`;
-                }
-            }
-        }
-    } else {
-        // Handle case where moreInfo is not an object or is empty
-        modalHTML += '<p>No additional information available.</p>';
-    }
-
-    // Add the Edit and Save buttons
-    modalHTML += `<button id="saveButton" style="display: none;">Save</button>`;
-
-    modalContent.innerHTML = modalHTML;
-    modal.style.display = 'block';
-
-    // Add event listener for the close button
-    const closeButton = modal.querySelector('.close-btn');
-    closeButton.addEventListener('click', () => closeModal(modal));
-
-    // Add event listener for closing the modal when clicking outside of it
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            closeModal(modal);
-        }
-    });
-
-    // Edit button functionality
-    const editButton = modal.querySelector('#editButton');
-    const saveButton = modal.querySelector('#saveButton');
-
-    editButton.addEventListener('click', () => {
-        // Convert text to input fields for editing
-        makeEditable(userData);
-        // Show Save button, hide Edit button
-        editButton.style.display = 'none';
-        saveButton.style.display = 'inline';
-    });
-
-    // Save button functionality
-    saveButton.addEventListener('click', () => {
-        saveChanges(userData);
-        // Re-convert input fields back to text with updated values
-        revertToText(userData);
-        // Keep the modal open after saving
-    });
-}
-
-// Function to make fields editable
-function makeEditable(userData) {
-    // Convert span values into input fields for editing
-    document.getElementById('userName').innerHTML = `
-        <input type="text" value="${userData.userFirstName}" />
-        <input type="text" value="${userData.userLastName}" />
-    `;
-    document.getElementById('userEmail').innerHTML = `<input type="email" value="${userData.userEmail}" />`;
-    document.getElementById('computerID').innerHTML = `<input type="text" value="${userData.computerID}" />`;
-
-    // Dotation Check becomes a checkbox input
-    document.getElementById('dotationCheck').innerHTML = `<input type="checkbox" ${userData.dotationCheck ? 'checked' : ''} />`;
-
-    // Update "More Information" fields (if any)
-    if (userData.moreInfo && typeof userData.moreInfo === 'object') {
-        for (const key in userData.moreInfo) {
-            if (userData.moreInfo.hasOwnProperty(key)) {
-                const value = userData.moreInfo[key];
-                
-                if (key === 'materials' && typeof value === 'object') {
-                    // Show checkboxes for materials
-                    document.getElementById('phone').innerHTML = `<input type="checkbox" ${value.phone ? 'checked' : ''} />`;
-                    document.getElementById('charger').innerHTML = `<input type="checkbox" ${value.charger ? 'checked' : ''} />`;
-                    document.getElementById('token').innerHTML = `<input type="checkbox" ${value.token ? 'checked' : ''} />`;
-                    document.getElementById('headset').innerHTML = `<input type="checkbox" ${value.headset ? 'checked' : ''} />`;
-                } else {
-                    // Handle other fields as text input
-                    document.getElementById(key).innerHTML = `<input type="text" value="${value}" />`;
-                }
-            }
-        }
-    }
-}
-
-
-async function saveChanges(userData) {
-    try {
-        // Get references to the elements for the updated fields
-        const updatedFirstName = document.querySelector('#userName input:nth-child(1)').value;
-        const updatedLastName = document.querySelector('#userName input:nth-child(2)').value;
-        const updatedEmail = document.querySelector('#userEmail input').value;
-        const updatedComputerID = document.querySelector('#computerID input').value;
-        const updatedDotationCheck = document.querySelector('#dotationCheck input').checked;
-
-        // Update the moreInfo fields (if any)
-        const updatedMoreInfo = {};
-        if (userData.moreInfo && typeof userData.moreInfo === 'object') {
-            for (const key in userData.moreInfo) {
-                if (userData.moreInfo.hasOwnProperty(key)) {
-                    const value = userData.moreInfo[key];
-                    if (key === 'materials' && typeof value === 'object') {
-                        updatedMoreInfo[key] = {
-                            phone: document.querySelector('#phone input').checked,
-                            charger: document.querySelector('#charger input').checked,
-                            token: document.querySelector('#token input').checked,
-                            headset: document.querySelector('#headset input').checked
-                        };
-                    } else {
-                        updatedMoreInfo[key] = document.querySelector(`#${key} input`).value;
-                    }
-                }
-            }
-        }
-
-        // Prepare the updated data
-        const updatedUserData = {
-            userFirstName: updatedFirstName,
-            userLastName: updatedLastName,
-            userEmail: updatedEmail,
-            computerID: updatedComputerID,
-            dotationCheck: updatedDotationCheck,
-            moreInfo: updatedMoreInfo
-        };
-
-        // Call Firebase update function (defined below) to update the document
-        await updateUserInFirebase(userData.userIPN, updatedUserData);
-
-        // Update the local userData object with the changes for UI reflection
-        userData.userFirstName = updatedFirstName;
-        userData.userLastName = updatedLastName;
-        userData.userEmail = updatedEmail;
-        userData.computerID = updatedComputerID;
-        userData.dotationCheck = updatedDotationCheck;
-        userData.moreInfo = updatedMoreInfo;
-
-        // Revert to text view after saving changes
-        revertToText(userData);
-        fetchTable()
-        // Optionally, provide feedback for the user here (e.g., alert or success message)
-        console.log('Changes saved successfully!');
-    } catch (error) {
-        console.error('Error saving changes:', error);
-    }
-}
-
-
-
-// Function to revert inputs back to text after saving
-function revertToText(userData) {
-    // Convert input fields back to text
-    document.getElementById('userID').innerHTML = userData.userIPN;
-    document.getElementById('userName').innerHTML = `${userData.userFirstName} ${userData.userLastName}`;
-    document.getElementById('userEmail').innerHTML = userData.userEmail;
-    document.getElementById('computerID').innerHTML = userData.computerID;
-
-    // For the dotation check, show a checkbox (disabled) with checked or unchecked
-    document.getElementById('dotationCheck').innerHTML = `
-        <input type="checkbox" disabled ${userData.dotationCheck ? 'checked' : ''}>
-    `;
-
-    // Update "More Information" fields (if any)
-    if (Array.isArray(userData.moreInfo)) {
-        userData.moreInfo.forEach(info => {
-            for (const key in info) {
-                if (key === 'materials') {
-                    // Check if materials is an array and has at least one element
-                    if (Array.isArray(info.materials) && info.materials.length > 0) {
-                        document.getElementById('phone').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].phone ? 'checked' : ''}>
-                        `;
-                        document.getElementById('charger').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].charger ? 'checked' : ''}>
-                        `;
-                        document.getElementById('token').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].token ? 'checked' : ''}>
-                        `;
-                        document.getElementById('headset').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].headset ? 'checked' : ''}>
-                        `;
-                    } else {
-                        // If materials is not an array or empty, leave checkboxes unchecked and disabled
-                        document.getElementById('phone').innerHTML = '<input type="checkbox" disabled>';
-                        document.getElementById('charger').innerHTML = '<input type="checkbox" disabled>';
-                        document.getElementById('token').innerHTML = '<input type="checkbox" disabled>';
-                        document.getElementById('headset').innerHTML = '<input type="checkbox" disabled>';
-                    }
-                } else {
-                    document.getElementById(key).innerHTML = info[key];
-                }
-            }
-        });
-    } else if (userData.moreInfo && typeof userData.moreInfo === 'object') {
-        // Handle the case where moreInfo is an object (not an array)
-        for (const key in userData.moreInfo) {
-            if (userData.moreInfo.hasOwnProperty(key)) {
-                const info = userData.moreInfo[key];
-                if (key === 'materials') {
-                    // Check if materials is an array and has at least one element
-                    if (Array.isArray(info.materials) && info.materials.length > 0) {
-                        document.getElementById('phone').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].phone ? 'checked' : ''}>
-                        `;
-                        document.getElementById('charger').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].charger ? 'checked' : ''}>
-                        `;
-                        document.getElementById('token').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].token ? 'checked' : ''}>
-                        `;
-                        document.getElementById('headset').innerHTML = `
-                            <input type="checkbox" disabled ${info.materials[0].headset ? 'checked' : ''}>
-                        `;
-                    } else {
-                        // If materials is not an array or empty, leave checkboxes unchecked and disabled
-                        document.getElementById('phone').innerHTML = '<input type="checkbox" disabled>';
-                        document.getElementById('charger').innerHTML = '<input type="checkbox" disabled>';
-                        document.getElementById('token').innerHTML = '<input type="checkbox" disabled>';
-                        document.getElementById('headset').innerHTML = '<input type="checkbox" disabled>';
-                    }
-                } else {
-                    document.getElementById(key).innerHTML = info;
-                }
-            }
-        }
-    }
-
-    // Hide Save button, show Edit button again
-    const editButton = document.querySelector('#editButton');
-    const saveButton = document.querySelector('#saveButton');
-    editButton.style.display = 'inline';
-    saveButton.style.display = 'none';
-}
-
-
-
-
-// Function to close the modal
+// Function to close the modal and re-enable the "+" button
 function closeModal(modal) {
-    modal.style.display = 'none';
-    // Don't clear the modal content so it can be reused
+    document.body.removeChild(modal);
+    document.querySelector(".add-column-btn").disabled = false;
+}
+
+// Sorting function with toggle
+function sortTableByColumn(data, column, tbody, headers) {
+    let ascending = !sortTableByColumn.asc || sortTableByColumn.lastColumn !== column;
+    sortTableByColumn.asc = ascending;
+    sortTableByColumn.lastColumn = column;
+
+    data.sort((a, b) => {
+        let valA = a[column] ?? a.moreInfo?.[column] ?? "";
+        let valB = b[column] ?? b.moreInfo?.[column] ?? "";
+
+        if (typeof valA === "string") valA = valA.toLowerCase();
+        if (typeof valB === "string") valB = valB.toLowerCase();
+
+        return ascending ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+    });
+
+    tbody.innerHTML = "";
+    populateTable(data, headers, tbody);
 }
