@@ -14,6 +14,48 @@ import { getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc  } fr
   const db = getFirestore(app);
 
 
+  
+
+  export async function fetchContactList() {
+    const querySnapshot = await getDocs(collection(db, "contactList")); // Assuming 'contacts' is the collection name
+    const contactList = [];
+    
+    querySnapshot.forEach((doc) => {
+        // Push the document's data with the document id to the list
+        contactList.push({ id: doc.id, ...doc.data() }); // doc.id is the document ID, doc.data() is the fields inside the document
+    });
+    
+    return contactList; // Return the array of contacts
+}
+
+
+export async function updateContactInFirebase(contact) {
+    const contactRef = doc(db, "contactList", contact.id); // Reference the document using its ID
+    try {
+        await setDoc(contactRef, contact); // Update the document with new data
+        console.log('Document successfully updated!');
+    } catch (error) {
+        console.error('Error updating document:', error);
+    }
+}
+
+export async function fetchContactById(contactId) {
+    const docRef = doc(db, "contactList", contactId); // Reference to the document
+    try {
+        const docSnap = await getDoc(docRef);  // Fetch the document
+        if (docSnap.exists()) {
+            return { id: docSnap.id, ...docSnap.data() };  // If the document exists, return the data
+        } else {
+            console.log("No such document!");
+            return null;  // Handle the case where the document doesn't exist
+        }
+    } catch (error) {
+        console.error('Error getting document:', error);
+        return null;  // Return null in case of error
+    }
+}
+
+
 
 
   export async function fetchStockPC() {
@@ -27,6 +69,11 @@ import { getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc  } fr
         console.error("Error fetching personnel data:", error);
     }
 }
+
+
+
+
+
 
   export async function fetchPersonnel() {
     try {

@@ -71,24 +71,35 @@ function populateTable(data, headers, tbody) {
                 link.href = '#';
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    openUserInfoModal(userData);  // Open the modal with full user info
+                    openUserInfoModal(userData);
                 });
                 cell.appendChild(link);
-            } else if (header === "dotationCheck") {
-                // Handle checkbox for "dotationCheck"
+            } 
+            // Handle dotationCheck (checkbox + icon)
+            else if (header === "dotationCheck") {
                 const checkbox = document.createElement('input');
                 checkbox.type = "checkbox";
                 checkbox.checked = userData[header] || false;
-                checkbox.disabled = true;  // Make it read-only in table
+                checkbox.disabled = true; // Just for display, not editable from table
+                console.log(userData)
+                const linkIcon = document.createElement('a');
+                linkIcon.href = `https://grouperenault.sharepoint.com/:b:/r/sites/BeneluxTeamLeader-Admin/Shared%20Documents/Admin/DOTATIONS%20-%20ACE2%20-%20Laptop/${userData.userIPN}%20-%20${userData.userLastName}%20${userData.userFirstName}%20-%20G9%20-%20${userData.computerID}.pdf?csf=1&web=1&e=ZJO5XN`; // Replace with actual URL
+                
+                linkIcon.target = "_blank";
+                linkIcon.innerHTML = "🔗"; // Link icon
+                linkIcon.style.marginLeft = "8px"; // Space between checkbox and link
+
                 cell.appendChild(checkbox);
-            } else {
-                // Check if the header exists in the userData or inside moreInfo
+                cell.appendChild(linkIcon);
+            } 
+            // Check if the header exists in userData or inside moreInfo
+            else {
                 if (header in userData) {
                     cell.textContent = userData[header] || 'N/A';
                 } else if (userData.moreInfo && userData.moreInfo[header] !== undefined) {
                     cell.textContent = userData.moreInfo[header] || 'N/A';
                 } else {
-                    cell.textContent = 'N/A'; // Default to 'N/A' if no data exists
+                    cell.textContent = 'N/A';
                 }
             }
 
@@ -98,7 +109,6 @@ function populateTable(data, headers, tbody) {
         tbody.appendChild(row);
     });
 }
-
 
 import { updateUserInFirebase } from "./database.js"; // Import Firebase function
 
