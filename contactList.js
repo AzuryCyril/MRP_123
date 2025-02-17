@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Fetch the contact list from Firebase
     const contactList = await fetchContactList();
-    console.log(contactList);
     
     // Loop through each document and create a div
     contactList.forEach(contact => {
@@ -66,18 +65,21 @@ function getContactAdditionalInfo(contact) {
     // Define the order of fields
     const fieldOrder = ['contactPerson', 'contactPersonEmail', 'contactPersonBackup', 'assignmentGroup', 'urlLink'];
 
-    // First, display fields in the defined order if they exist
-    fieldOrder.forEach(key => {
-        if (contact[key]) {
-            additionalInfoHTML += `<li><strong>${formatFieldLabel(key)}:</strong> ${contact[key]}</li>`;
+
+    fieldOrder.forEach(order =>{
+        Object.keys(contact).forEach(key => {
+        let trimmedKey = key.replace(/-\d+$/, "");
+        // Skip fields that have already been displayed in the fieldOrder
+        
+        
+        if (order.includes(trimmedKey) && key !== "id" && trimmedKey !== "urlLink") {
+            let fieldLabel = formatFieldLabel(key); // Trim field name
+            additionalInfoHTML += `<li><strong>${fieldLabel}:</strong> ${contact[key]}</li>`;
+        }else if (order.includes(trimmedKey) && trimmedKey == "urlLink"){
+            let fieldLabel = formatFieldLabel(key); // Trim field name
+            additionalInfoHTML += `<li><strong>${fieldLabel}:</strong> <a href="${contact[key]}">${contact[key]}</a></li>`;
         }
     });
-
-    // Then, display any additional fields that are not part of the predefined order
-    Object.keys(contact).sort().forEach(key => {
-        if (key !== "id" && !fieldOrder.includes(key)) { // Exclude ID and already displayed fields
-            additionalInfoHTML += `<li><strong>${formatFieldLabel(key)}:</strong> ${contact[key]}</li>`;
-        }
     });
 
     additionalInfoHTML += '</ul>';
@@ -86,13 +88,15 @@ function getContactAdditionalInfo(contact) {
 
 // Helper function to format field labels for display
 function formatFieldLabel(key) {
-    return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()); // Converts camelCase to readable format
+    // Remove the numbering like "-1", "-2", etc.
+    const baseKey = key.replace(/-\d+$/, "");
+    // Converts camelCase to readable format
+    return baseKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 }
 
 
 async function openEditModal(contactId) {
     const contact = await fetchContactById(contactId);
-    console.log('Editing contact:', contact);
 
     // Create overlay
     const overlay = document.createElement('div');
@@ -132,7 +136,7 @@ async function openEditModal(contactId) {
                 const baseKey = fieldKey.replace(/-\d+$/, ""); // Remove existing numbering
                 fieldCounts[baseKey] = (fieldCounts[baseKey] || 0) + 1;
                 const fieldNumber = fieldCounts[baseKey];
-
+                console.log(fieldNumber)
                 // Check if it's a URL field and validate immediately
                 const isURLField = baseKey === "urlLink";
                 const invalidClass = isURLField && contact[fieldKey] && !isValidURL(contact[fieldKey]) ? "invalid-url" : "";
@@ -272,7 +276,7 @@ modal.querySelector('.save-btn').addEventListener('click', async () => {
         await updateContactInFirebase(updatedContact);
         console.log('Contact updated successfully:', updatedContact);
         closeModal();
-        location.reload();
+      
     } catch (error) {
         console.error('Error updating contact:', error);
     }
