@@ -134,7 +134,6 @@ async function openEditModal(contactId) {
         Object.keys(contact).forEach((fieldKey) => {
            
             let trimmedKey = fieldKey.replace(/-\d+$/, "");
-            console.log(trimmedKey)
             if (order.includes(trimmedKey) && fieldKey !== "id") {
                 existingFields.add(fieldKey); // Mark this field as already processed
                     const baseKey = fieldKey.replace(/-\d+$/, ""); // Remove existing numbering
