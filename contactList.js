@@ -129,25 +129,29 @@ async function openEditModal(contactId) {
     }
 
     // Extract existing field names and determine numbering
-    fieldOrder.forEach((key) => {
+    fieldOrder.forEach((order) => {
+     
         Object.keys(contact).forEach((fieldKey) => {
-            if (fieldKey.startsWith(key) && !existingFields.has(fieldKey)) {
+           
+            let trimmedKey = fieldKey.replace(/-\d+$/, "");
+            console.log(trimmedKey)
+            if (order.includes(trimmedKey) && fieldKey !== "id") {
                 existingFields.add(fieldKey); // Mark this field as already processed
-                const baseKey = fieldKey.replace(/-\d+$/, ""); // Remove existing numbering
-                fieldCounts[baseKey] = (fieldCounts[baseKey] || 0) + 1;
-                const fieldNumber = fieldCounts[baseKey];
-                console.log(fieldNumber)
-                // Check if it's a URL field and validate immediately
-                const isURLField = baseKey === "urlLink";
-                const invalidClass = isURLField && contact[fieldKey] && !isValidURL(contact[fieldKey]) ? "invalid-url" : "";
-
-                modalHTML += `
-                    <div class="field-group" id="field-${fieldKey}">
-                        <label for="${fieldKey}">${baseKey} ${fieldNumber}:</label>
-                        <input type="text" id="${fieldKey}" value="${contact[fieldKey]}" class="${isURLField ? 'url-input' : ''} ${invalidClass}" />
-                        <button class="remove-field-btn" data-field-id="field-${fieldKey}">❌</button>
-                    </div>
-                `;
+                    const baseKey = fieldKey.replace(/-\d+$/, ""); // Remove existing numbering
+                    fieldCounts[baseKey] = (fieldCounts[baseKey] || 0) + 1;
+                    const fieldNumber = fieldCounts[baseKey];
+                    console.log(fieldNumber)
+                    // Check if it's a URL field and validate immediately
+                    const isURLField = baseKey === "urlLink";
+                    const invalidClass = isURLField && contact[fieldKey] && !isValidURL(contact[fieldKey]) ? "invalid-url" : "";
+    
+                    modalHTML += `
+                        <div class="field-group" id="field-${fieldKey}">
+                            <label for="${fieldKey}">${baseKey} ${fieldNumber}:</label>
+                            <input type="text" id="${fieldKey}" value="${contact[fieldKey]}" class="${isURLField ? 'url-input' : ''} ${invalidClass}" />
+                            <button class="remove-field-btn" data-field-id="field-${fieldKey}">❌</button>
+                        </div>
+                    `;
             }
         });
     });
