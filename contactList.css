@@ -190,3 +190,9 @@ body{
     max-height: 200px; /* Adjust this to fit your content */
     opacity: 1; /* Fully visible */
 }
+
+/* Search Bar */
+#contactSearch {
+    margin: 10px 0 0px 210px;
+    display: grid;
+}

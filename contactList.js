@@ -3,58 +3,74 @@ import { fetchContactList, updateContactInFirebase, fetchContactById } from "./d
 
 document.addEventListener("DOMContentLoaded", async () => {
     const contactContainer = document.getElementById("contactList");
+    const searchBar = document.getElementById("contactSearch");
 
-    // Fetch the contact list from Firebase
+    // Fetch contact list from Firebase
     const contactList = await fetchContactList();
-    
-    // Loop through each document and create a div
-    contactList.forEach(contact => {
-        let contactHTML = `
-            <article class='c1' data-id="${contact.id}">
-                <div class='c2'>
-                    <div class='c2Title'>
-                        <input type="checkbox" class="delete-checkbox" data-id="${contact.id}" />
-                        <h1>${contact.id}</h1>
+
+    // Function to render contacts
+    function renderContacts(filteredContacts) {
+        contactContainer.innerHTML = ""; // Clear previous contacts
+        filteredContacts.forEach(contact => {
+            let contactHTML = `
+                <article class='c1' data-id="${contact.id}">
+                    <div class='c2'>
+                        <div class='c2Title'>
+                            <input type="checkbox" class="delete-checkbox" data-id="${contact.id}" />
+                            <h1>${contact.id}</h1>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="edit-btn" data-id="${contact.id}"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button class="arrowButton"><i class="arrow fa-solid fa-arrow-right"></i></button>
+                        </div>
                     </div>
-                    <div class="action-buttons">
-                        <button class="edit-btn" data-id="${contact.id}"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button class="arrowButton"><i class=" arrow fa-solid fa-arrow-right"></i></button>
+                    <div class='c3' id="contact-info-${contact.id}">
+                        <!-- Additional info will go here -->
                     </div>
-                </div>
-                <div class='c3' id="contact-info-${contact.id}">
-                    <!-- Additional info will go here -->
-                </div>
-            </article>
-        `;
-        contactContainer.insertAdjacentHTML("beforeend", contactHTML);
-    });
-
-    const c2Elements = contactContainer.querySelectorAll('.c2');
-    c2Elements.forEach((c2, index) => {
-        const arrow = c2.querySelector('.arrow');
-        const editButton = c2.querySelector('.edit-btn');
-        const contactId = c2.querySelector('h1').textContent; // Get the contact id
-
-        // Toggle the visibility of c3 and rotate the arrow when the row is clicked
-        c2.addEventListener('click', async () => {
-            const c3 = document.getElementById(`contact-info-${contactId}`);
-            c3.classList.toggle('active');
-            arrow.classList.toggle('rotated');
-
-            // Only populate the c3 content when it's expanded (optional)
-            if (!c3.classList.contains('populated')) {
-                const contact = contactList.find(contact => contact.id === contactId); // Find the correct contact
-                const additionalInfo = getContactAdditionalInfo(contact); // Get additional info
-                c3.innerHTML = additionalInfo; // Populate c3 with additional info
-                c3.classList.add('populated'); // Mark this as populated to avoid overwriting
-            }
+                </article>
+            `;
+            contactContainer.insertAdjacentHTML("beforeend", contactHTML);
         });
 
-        // Prevent arrow functionality when "Edit" button is clicked
-        editButton.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent toggle when editing
-            openEditModal(contactId); // Open modal to edit values
+        attachEventListeners();
+    }
+
+    // Attach event listeners to the rendered contacts
+    function attachEventListeners() {
+        const c2Elements = contactContainer.querySelectorAll('.c2');
+        c2Elements.forEach((c2) => {
+            const arrow = c2.querySelector('.arrow');
+            const editButton = c2.querySelector('.edit-btn');
+            const contactId = c2.querySelector('h1').textContent;
+
+            c2.addEventListener('click', async () => {
+                const c3 = document.getElementById(`contact-info-${contactId}`);
+                c3.classList.toggle('active');
+                arrow.classList.toggle('rotated');
+
+                if (!c3.classList.contains('populated')) {
+                    const contact = contactList.find(contact => contact.id === contactId);
+                    const additionalInfo = getContactAdditionalInfo(contact);
+                    c3.innerHTML = additionalInfo;
+                    c3.classList.add('populated');
+                }
+            });
+
+            editButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditModal(contactId);
+            });
         });
+    }
+
+    // Initial render
+    renderContacts(contactList);
+
+    // Search functionality
+    searchBar.addEventListener("input", (event) => {
+        const query = event.target.value.toLowerCase();
+        const filteredContacts = contactList.filter(contact => contact.id.toLowerCase().includes(query));
+        renderContacts(filteredContacts);
     });
 });
 
