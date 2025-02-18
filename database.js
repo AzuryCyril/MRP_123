@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+    getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc, deleteDoc, addDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAt0x4UEocfK2skKuABAwym2fG_o4nP1bs",
@@ -54,6 +56,34 @@ export async function fetchContactById(contactId) {
         return null;  // Return null in case of error
     }
 }
+
+
+export async function addContactToDatabase(contactId, contactData) {
+    try {
+        // Set the document with the user-defined contact ID
+        const contactRef = doc(db, "contactList", contactId);
+        await setDoc(contactRef, contactData);
+        console.log("Contact added successfully with ID: ", contactId);
+    } catch (error) {
+        console.error("Error adding contact:", error);
+    }
+}
+
+// Function to delete multiple contacts from the database
+export async function deleteContactsFromDatabase(contactIds) {
+    try {
+        for (const id of contactIds) {
+            await deleteDoc(doc(db, "contactList", id)); // Delete from Firestore
+        }
+        console.log("Contacts deleted successfully!");
+    } catch (error) {
+        console.error("Error deleting contacts:", error);
+    }
+}
+
+
+
+
 
 
 

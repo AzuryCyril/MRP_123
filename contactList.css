@@ -24,10 +24,10 @@ body{
 }
 
 
-.action-buttons, .c2Title {
+.c2Title {
     display: inline-flex; /* Inline-flex to make sure it fits around the arrow */
 }
-.action-buttons .edit-btn, .arrowButton, #saveNewContactBtn, #cancelNewContactBtn {
+.edit-btn, .arrowButton {
     background-color: #53565a;
     cursor: pointer;
     text-align: center;
@@ -38,12 +38,12 @@ body{
     transition: all 0.2s;
     border-radius: 2px;
 }
-.action-buttons .edit-btn i,.arrowButton i{
+.edit-btn i,.arrowButton i{
     font-size: 0.7em;
     vertical-align: middle;
 
 }
-.action-buttons .edit-btn:hover, .arrowButton:hover,#saveNewContactBtn:hover, #cancelNewContactBtn:hover{
+.edit-btn:hover, .arrowButton:hover{
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -192,7 +192,46 @@ body{
 }
 
 /* Search Bar */
-#contactSearch {
+#contactButtons {
+    display: inline-flex
+;
+    justify-content: space-between;
     margin: 10px 0 0px 210px;
-    display: grid;
+}
+#addContactBtn, #deleteContactsBtn {
+  
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#addContactBtn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#deleteContactsBtn {
+    background-color: #f44336;
+    color: white;
+}
+
+#addContactBtn:hover {
+    background-color: #45a049;
+}
+
+#deleteContactsBtn:hover {
+    background-color: #d32f2f;
+}
+#cancelNewContactBtn, #confirmNewContactBtn{
+    background-color: #53565a;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    margin: 0 0 0 10px;
+    border: 0;
+    transition: all 0.2s;
+    border-radius: 2px;
+}
+#cancelNewContactBtn:hover, #confirmNewContactBtn:hover{
+    outline: solid 1.5px #fc3;
 }

@@ -1,16 +1,18 @@
 "use strict";
-import { fetchContactList, updateContactInFirebase, fetchContactById } from "./database.js";
+import { fetchContactList, updateContactInFirebase, fetchContactById, addContactToDatabase, deleteContactsFromDatabase } from "./database.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const contactContainer = document.getElementById("contactList");
     const searchBar = document.getElementById("contactSearch");
+    const addContactBtn = document.getElementById("addContactBtn");
+    const deleteContactsBtn = document.getElementById("deleteContactsBtn");
 
     // Fetch contact list from Firebase
-    const contactList = await fetchContactList();
+    let contactList = await fetchContactList();
 
     // Function to render contacts
     function renderContacts(filteredContacts) {
-        contactContainer.innerHTML = ""; // Clear previous contacts
+        contactContainer.innerHTML = "";
         filteredContacts.forEach(contact => {
             let contactHTML = `
                 <article class='c1' data-id="${contact.id}">
@@ -72,6 +74,76 @@ document.addEventListener("DOMContentLoaded", async () => {
         const filteredContacts = contactList.filter(contact => contact.id.toLowerCase().includes(query));
         renderContacts(filteredContacts);
     });
+
+    addContactBtn.addEventListener("click", () => {
+        let newContactHTML = `
+            <article class='c1' data-id="new">
+                <div class='c2'>
+                    <div class='c2Title'>
+                        <input type="checkbox" class="delete-checkbox" />
+                        <h1><input type="text" id="newContactId" placeholder="Enter contact ID" /></h1>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="confirmNewContactBtn"><i class="fa-solid fa-check"></i></button>
+                        <button id="cancelNewContactBtn"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            </article>
+        `;
+        contactContainer.insertAdjacentHTML("beforeend", newContactHTML);
+    
+        const confirmBtn = document.getElementById("confirmNewContactBtn");
+        const cancelBtn = document.getElementById("cancelNewContactBtn");
+    
+        confirmBtn.addEventListener("click", async () => {
+            const contactIdInput = document.getElementById("newContactId").value.trim();
+            if (contactIdInput) {
+                // Create the new contact object with other fields (e.g., contactPerson, email, etc.)
+                const newContact = {
+                    id: contactIdInput,
+                  
+                };
+    
+                // Add the new contact to the database with the user-defined ID
+                await addContactToDatabase(contactIdInput, newContact);
+                contactList = await fetchContactList(); // Refresh contact list
+                renderContacts(contactList);
+            }
+        });
+    
+        cancelBtn.addEventListener("click", () => {
+            // Remove the newly created input row
+            contactContainer.removeChild(contactContainer.lastElementChild);
+        });
+    });
+    // Delete selected contacts functionality
+deleteContactsBtn.addEventListener("click", async () => {
+    const selectedContacts = document.querySelectorAll(".delete-checkbox:checked"); // Get all checked checkboxes
+    const contactIdsToDelete = [];
+
+    // Get the IDs of selected contacts
+    selectedContacts.forEach((checkbox) => {
+        contactIdsToDelete.push(checkbox.dataset.id);
+    });
+
+    // If there are contacts to delete
+    if (contactIdsToDelete.length > 0) {
+        // Delete contacts from database
+        await deleteContactsFromDatabase(contactIdsToDelete);
+
+        // Also remove them from the contact list in the DOM
+        contactIdsToDelete.forEach((id) => {
+            const contactElement = document.querySelector(`.c1[data-id="${id}"]`);
+            if (contactElement) {
+                contactElement.remove(); // Remove from DOM
+            }
+        });
+
+        console.log("Contacts deleted from the DOM as well!");
+    } else {
+        console.log("No contacts selected for deletion.");
+    }
+});
 });
 
 // Helper function to extract additional information from the contact
@@ -155,7 +227,6 @@ async function openEditModal(contactId) {
                     const baseKey = fieldKey.replace(/-\d+$/, ""); // Remove existing numbering
                     fieldCounts[baseKey] = (fieldCounts[baseKey] || 0) + 1;
                     const fieldNumber = fieldCounts[baseKey];
-                    console.log(fieldNumber)
                     // Check if it's a URL field and validate immediately
                     const isURLField = baseKey === "urlLink";
                     const invalidClass = isURLField && contact[fieldKey] && !isValidURL(contact[fieldKey]) ? "invalid-url" : "";
@@ -251,7 +322,7 @@ async function openEditModal(contactId) {
     modal.querySelector('.close-btn').addEventListener('click', closeModal);
     overlay.addEventListener('click', closeModal);
 
-   // Save functionality
+// Save functionality with immediate DOM update
 modal.querySelector('.save-btn').addEventListener('click', async () => {
     const updatedContact = { id: contact.id };
     let hasInvalidURL = false;
@@ -292,15 +363,32 @@ modal.querySelector('.save-btn').addEventListener('click', async () => {
     }
 
     try {
+        // Update the contact in Firebase
         await updateContactInFirebase(updatedContact);
         console.log('Contact updated successfully:', updatedContact);
+
+        // Close the modal
         closeModal();
-      
+
+        // Now update the contact in the contact list (c3) DOM
+        const contactElement = document.querySelector(`.c1[data-id="${contact.id}"]`); // Find the contact in the list using its ID
+        if (contactElement) {
+            const contactInfoElement = contactElement.querySelector('.c3'); // Find the c3 element (additional info)
+
+            // Update the contact info inside the contact element
+            contactInfoElement.innerHTML = getContactAdditionalInfo(updatedContact); // Use your existing function to display updated info
+
+            // Optionally, update the contact ID in the title (if modified)
+            const contactTitle = contactElement.querySelector('h1');
+            if (contactTitle) {
+                contactTitle.textContent = updatedContact.id; // Update the title with the new contact ID
+            }
+        }
+
     } catch (error) {
         console.error('Error updating contact:', error);
     }
 });
-
 }
 
 
