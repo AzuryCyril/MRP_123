@@ -1,0 +1,21 @@
+header{
+    border-bottom: 1px solid #92a8b6;
+    background-color: #222;
+}
+.contr{
+    max-width: 1070px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 13px 0;
+}
+.headerTitle{
+    font-size: 18px;
+    font-weight: 900;
+    line-height: normal;
+    color: #edf6fb;
+}
