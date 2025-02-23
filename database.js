@@ -18,7 +18,23 @@ import {
 
   
 
-  export async function fetchContactList() {
+export async function fetchInternSubs() {
+    const querySnapshot = await getDocs(collection(db, "supportIntern")); // Assuming 'contacts' is the collection name
+    const contactList = [];
+    
+    querySnapshot.forEach((doc) => {
+        // Push the document's data with the document id to the list
+        contactList.push({ id: doc.id, ...doc.data() }); // doc.id is the document ID, doc.data() is the fields inside the document
+    });
+    
+    return contactList; // Return the array of contacts
+}
+ 
+
+
+
+ 
+export async function fetchContactList() {
     const querySnapshot = await getDocs(collection(db, "contactList")); // Assuming 'contacts' is the collection name
     const contactList = [];
     

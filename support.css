@@ -19,3 +19,45 @@ header{
     line-height: normal;
     color: #edf6fb;
 }
+.internSubs{
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+.intern-sub-item{
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    max-width: 290px;
+    margin: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 8px 0 rgba(38, 40, 42, .3);
+    background-color: #fff;
+    letter-spacing: .1px;
+    color: #2c70a2;
+    transition: none;
+}
+.icon-container {
+    width: 40px;
+    height: 40px;
+    background-color: #fc3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.icon-container i {
+    color: white;
+    font-size: 16px;
+    font-size: 20px;
+}
+
+.sub-id {
+    font-weight: bold;
+    color: #fc3;
+}
+
+.sub-label {
+    color: black;
+}
