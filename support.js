@@ -1,43 +1,113 @@
 "use strict";
-import { fetchInternSubs } from "./database.js";
+import { fetchInternSubs, fetchExternSubs, fetchServiceDeskSubs } from './database.js';
 
-async function renderInternSubs() {
-    const internSubsDiv = document.querySelector('.internSubs');
+let historyTrail = []; // Start with an empty history
 
-    if (!internSubsDiv) {
-        console.error("Element with class 'internSubs' not found.");
+function updateHistory(selection, type) {
+    const historyDiv = document.querySelector('.followHistory');
+    const followHeader = document.querySelector('.followHeader'); // Get the full-width container
+
+    if (!historyDiv || !followHeader) return;
+
+    if (historyTrail.length === 0) {
+        historyTrail.push({ label: "Renault Support BE", type: null }); // Add only once
+    }
+
+    historyTrail.push({ label: selection, type });
+
+    // Show the followHeader when history is added
+    followHeader.style.display = "block";
+
+    // Render history as clickable links
+    historyDiv.innerHTML = ''; 
+    historyTrail.forEach((entry, index) => {
+        const historyLink = document.createElement('span');
+        historyLink.textContent = entry.label;
+        historyLink.classList.add('history-link');
+
+        if (index < historyTrail.length - 1) {
+            historyLink.style.cursor = 'pointer';
+            historyLink.style.color = 'blue';
+            historyLink.addEventListener('click', () => restoreState(index));
+        }
+
+        historyDiv.appendChild(historyLink);
+        if (index < historyTrail.length - 1) {
+            historyDiv.appendChild(document.createTextNode(" => "));
+        }
+    });
+}
+
+function restoreState(index) {
+    const subsDiv = document.querySelector('.Subs');
+    const buttonContainer = document.querySelector('.button-container');
+    const followHeader = document.querySelector('.followHeader');
+
+    historyTrail = historyTrail.slice(0, index + 1);
+    updateHistory(historyTrail[index].label, historyTrail[index].type);
+
+    if (index === 0) {
+        buttonContainer.style.display = "flex";
+        subsDiv.innerHTML = ''; 
+        historyTrail = [];
+        document.querySelector('.followHistory').innerHTML = ''; 
+        followHeader.style.display = "none"; // Hide the header when history is cleared
+    } else {
+        renderSubs(historyTrail[index].type, false);
+    }
+}
+
+// Function to render the fetched data into the Subs div
+async function renderSubs(type, addToHistory = true) {
+    const subsDiv = document.querySelector('.Subs');
+    const buttonContainer = document.querySelector('.button-container');
+
+    if (!subsDiv || !buttonContainer) {
+        console.error("Elements not found.");
         return;
     }
 
+    // Hide buttons after selection
+    buttonContainer.style.display = "none";
+
     try {
-        const internSubs = await fetchInternSubs(); // Fetch data from Firestore
-        console.log("Fetched Data:", internSubs);
+        let subs = [];
+        let label = "";
 
-        internSubsDiv.innerHTML = ''; // Clear existing content
+        if (type === "intern") {
+            subs = await fetchInternSubs();
+            label = "Intern";
+        } else if (type === "extern") {
+            subs = await fetchExternSubs();
+            label = "Extern";
+        } else if (type === "servicedesk") {
+            subs = await fetchServiceDeskSubs();
+            label = "ServiceDesk";
+        }
 
-        internSubs.forEach(sub => {
-            console.log("Rendering item:", sub); // Debugging
+        if (addToHistory) {
+            updateHistory(label, type); // Update history only when a button is clicked
+        }
 
-            // Create container for each item
+        subsDiv.innerHTML = ''; // Clear existing content
+
+        subs.forEach(sub => {
             const subContainer = document.createElement('div');
-            subContainer.classList.add('intern-sub-item');
+            subContainer.classList.add('sub-item');
 
-            // Create the black circle with a document icon
+            // Icon
             const iconContainer = document.createElement('div');
             iconContainer.classList.add('icon-container');
-
             const icon = document.createElement('i');
-            icon.classList.add('fas', 'fa-file-alt'); // FontAwesome document icon
+            icon.classList.add('fas', 'fa-file-alt');
             iconContainer.appendChild(icon);
 
-            // Create text container
+            // Text
             const textContainer = document.createElement('div');
             textContainer.classList.add('text-container');
-
             const idElement = document.createElement('p');
             idElement.textContent = sub.id;
             idElement.classList.add('sub-id');
-
             const labelElement = document.createElement('p');
             labelElement.textContent = "Lorem ipsum...";
             labelElement.classList.add('sub-label');
@@ -47,16 +117,22 @@ async function renderInternSubs() {
             textContainer.appendChild(labelElement);
             subContainer.appendChild(iconContainer);
             subContainer.appendChild(textContainer);
-            internSubsDiv.appendChild(subContainer);
+            subsDiv.appendChild(subContainer);
         });
 
     } catch (error) {
-        console.error("Error fetching intern subscriptions:", error);
-        internSubsDiv.innerHTML = '<p>Error loading data.</p>';
+        console.error("Error fetching subscriptions:", error);
+        subsDiv.innerHTML = '<p>Error loading data.</p>';
     }
 }
 
-// Call the function when the page loads
+// Event listener for buttons
 document.addEventListener("DOMContentLoaded", () => {
-    renderInternSubs();
+    document.querySelectorAll(".filter-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            const type = button.dataset.type;
+            renderSubs(type);
+        });
+    });
 });
+

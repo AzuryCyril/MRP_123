@@ -1,3 +1,7 @@
+body{
+  min-height: 100vh;
+  background-color: #eeeeee;
+}
 header{
     border-bottom: 1px solid #92a8b6;
     background-color: #222;
@@ -19,11 +23,11 @@ header{
     line-height: normal;
     color: #edf6fb;
 }
-.internSubs{
+.Subs{
     justify-content: space-evenly;
     flex-wrap: wrap;
 }
-.intern-sub-item{
+.sub-item{
     display: inline-flex;
     align-items: center;
     width: 100%;
@@ -60,4 +64,48 @@ header{
 
 .sub-label {
     color: black;
+}
+/* Initially hidden */
+.followHeader {
+    width: 100%;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    display: none; /* Hide until needed */
+}
+
+/* Follow History: Centered like .contr */
+.followHistory {
+    max-width: 1070px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 13px 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+.history-link:hover {
+    text-decoration: underline;
+}
+
+/* Buttons */
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.filter-btn:hover {
+    background-color: #0056b3;
 }
