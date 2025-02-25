@@ -37,7 +37,7 @@ export async function fetchServiceDeskSubs() {
 
  
 export async function fetchContactList() {
-    const querySnapshot = await getDocs(collection(db, "contactList")); // Assuming 'contacts' is the collection name
+    const querySnapshot = await getDocs(collection(db, "contactList2")); // Assuming 'contacts' is the collection name
     const contactList = [];
     
     querySnapshot.forEach((doc) => {

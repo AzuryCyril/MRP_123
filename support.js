@@ -36,7 +36,7 @@ function updateHistory(selection, type) {
 
         historyDiv.appendChild(historyLink);
         if (index < historyTrail.length - 1) {
-            historyDiv.appendChild(document.createTextNode(" => "));
+            historyDiv.appendChild(document.createTextNode("\u00A0>\u00A0"));
         }
     });
 }
@@ -76,35 +76,39 @@ function restoreState(index) {
 async function showDescription(subId, description, parentType) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
-    const contactDiv = document.querySelector('.subContact'); // The contact div
+    const contactDiv = document.querySelector('.subContact'); 
+    const contactInfoDiv = document.querySelector('.subContactInfo'); 
 
-    if (!subsDiv || !descriptionDiv || !contactDiv) return;
+    if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv) return;
 
     // Hide subs and show description
     subsDiv.style.display = "none";
     descriptionDiv.innerHTML = `<p>${description || "No description available"}</p>`;
-    descriptionDiv.style.display = "block";  // Show the description div
+    descriptionDiv.style.display = "block";  
 
     // Fetch the contact information based on the subId
-    const contactList = await fetchContactList();  // Assuming fetchContactList is an async function
-    const matchingContact = contactList.find(contact => contact.id === subId); // Match by subId (or another property)
+    const contactList = await fetchContactList();
+    const matchingContact = contactList.find(contact => contact.id === subId);
 
     if (matchingContact) {
-        // Display the contact details in the subContact div
-        contactDiv.innerHTML = `
-            <p><strong>Name:</strong> ${matchingContact.name || "No name available"}</p>
-            <p><strong>Email:</strong> ${matchingContact.email || "No email available"}</p>
-            <p><strong>Phone:</strong> ${matchingContact.phone || "No phone available"}</p>
+        // Update only the inner subContactInfo div
+        contactInfoDiv.innerHTML = `
+            <p><strong>Name:</strong> ${matchingContact.test || "No name available"}</p>
+            <p><strong>Contact Person:</strong> ${matchingContact.contactPerson || "No phone available"}</p>
+            <p><strong>Contact Person Email:</strong> ${matchingContact.contactPersonEmail || "No phone available"}</p>
+            <p><strong>Contact Person Backup:</strong> ${matchingContact.contactPersonBackup || "No phone available"}</p>
+            <p><strong>Assigment Group:</strong> ${matchingContact.assignmentGroup || "No email available"}</p>
         `;
-        contactDiv.style.display = "block";  // Show the contact div
+        contactDiv.style.display = "block";  
     } else {
-        contactDiv.innerHTML = "<p>No contact information available for this sub.</p>";
-        contactDiv.style.display = "block";  // Show the contact div
+        contactInfoDiv.innerHTML = "<p>No contact information available for this sub.</p>";
+        contactDiv.style.display = "block";
     }
 
     // Add to follow history
     updateHistory(subId, parentType);
 }
+
 
 async function renderSubs(type, addToHistory = true) {
     const subsDiv = document.querySelector('.Subs');
