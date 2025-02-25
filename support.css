@@ -14,7 +14,6 @@ header{
     -ms-flex-pack: justify;
     justify-content: space-between;
     -ms-flex-align: center;
-    align-items: center;
     padding: 13px 0;
 }
 .headerTitle{
@@ -108,4 +107,24 @@ header{
 }
 .filter-btn:hover {
     background-color: #0056b3;
+}
+
+
+.subDescription{
+    flex-grow: 1;
+    margin-right: 24px;
+    background-color: white;
+    display: none; /* Initially hidden */
+    padding: 15px 24px;
+    box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .1);
+    border-radius: 2px;
+}
+
+.subContact{
+    width: 320px;
+    flex-shrink: 0;
+    word-wrap: break-word;
+    display: none; /* Initially hidden */
+    background-color: white;
+    box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .1);
 }
