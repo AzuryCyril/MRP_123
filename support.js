@@ -1,5 +1,5 @@
 "use strict";
-import { fetchInternSubs, fetchExternSubs, fetchServiceDeskSubs, fetchContactList } from './database.js';
+import { fetchInternSubs, fetchExternSubs, fetchServiceDeskSubs, fetchContactList, updateSubDescription  } from './database.js';
 
 let historyTrail = []; // Start with an empty history
 
@@ -72,7 +72,6 @@ function restoreState(index) {
     }
 }
 
-
 async function showDescription(subId, description, parentType) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
@@ -83,7 +82,17 @@ async function showDescription(subId, description, parentType) {
 
     // Hide subs and show description
     subsDiv.style.display = "none";
-    descriptionDiv.innerHTML = `<p>${description || "No description available"}</p>`;
+
+    descriptionDiv.innerHTML = `
+        <div class="descriptionHeader">
+            <h2 class="subTitle">${subId}</h2>
+            <i class="fas fa-pencil-alt edit-icon"></i>
+        </div>
+        <div class="descriptionContent">
+            <p id="descText">${description || "No description available"}</p>
+        </div>
+    `;
+    
     descriptionDiv.style.display = "block";  
 
     // Fetch the contact information based on the subId
@@ -93,11 +102,11 @@ async function showDescription(subId, description, parentType) {
     if (matchingContact) {
         // Update only the inner subContactInfo div
         contactInfoDiv.innerHTML = `
-            <p><strong>Name:</strong> ${matchingContact.test || "No name available"}</p>
-            <p><strong>Contact Person:</strong> ${matchingContact.contactPerson || "No phone available"}</p>
-            <p><strong>Contact Person Email:</strong> ${matchingContact.contactPersonEmail || "No phone available"}</p>
-            <p><strong>Contact Person Backup:</strong> ${matchingContact.contactPersonBackup || "No phone available"}</p>
-            <p><strong>Assigment Group:</strong> ${matchingContact.assignmentGroup || "No email available"}</p>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p> ${matchingContact.test || "No name available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p> ${matchingContact.contactPerson || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person Email:</p><p> ${matchingContact.contactPersonEmail || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person Backup:</p><p> ${matchingContact.contactPersonBackup || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p> ${matchingContact.assignmentGroup || "No email available"}</p></div>
         `;
         contactDiv.style.display = "block";  
     } else {
@@ -105,9 +114,62 @@ async function showDescription(subId, description, parentType) {
         contactDiv.style.display = "block";
     }
 
+    // Add event listener to pencil icon for editing
+    const editIcon = descriptionDiv.querySelector(".edit-icon");
+    editIcon.addEventListener("click", () => enableEditing(subId));
+
     // Add to follow history
     updateHistory(subId, parentType);
 }
+
+// Function to enable editing mode
+function enableEditing(subId) {
+    const descriptionDiv = document.querySelector('.subDescription');
+    const descText = document.getElementById('descText');
+
+    if (!descriptionDiv || !descText) return;
+
+    // Store the current description
+    const currentDescription = descText.textContent;
+
+    // Replace with an input field
+    descriptionDiv.querySelector('.descriptionContent').innerHTML = `
+        <textarea id="descInput" class="desc-input">${currentDescription}</textarea>
+        <button id="saveDesc" class="save-btn">Save</button>
+    `;
+
+    // Add event listener to save button
+    document.getElementById("saveDesc").addEventListener("click", () => saveDescription(subId));
+}
+
+// Function to save updated description
+async function saveDescription(subId) {
+    const descriptionDiv = document.querySelector('.subDescription');
+    const newDesc = document.getElementById('descInput').value;
+
+    if (!descriptionDiv || !newDesc) return;
+
+    // Determine parent type (intern, extern, servicedesk)
+    const parentType = historyTrail.length > 1 ? historyTrail[1].type : null;
+    if (!parentType) {
+        console.error("Parent type not found!");
+        return;
+    }
+
+    // Call updateSubDescription to save the new description
+    try {
+        await updateSubDescription(subId, newDesc, parentType);
+
+        // Replace input field with updated description text
+        descriptionDiv.querySelector('.descriptionContent').innerHTML = `
+            <p id="descText">${newDesc}</p>
+        `;
+
+    } catch (error) {
+        console.error("Error saving description:", error);
+    }
+}
+
 
 
 async function renderSubs(type, addToHistory = true) {

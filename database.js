@@ -33,6 +33,35 @@ export async function fetchServiceDeskSubs() {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
+export async function updateSubDescription(subId, newDescription, parentType) {
+    let collectionName = ""; 
+
+    // Determine which collection to update
+    if (parentType === "intern") {
+        collectionName = "supportIntern";
+    } else if (parentType === "extern") {
+        collectionName = "supportExtern";
+    } else if (parentType === "servicedesk") {
+        collectionName = "supportServiceDesk";
+    }
+
+    if (!collectionName) {
+        console.error("Invalid collection type");
+        return;
+    }
+
+    const subRef = doc(db, collectionName, subId); // Correct Firestore path
+
+    try {
+        await updateDoc(subRef, {
+            description: newDescription
+        });
+        console.log(`Description updated in ${collectionName}`);
+    } catch (error) {
+        console.error("Error updating Firestore:", error);
+    }
+}
+
 
 
  
