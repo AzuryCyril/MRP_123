@@ -41,6 +41,7 @@ function updateHistory(selection, type) {
     });
 }
 
+
 function restoreState(index) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
@@ -104,8 +105,8 @@ async function showDescription(subId, description, parentType) {
         contactInfoDiv.innerHTML = `
             <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p> ${matchingContact.test || "No name available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p> ${matchingContact.contactPerson || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person Email:</p><p> ${matchingContact.contactPersonEmail || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person Backup:</p><p> ${matchingContact.contactPersonBackup || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p> ${matchingContact.contactPersonEmail || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p> ${matchingContact.contactPersonBackup || "No phone available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p> ${matchingContact.assignmentGroup || "No email available"}</p></div>
         `;
         contactDiv.style.display = "block";  
@@ -123,20 +124,27 @@ async function showDescription(subId, description, parentType) {
 }
 
 // Function to enable editing mode
+// Function to enable editing mode
 function enableEditing(subId) {
     const descriptionDiv = document.querySelector('.subDescription');
     const descText = document.getElementById('descText');
 
     if (!descriptionDiv || !descText) return;
 
-    // Store the current description
-    const currentDescription = descText.textContent;
+    // Store the current description, keeping HTML formatting
+    const currentDescription = descText.innerHTML.trim();
 
-    // Replace with an input field
+    // Get the width and height of the description text
+    const descriptionWidth = descText.offsetWidth;
+    const descriptionHeight = descText.scrollHeight;
+
+    // Replace the description with an input field (textarea)
     descriptionDiv.querySelector('.descriptionContent').innerHTML = `
-        <textarea id="descInput" class="desc-input">${currentDescription}</textarea>
+        <textarea id="descInput" class="desc-input" style="width: ${descriptionWidth}px; height: ${descriptionHeight}px;">${currentDescription}</textarea>
         <button id="saveDesc" class="save-btn">Save</button>
     `;
+
+
 
     // Add event listener to save button
     document.getElementById("saveDesc").addEventListener("click", () => saveDescription(subId));
@@ -162,7 +170,7 @@ async function saveDescription(subId) {
 
         // Replace input field with updated description text
         descriptionDiv.querySelector('.descriptionContent').innerHTML = `
-            <p id="descText">${newDesc}</p>
+            <div id="descText">${newDesc}</div>
         `;
 
     } catch (error) {
@@ -261,4 +269,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
 
