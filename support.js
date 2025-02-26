@@ -90,7 +90,7 @@ async function showDescription(subId, description, parentType) {
             <i class="fas fa-pencil-alt edit-icon"></i>
         </div>
         <div class="descriptionContent">
-            <p id="descText">${description || "No description available"}</p>
+            <div id="descText">${description || "No description available"}</div>
         </div>
     `;
     
@@ -138,13 +138,32 @@ function enableEditing(subId) {
     const descriptionWidth = descText.offsetWidth;
     const descriptionHeight = descText.scrollHeight;
 
+    // Remove existing TinyMCE instance before replacing the textarea
+    if (tinymce.get('descInput')) {
+        tinymce.get('descInput').remove();
+    }
+
     // Replace the description with an input field (textarea)
     descriptionDiv.querySelector('.descriptionContent').innerHTML = `
         <textarea id="descInput" class="desc-input" style="width: ${descriptionWidth}px; height: ${descriptionHeight}px;">${currentDescription}</textarea>
         <button id="saveDesc" class="save-btn">Save</button>
     `;
 
-
+    // Re-initialize TinyMCE on the new textarea
+    tinymce.init({
+        selector: '#descInput', // Apply TinyMCE to the textarea
+        height: descriptionHeight + 200,
+        width: descriptionWidth,
+        menubar: false, // Optional: Hide the menu bar
+        plugins: 'advlist autolink lists link image charmap print preview anchor',
+        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+        setup: function (editor) {
+            editor.on('change', function () {
+                // Automatically update the content inside the textarea as the user types
+                editor.save();
+            });
+        }
+    });
 
     // Add event listener to save button
     document.getElementById("saveDesc").addEventListener("click", () => saveDescription(subId));
