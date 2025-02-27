@@ -64,6 +64,23 @@ export async function updateSubDescription(subId, newDescription, parentType) {
 
 
 
+export async function updateContactInfo(subId, updatedInfo) {
+    try {
+        const contactRef = doc(db, "contactList2", subId);  // Reference to document
+        await updateDoc(contactRef, updatedInfo);  
+        console.log("Contact info updated successfully!");
+    } catch (error) {
+        console.error("Error updating contact info:", error);
+    }
+}
+
+
+
+
+
+
+
+
  
 export async function fetchContactList() {
     const querySnapshot = await getDocs(collection(db, "contactList2")); // Assuming 'contacts' is the collection name

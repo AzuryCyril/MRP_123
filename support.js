@@ -1,5 +1,5 @@
 "use strict";
-import { fetchInternSubs, fetchExternSubs, fetchServiceDeskSubs, fetchContactList, updateSubDescription  } from './database.js';
+import { fetchInternSubs, fetchExternSubs, fetchServiceDeskSubs, fetchContactList, updateSubDescription, updateContactInfo  } from './database.js';
 
 let historyTrail = []; // Start with an empty history
 
@@ -101,16 +101,19 @@ async function showDescription(subId, description, parentType) {
     const matchingContact = contactList.find(contact => contact.id === subId);
 
     if (matchingContact) {
-        // Update only the inner subContactInfo div
         contactInfoDiv.innerHTML = `
-            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p> ${matchingContact.test || "No name available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p> ${matchingContact.contactPerson || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p> ${matchingContact.contactPersonEmail || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p> ${matchingContact.contactPersonBackup || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p> ${matchingContact.assignmentGroup || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${matchingContact.test || "No name available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${matchingContact.contactPerson || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${matchingContact.contactPersonEmail || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${matchingContact.contactPersonBackup || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${matchingContact.assignmentGroup || "No email available"}</p></div>
         `;
         contactDiv.style.display = "block";  
-    } else {
+    
+        // Add event listener to edit icon for contact info
+        document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId));
+    }
+     else {
         contactInfoDiv.innerHTML = "<p>No contact information available for this sub.</p>";
         contactDiv.style.display = "block";
     }
@@ -123,13 +126,96 @@ async function showDescription(subId, description, parentType) {
     updateHistory(subId, parentType);
 }
 
-// Function to enable editing mode
+
+function enableContactEditing(subId) {
+    const contactInfoDiv = document.querySelector('.subContactInfo');
+    const editIcon = document.getElementById('editContactIcon');  // Get the pencil icon
+    const contactHeader = document.querySelector('.contactHeader'); // Get the container of the pencil icon
+    
+    if (!contactInfoDiv || !contactHeader) return;
+
+    // Store current values
+    const name = document.getElementById("contactName").textContent.trim();
+    const person = document.getElementById("contactPerson").textContent.trim();
+    const email = document.getElementById("contactEmail").textContent.trim();
+    const backup = document.getElementById("contactBackup").textContent.trim();
+    const group = document.getElementById("assignmentGroup").textContent.trim();
+
+    // Replace text with input fields
+    contactInfoDiv.innerHTML = `
+        <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><input id="editContactName" type="text" value="${name}"></div>
+        <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><input id="editContactPerson" type="text" value="${person}"></div>
+        <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><input id="editContactEmail" type="email" value="${email}"></div>
+        <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><input id="editContactBackup" type="text" value="${backup}"></div>
+        <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><input id="editAssignmentGroup" type="text" value="${group}"></div>
+    `;
+
+    // Create and add a save button
+    const saveButton = document.createElement('button'); // Create the save button
+    saveButton.id = "saveContact";
+    saveButton.classList.add("save-btn");
+    saveButton.textContent = "Save";
+
+    // Insert the save button right after the pencil icon in the same container
+    contactHeader.appendChild(saveButton);
+
+    // Hide the pencil icon and show the save button
+    editIcon.style.display = 'none';  // Hide the pencil icon
+    saveButton.style.display = 'inline-block'; // Show the save button
+
+    // Add event listener for saving changes
+    saveButton.addEventListener("click", () => saveContactInfo(subId, saveButton, editIcon));
+}
+
+
+
+async function saveContactInfo(subId, saveButton, editIcon) {
+    const newName = document.getElementById("editContactName").value.trim();
+    const newPerson = document.getElementById("editContactPerson").value.trim();
+    const newEmail = document.getElementById("editContactEmail").value.trim();
+    const newBackup = document.getElementById("editContactBackup").value.trim();
+    const newGroup = document.getElementById("editAssignmentGroup").value.trim();
+
+    // Create an object with the updated data
+    const updatedContactInfo = {
+        test: newName,
+        contactPerson: newPerson,
+        contactPersonEmail: newEmail,
+        contactPersonBackup: newBackup,
+        assignmentGroup: newGroup
+    };
+
+    try {
+        await updateContactInfo(subId, updatedContactInfo); // Calls the update function (presumably a database operation)
+
+        // Replace input fields back with text
+        const contactInfoDiv = document.querySelector('.subContactInfo');
+        contactInfoDiv.innerHTML = `
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
+        `;
+
+        // After saving, hide the save button and show the pencil icon again
+        saveButton.style.display = 'none';
+        editIcon.style.display = 'inline-block'; // Show the pencil icon
+
+    } catch (error) {
+        console.error("Error updating contact info:", error);
+    }
+}
+
+
+
 // Function to enable editing mode
 function enableEditing(subId) {
     const descriptionDiv = document.querySelector('.subDescription');
     const descText = document.getElementById('descText');
+    const editIcon = descriptionDiv.querySelector('.edit-icon');  // Get the pencil icon
 
-    if (!descriptionDiv || !descText) return;
+    if (!descriptionDiv || !descText || !editIcon) return;
 
     // Store the current description, keeping HTML formatting
     const currentDescription = descText.innerHTML.trim();
@@ -146,13 +232,12 @@ function enableEditing(subId) {
     // Replace the description with an input field (textarea)
     descriptionDiv.querySelector('.descriptionContent').innerHTML = `
         <textarea id="descInput" class="desc-input" style="width: ${descriptionWidth}px; height: ${descriptionHeight}px;">${currentDescription}</textarea>
-        <button id="saveDesc" class="save-btn">Save</button>
     `;
 
     // Re-initialize TinyMCE on the new textarea
     tinymce.init({
         selector: '#descInput', // Apply TinyMCE to the textarea
-        height: descriptionHeight + 200,
+        height: descriptionHeight + 150,
         width: descriptionWidth,
         menubar: false, // Optional: Hide the menu bar
         plugins: 'advlist autolink lists link image charmap print preview anchor',
@@ -165,12 +250,27 @@ function enableEditing(subId) {
         }
     });
 
+    // Create and add a save button to the descriptionHeader
+    const saveButton = document.createElement('button');
+    saveButton.id = 'saveDesc';
+    saveButton.classList.add('save-btn');
+    saveButton.textContent = 'Save';
+
+    // Insert the save button right after the pencil icon in the same container
+    const descriptionHeader = descriptionDiv.querySelector('.descriptionHeader');
+    descriptionHeader.appendChild(saveButton);
+
+    // Hide the pencil icon and show the save button
+    editIcon.style.display = 'none';
+    saveButton.style.display = 'inline-block'; // Show the save button
+
     // Add event listener to save button
-    document.getElementById("saveDesc").addEventListener("click", () => saveDescription(subId));
+    saveButton.addEventListener("click", () => saveDescription(subId, saveButton, editIcon));
 }
 
+
 // Function to save updated description
-async function saveDescription(subId) {
+async function saveDescription(subId, saveButton, editIcon) {
     const descriptionDiv = document.querySelector('.subDescription');
     const newDesc = document.getElementById('descInput').value;
 
@@ -192,10 +292,15 @@ async function saveDescription(subId) {
             <div id="descText">${newDesc}</div>
         `;
 
+        // Hide the save button and show the pencil icon again
+        saveButton.style.display = 'none';
+        editIcon.style.display = 'inline-block'; // Show the pencil icon
+
     } catch (error) {
         console.error("Error saving description:", error);
     }
 }
+
 
 
 
@@ -257,7 +362,7 @@ async function renderSubs(type, addToHistory = true) {
             idElement.classList.add('sub-id');
 
             // Trimmed description
-            let descriptionText = sub.description || "No description available";
+            let descriptionText = sub.id || "No description available";
             if (descriptionText.length > 20) {
                 descriptionText = descriptionText.substring(0, 20) + "...";
             }
