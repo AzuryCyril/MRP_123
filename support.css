@@ -130,6 +130,7 @@ header{
     box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .1);
     display: none; /* Initially hidden */
     font-family: NouvelR;
+    height: fit-content;
 }
 
 .contactHeader{
@@ -161,6 +162,10 @@ header{
 }
 .contactInfoRow p{
     font-family: NouvelRBold;
+}
+.contactInfoRow input{
+    font-family: NouvelRBold;
+    width: 150px;
 }
 .contactInfoTitle{
     flex-shrink: 0;
@@ -209,4 +214,19 @@ header{
 
 .saveBtn:hover {
     background-color: #218838;
+}
+
+.subIssues{
+    margin-top: 44px;
+    display: block !important;
+}
+
+.issueHeader{
+    padding: 20px 0;
+    width: 100%;
+    border-bottom: 1px solid #2c70a2;
+    background-color: #2c70a2;
+    box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .3);
+    color: #fff !important;
+    text-align: center;
 }

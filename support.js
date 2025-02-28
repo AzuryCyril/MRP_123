@@ -73,13 +73,14 @@ function restoreState(index) {
     }
 }
 
-async function showDescription(subId, description, parentType) {
+async function showDescription(subId, description, issues, parentType) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     const contactDiv = document.querySelector('.subContact'); 
     const contactInfoDiv = document.querySelector('.subContactInfo'); 
+    const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
 
-    if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv) return;
+    if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv || !issuesDiv) return;
 
     // Hide subs and show description
     subsDiv.style.display = "none";
@@ -112,10 +113,17 @@ async function showDescription(subId, description, parentType) {
     
         // Add event listener to edit icon for contact info
         document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId));
-    }
-     else {
+    } else {
         contactInfoDiv.innerHTML = "<p>No contact information available for this sub.</p>";
         contactDiv.style.display = "block";
+    }
+
+    // Display possible issues
+    console.log(issues)
+    if (issues.length > 0) {
+        issuesDiv.innerHTML = `<p class="issueItem">${issues.test.pokemon}</p>`;
+    } else {
+        issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
     }
 
     // Add event listener to pencil icon for editing
@@ -237,7 +245,7 @@ function enableEditing(subId) {
     // Re-initialize TinyMCE on the new textarea
     tinymce.init({
         selector: '#descInput', // Apply TinyMCE to the textarea
-        height: descriptionHeight + 150,
+        height: descriptionHeight + 350,
         width: descriptionWidth,
         menubar: false, // Optional: Hide the menu bar
         plugins: 'advlist autolink lists link image charmap print preview anchor',
@@ -343,9 +351,8 @@ async function renderSubs(type, addToHistory = true) {
             const subContainer = document.createElement('div');
             subContainer.classList.add('sub-item');
             subContainer.style.cursor = "pointer"; // Make it clear it's clickable
-
             // Click event to show description and add to history
-            subContainer.addEventListener('click', () => showDescription(sub.id, sub.description, type));
+            subContainer.addEventListener('click', () => showDescription(sub.id, sub.description, sub.issues, type));
 
             // Icon
             const iconContainer = document.createElement('div');
