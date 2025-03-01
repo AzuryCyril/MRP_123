@@ -17,19 +17,54 @@ import {
 
 
 
+   
+    export async function addIssueToFirestore(subId, inputFieldValue, parentType) {
 
+        let collectionName = ""; 
 
+    // Determine which collection to update
+    if (parentType === "intern") {
+        collectionName = "supportIntern";
+    } else if (parentType === "extern") {
+        collectionName = "supportExtern";
+    } else if (parentType === "servicedesk") {
+        collectionName = "supportServiceDesk";
+    }
 
+    if (!collectionName) {
+        console.error("Invalid collection type");
+        return;
+    }
 
-
-
-
-
-
-
-
-
-
+        try {
+            const docRef = doc(db, collectionName, subId); // Reference to document
+            const docSnap = await getDoc(docRef);
+    
+            let existingIssues = [];
+    
+            if (docSnap.exists()) {
+                const docData = docSnap.data();
+                existingIssues = Array.isArray(docData.issues) ? docData.issues : []; // Ensure it's an array
+            }
+    
+            // Create new issue object
+            const newIssue = {
+                name: inputFieldValue,
+                solution: "solution here"
+            };
+    
+            // Append new issue
+            const updatedIssues = [...existingIssues, newIssue];
+    
+            // Update Firestore
+            await updateDoc(docRef, { issues: updatedIssues });
+    
+            console.log("Issue added successfully!");
+        } catch (error) {
+            console.error("Error adding issue:", error);
+        }
+    }
+    
 
 
 

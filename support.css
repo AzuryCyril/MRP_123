@@ -201,32 +201,51 @@ header{
     border-radius: 4px;
 }
 
-.saveBtn {
-    margin-top: 8px;
-    padding: 6px 12px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.saveBtn:hover {
-    background-color: #218838;
-}
 
 .subIssues{
     margin-top: 44px;
-    display: block !important;
+    max-width: 1070px;
+    width: 100%;
+    margin: 0 auto;
+    display: none;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -ms-flex-align: center;
+    padding: 13px 0;
 }
 
 .issueHeader{
     padding: 20px 0;
     width: 100%;
     border-bottom: 1px solid #2c70a2;
-    background-color: #2c70a2;
+    background-color: #222;
     box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .3);
     color: #fff !important;
+    text-align: center;
+}
+.issueItem{
+    display: flex;
+    padding: 24px 16px;
+    border-bottom: 1px solid #99c4e4;
+    background-color: #fff;
+    box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .3);
+}
+
+.preview__text h4{
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.38;
+    letter-spacing: .11px;
+    color: #2c70a2;
+}
+.add-issue-btn{
+    margin: 10px 0;
+    padding: 10px 0;
+    width: 100%;
+    cursor: pointer;
+    color: white;
+    background-color: #222;
+    box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .3);
     text-align: center;
 }

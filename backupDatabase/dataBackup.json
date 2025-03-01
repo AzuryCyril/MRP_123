@@ -1,0 +1,123 @@
+{
+  "__collections__": {
+    "contactList": {
+      "CSB": {
+        "id": "CSB",
+        "contactPersonEmail-2": "s",
+        "contactPersonEmail-1": "ss",
+        "contactPersonBackup-1": "s",
+        "assignmentGroup-1": "s",
+        "test": "test",
+        "__collections__": {}
+      },
+      "test": {
+        "id": "test",
+        "__collections__": {}
+      },
+      "test2": {
+        "id": "test2",
+        "contactPersonBackup-1": "s",
+        "__collections__": {}
+      }
+    },
+    "contactList2": {
+      "CSB": {
+        "assignmentGroup": "test",
+        "contactPerson": "test",
+        "contactPersonEmail": "test",
+        "contactPersonBackup": "test",
+        "test": "testttaaa",
+        "__collections__": {}
+      }
+    },
+    "materialAmount": {
+      "charger": {
+        "count": 8,
+        "__collections__": {}
+      },
+      "headset": {
+        "count": 8,
+        "__collections__": {}
+      },
+      "phone": {
+        "count": 7,
+        "__collections__": {}
+      },
+      "token": {
+        "count": 9,
+        "__collections__": {}
+      }
+    },
+    "personnel": {
+      "pb00762": {
+        "userIPN": "pb00762",
+        "userEmail": "cyril.passeleur-extern@renault.be",
+        "moreInfo": {
+          "Entité": "RBL",
+          "Localisation": "Drogenbosss",
+          "Direction": "DSIII",
+          "Status": "PrestataireE",
+          "Sociétés": "Dilaco",
+          "Manager": "Ahmed Abatane",
+          "PhoneNumber": "0476248017",
+          "materials": {
+            "phone": true,
+            "charger": true,
+            "token": true,
+            "headset": false
+          }
+        },
+        "computerID": "BELH100500",
+        "userLastName": "Passeleur",
+        "dotationCheck": true,
+        "userFirstName": "Cyrill",
+        "__collections__": {}
+      }
+    },
+    "stockPc": {
+      "BELH100457": {
+        "computerID": "BELH100457",
+        "entite": "RBL",
+        "status": "STOCK",
+        "model": "HP 650 G9 - EliteBook",
+        "serieNumber": "5CD3262MBL",
+        "comment": "Ready ACE2",
+        "__collections__": {}
+      }
+    },
+    "supportExtern": {
+      "VPN": {
+        "description": "<p>aaaaasssssssssss<em>sssssss</em></p>",
+        "__collections__": {}
+      }
+    },
+    "supportIntern": {
+      "As400": {
+        "description": "ssssssssssssssss",
+        "__collections__": {}
+      },
+      "CSB": {
+        "description": "<p>1111<em>1111</em></p>\n<p><em>hhhhhhh</em></p>\n<p><em>hhhh</em>hhhhhhh</p>\n<p> </p>\n<ul>\n<li>stes</li>\n</ul>",
+        "issues": {
+          "issue1": {
+            "name": "User cannot login",
+            "solution": "Remove cache and cookies"
+          }
+        },
+        "__collections__": {}
+      },
+      "Laptop": {
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin venenatis nulla in purus faucibus, et placerat dui suscipit. Suspendisse efficitur, ante nec aliquet lacinia, felis nunc porta diam, eu imperdiet leo odio id neque. Curabitur porta sapien vel eros sollicitudin, a consectetur nibh lobortis. Aliquam ultrices aliquam augue non efficitur. Proin eu lacus eu enim convallis dapibus id quis quam. Maecenas feugiat bibendum nunc in malesuada. In ultrices interdum volutpat.",
+        "__collections__": {}
+      }
+    },
+    "supportServiceDesk": {
+      "BLA": {
+        "__collections__": {}
+      },
+      "VPN": {
+        "__collections__": {}
+      }
+    }
+  }
+}

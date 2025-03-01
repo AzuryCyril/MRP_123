@@ -1,5 +1,16 @@
 "use strict";
-import { fetchInternSubs, fetchExternSubs, fetchServiceDeskSubs, fetchContactList, updateSubDescription, updateContactInfo  } from './database.js';
+import {
+    fetchInternSubs,
+    fetchExternSubs,
+    fetchServiceDeskSubs,
+    fetchContactList,
+    updateSubDescription,
+    updateContactInfo,
+    addIssueToFirestore
+} from './database.js';
+
+
+
 
 let historyTrail = []; // Start with an empty history
 
@@ -10,12 +21,18 @@ function updateHistory(selection, type) {
     if (!historyDiv || !followHeader) return;
 
     if (historyTrail.length === 0) {
-        historyTrail.push({ label: "Renault Support BE", type: null }); // Add only once
+        historyTrail.push({
+            label: "Renault Support BE",
+            type: null
+        }); // Add only once
     }
 
     // Prevent duplicate entries when clicking the same item
     if (historyTrail[historyTrail.length - 1].label !== selection) {
-        historyTrail.push({ label: selection, type });
+        historyTrail.push({
+            label: selection,
+            type
+        });
     }
 
     // Show the followHeader when history is added
@@ -42,12 +59,15 @@ function updateHistory(selection, type) {
 }
 
 
+
+
 function restoreState(index) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     const contactDiv = document.querySelector('.subContact'); // Get the subContact div
     const buttonContainer = document.querySelector('.button-container');
     const followHeader = document.querySelector('.followHeader');
+    const issuesContainer = document.querySelector('.subIssues');
 
     // Trim history to the selected point
     historyTrail = historyTrail.slice(0, index + 1);
@@ -56,31 +76,37 @@ function restoreState(index) {
     if (index === 0) {
         // If clicking "Renault Support BE", show buttons, hide everything else
         buttonContainer.style.display = "flex";
-        subsDiv.innerHTML = ''; 
-        descriptionDiv.innerHTML = ''; 
+        subsDiv.innerHTML = '';
+        descriptionDiv.innerHTML = '';
         descriptionDiv.style.display = "none"; // Hide description on reset
         subsDiv.style.display = "block"; // Show subs
         contactDiv.style.display = "none"; // Hide contact info when going back to the main page
+        issuesContainer.style.display = "none"; // Hide when navigating
         historyTrail = [];
-        document.querySelector('.followHistory').innerHTML = ''; 
+        document.querySelector('.followHistory').innerHTML = '';
         followHeader.style.display = "none"; // Hide the header when history is cleared
     } else if (historyTrail[index].type) {
         // If clicking back to any category (like Intern), render the list again
-        descriptionDiv.style.display = "none"; 
-        subsDiv.style.display = "block"; 
+        descriptionDiv.style.display = "none";
+        subsDiv.style.display = "block";
         contactDiv.style.display = "none"; // Hide the contact div when we're on the sub list
+        issuesContainer.style.display = "none";
         renderSubs(historyTrail[index].type, false); // Fetch and show the selected type
     }
 }
 
+
+
+
+
+
 async function showDescription(subId, description, issues, parentType) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
-    const contactDiv = document.querySelector('.subContact'); 
-    const contactInfoDiv = document.querySelector('.subContactInfo'); 
-    const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
+    const contactDiv = document.querySelector('.subContact');
+    const contactInfoDiv = document.querySelector('.subContactInfo');
 
-    if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv || !issuesDiv) return;
+    if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv) return;
 
     // Hide subs and show description
     subsDiv.style.display = "none";
@@ -94,8 +120,9 @@ async function showDescription(subId, description, issues, parentType) {
             <div id="descText">${description || "No description available"}</div>
         </div>
     `;
+
+    descriptionDiv.style.display = "block";
     
-    descriptionDiv.style.display = "block";  
 
     // Fetch the contact information based on the subId
     const contactList = await fetchContactList();
@@ -109,8 +136,8 @@ async function showDescription(subId, description, issues, parentType) {
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${matchingContact.contactPersonBackup || "No phone available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${matchingContact.assignmentGroup || "No email available"}</p></div>
         `;
-        contactDiv.style.display = "block";  
-    
+        contactDiv.style.display = "block";
+
         // Add event listener to edit icon for contact info
         document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId));
     } else {
@@ -118,13 +145,7 @@ async function showDescription(subId, description, issues, parentType) {
         contactDiv.style.display = "block";
     }
 
-    // Display possible issues
-    console.log(issues)
-    if (issues.length > 0) {
-        issuesDiv.innerHTML = `<p class="issueItem">${issues.test.pokemon}</p>`;
-    } else {
-        issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
-    }
+   showIssues(subId, issues, parentType);
 
     // Add event listener to pencil icon for editing
     const editIcon = descriptionDiv.querySelector(".edit-icon");
@@ -135,11 +156,136 @@ async function showDescription(subId, description, issues, parentType) {
 }
 
 
+
+async function showIssues(subId, issues, parentType){
+
+    console.log(issues)
+     // Display possible issues
+     const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
+     const issuesContainer = document.querySelector('.subIssues');
+
+     if (!issuesDiv) return;
+     issuesContainer.style.display = "block";
+     const issueArray = Object.values(issues); // Convert object to array
+     issuesDiv.innerHTML = "";
+     if (issueArray.length > 0) {
+         issuesDiv.innerHTML = issueArray
+             .map(issue => {
+                 let solutionText = issue.solution;
+ 
+                 // Limit characters to roughly 2 lines (adjust as needed)
+                 const maxLength = 120; // Adjust based on font and layout
+                 if (solutionText.length > maxLength) {
+                     solutionText = solutionText.substring(0, maxLength) + "...";
+                 }
+ 
+                 return `<div class="issueItem">
+                     <div class="icon-container"><i class="fas fa-file-alt"></i></div>
+                     <div class="preview__text">
+                         <h4>${issue.name}:</h4> 
+                         <p>Category: ${subId}</p></br>
+                         <p>${solutionText}</p>
+                     </div>
+                 </div>`;
+             })
+             .join('');
+     } else {
+         issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
+     }
+ 
+     // Add "Add Issue" button at the bottom
+     const addIssueButton = document.createElement("button");
+     addIssueButton.textContent = "+ Add Issue";
+     addIssueButton.classList.add("add-issue-btn");
+     addIssueButton.addEventListener("click", () => showIssueInput(subId, issues, parentType));
+ 
+     issuesDiv.appendChild(addIssueButton);
+}
+
+
+async function showIssueInput(subId, issues, parentType) {
+    const issuesDiv = document.querySelector('.possibleIssues');
+    console.log(parentType);
+
+    // Remove existing input if any
+    const existingInput = document.getElementById("newIssueInput");
+    if (existingInput) return; // Prevent multiple inputs
+
+    // Create input field
+    const inputField = document.createElement("input");
+    inputField.type = "text";
+    inputField.id = "newIssueInput";
+    inputField.placeholder = "Enter issue name...";
+    inputField.classList.add("issue-input");
+
+    // Create error message span (hidden by default)
+    const errorMessage = document.createElement("span");
+    errorMessage.textContent = "Issue name cannot be empty!";
+    errorMessage.style.color = "red";
+    errorMessage.style.fontSize = "12px";
+    errorMessage.style.display = "none"; // Hide initially
+
+    // Create confirm button
+    const confirmBtn = document.createElement("button");
+    confirmBtn.textContent = "Confirm";
+    confirmBtn.classList.add("confirm-btn");
+    confirmBtn.addEventListener("click", async () => {
+        if (inputField.value.trim() === "") {
+            errorMessage.style.display = "block"; // Show error message
+            return;
+        }
+        addIssueToFirestore(subId, inputField.value.trim(), parentType);
+        
+        // Clean up input and buttons
+        inputField.remove();
+        confirmBtn.remove();
+        cancelBtn.remove();
+        errorMessage.remove();
+
+        
+        if (parentType === "intern") {
+            issues = await fetchInternSubs();
+          
+        } else if (parentType === "extern") {
+            issues = await fetchExternSubs();
+       
+        } else if (parentType === "servicedesk") {
+            issues = await fetchServiceDeskSubs();
+           
+        }
+       
+        issues.forEach( sub =>{
+            if( sub.id == subId){issues = sub.issues}
+        })
+       showIssues(subId, issues, parentType)
+    });
+
+    // Create cancel button
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.classList.add("cancel-btn");
+    cancelBtn.addEventListener("click", () => {
+        inputField.remove();
+        confirmBtn.remove();
+        cancelBtn.remove();
+        errorMessage.remove();
+    });
+
+    // Append elements
+    issuesDiv.appendChild(inputField);
+    issuesDiv.appendChild(errorMessage);
+    issuesDiv.appendChild(confirmBtn);
+    issuesDiv.appendChild(cancelBtn);
+
+    inputField.focus();
+}
+
+
 function enableContactEditing(subId) {
     const contactInfoDiv = document.querySelector('.subContactInfo');
-    const editIcon = document.getElementById('editContactIcon');  // Get the pencil icon
+    const editIcon = document.getElementById('editContactIcon'); // Get the pencil icon
     const contactHeader = document.querySelector('.contactHeader'); // Get the container of the pencil icon
-    
+
     if (!contactInfoDiv || !contactHeader) return;
 
     // Store current values
@@ -168,7 +314,7 @@ function enableContactEditing(subId) {
     contactHeader.appendChild(saveButton);
 
     // Hide the pencil icon and show the save button
-    editIcon.style.display = 'none';  // Hide the pencil icon
+    editIcon.style.display = 'none'; // Hide the pencil icon
     saveButton.style.display = 'inline-block'; // Show the save button
 
     // Add event listener for saving changes
@@ -221,7 +367,7 @@ async function saveContactInfo(subId, saveButton, editIcon) {
 function enableEditing(subId) {
     const descriptionDiv = document.querySelector('.subDescription');
     const descText = document.getElementById('descText');
-    const editIcon = descriptionDiv.querySelector('.edit-icon');  // Get the pencil icon
+    const editIcon = descriptionDiv.querySelector('.edit-icon'); // Get the pencil icon
 
     if (!descriptionDiv || !descText || !editIcon) return;
 
@@ -400,5 +546,3 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
-
-
