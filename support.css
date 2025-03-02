@@ -27,7 +27,7 @@ header{
     justify-content: space-evenly;
     flex-wrap: wrap;
 }
-.sub-item{
+.sub-item, .addSubButton{
     display: inline-flex;
     align-items: center;
     width: 100%;

@@ -122,7 +122,7 @@ async function showDescription(subId, description, issues, parentType) {
     `;
 
     descriptionDiv.style.display = "block";
-    
+
 
     // Fetch the contact information based on the subId
     const contactList = await fetchContactList();
@@ -145,7 +145,7 @@ async function showDescription(subId, description, issues, parentType) {
         contactDiv.style.display = "block";
     }
 
-   showIssues(subId, issues, parentType);
+    showIssues(subId, issues, parentType);
 
     // Add event listener to pencil icon for editing
     const editIcon = descriptionDiv.querySelector(".edit-icon");
@@ -157,29 +157,29 @@ async function showDescription(subId, description, issues, parentType) {
 
 
 
-async function showIssues(subId, issues, parentType){
+async function showIssues(subId, issues, parentType) {
 
     console.log(issues)
-     // Display possible issues
-     const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
-     const issuesContainer = document.querySelector('.subIssues');
+    // Display possible issues
+    const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
+    const issuesContainer = document.querySelector('.subIssues');
 
-     if (!issuesDiv) return;
-     issuesContainer.style.display = "block";
-     const issueArray = Object.values(issues); // Convert object to array
-     issuesDiv.innerHTML = "";
-     if (issueArray.length > 0) {
-         issuesDiv.innerHTML = issueArray
-             .map(issue => {
-                 let solutionText = issue.solution;
- 
-                 // Limit characters to roughly 2 lines (adjust as needed)
-                 const maxLength = 120; // Adjust based on font and layout
-                 if (solutionText.length > maxLength) {
-                     solutionText = solutionText.substring(0, maxLength) + "...";
-                 }
- 
-                 return `<div class="issueItem">
+    if (!issuesDiv) return;
+    issuesContainer.style.display = "block";
+    const issueArray = Object.values(issues); // Convert object to array
+    issuesDiv.innerHTML = "";
+    if (issueArray.length > 0) {
+        issuesDiv.innerHTML = issueArray
+            .map(issue => {
+                let solutionText = issue.solution;
+
+                // Limit characters to roughly 2 lines (adjust as needed)
+                const maxLength = 120; // Adjust based on font and layout
+                if (solutionText.length > maxLength) {
+                    solutionText = solutionText.substring(0, maxLength) + "...";
+                }
+
+                return `<div class="issueItem">
                      <div class="icon-container"><i class="fas fa-file-alt"></i></div>
                      <div class="preview__text">
                          <h4>${issue.name}:</h4> 
@@ -187,19 +187,19 @@ async function showIssues(subId, issues, parentType){
                          <p>${solutionText}</p>
                      </div>
                  </div>`;
-             })
-             .join('');
-     } else {
-         issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
-     }
- 
-     // Add "Add Issue" button at the bottom
-     const addIssueButton = document.createElement("button");
-     addIssueButton.textContent = "+ Add Issue";
-     addIssueButton.classList.add("add-issue-btn");
-     addIssueButton.addEventListener("click", () => showIssueInput(subId, issues, parentType));
- 
-     issuesDiv.appendChild(addIssueButton);
+            })
+            .join('');
+    } else {
+        issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
+    }
+
+    // Add "Add Issue" button at the bottom
+    const addIssueButton = document.createElement("button");
+    addIssueButton.textContent = "+ Add Issue";
+    addIssueButton.classList.add("add-issue-btn");
+    addIssueButton.addEventListener("click", () => showIssueInput(subId, issues, parentType));
+
+    issuesDiv.appendChild(addIssueButton);
 }
 
 
@@ -235,29 +235,31 @@ async function showIssueInput(subId, issues, parentType) {
             return;
         }
         addIssueToFirestore(subId, inputField.value.trim(), parentType);
-        
+
         // Clean up input and buttons
         inputField.remove();
         confirmBtn.remove();
         cancelBtn.remove();
         errorMessage.remove();
 
-        
+
         if (parentType === "intern") {
             issues = await fetchInternSubs();
-          
+
         } else if (parentType === "extern") {
             issues = await fetchExternSubs();
-       
+
         } else if (parentType === "servicedesk") {
             issues = await fetchServiceDeskSubs();
-           
+
         }
-       
-        issues.forEach( sub =>{
-            if( sub.id == subId){issues = sub.issues}
+
+        issues.forEach(sub => {
+            if (sub.id == subId) {
+                issues = sub.issues
+            }
         })
-       showIssues(subId, issues, parentType)
+        showIssues(subId, issues, parentType)
     });
 
     // Create cancel button
@@ -531,6 +533,11 @@ async function renderSubs(type, addToHistory = true) {
             subsDiv.appendChild(subContainer);
         });
 
+        subsDiv.insertAdjacentHTML("beforeend", '<div class ="addSubButton">+</div>')
+        const addSubButton = document.querySelector(".addSubButton")
+        addSubButton.addEventListener("click", () => {
+            addSubButton.insertAdjacentHTML("beforeend", '<div class ="inputSubButton"><input type ="text"><button>V</button><button>X</button></div>')
+        })
     } catch (error) {
         console.error("Error fetching subscriptions:", error);
         subsDiv.innerHTML = '<p>Error loading data.</p>';
