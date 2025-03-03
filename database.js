@@ -80,7 +80,8 @@ import {
         try {
             await setDoc(subRef, {
                 description: "",
-                issues: {}
+                issues: {},
+                contactList: {contactPerson: "",contactPersonEmail: "",contactPersonBackup:"",assignmentGroup: "", name:"" }
             });
     
             console.log("Sub added successfully:", subName);
@@ -140,35 +141,36 @@ export async function updateSubDescription(subId, newDescription, parentType) {
 
 
 
-export async function updateContactInfo(subId, updatedInfo) {
+export async function updateContactInfo(subId, updatedInfo, parentType) {
+
+
+    let collectionName = ""; 
+
+    // Determine which collection to update
+    if (parentType === "intern") {
+        collectionName = "supportIntern";
+    } else if (parentType === "extern") {
+        collectionName = "supportExtern";
+    } else if (parentType === "servicedesk") {
+        collectionName = "supportServiceDesk";
+    }
+
+    if (!collectionName) {
+        console.error("Invalid collection type");
+        return;
+    }
+
     try {
-        const contactRef = doc(db, "contactList2", subId);  // Reference to document
-        await updateDoc(contactRef, updatedInfo);  
+        const contactRef = doc(db, collectionName, subId);  // Reference to document
+        await updateDoc(contactRef,{
+            contactList: updatedInfo
+        } );  
         console.log("Contact info updated successfully!");
     } catch (error) {
         console.error("Error updating contact info:", error);
     }
 }
 
-
-
-
-
-
-
-
- 
-export async function fetchContactList() {
-    const querySnapshot = await getDocs(collection(db, "contactList2")); // Assuming 'contacts' is the collection name
-    const contactList = [];
-    
-    querySnapshot.forEach((doc) => {
-        // Push the document's data with the document id to the list
-        contactList.push({ id: doc.id, ...doc.data() }); // doc.id is the document ID, doc.data() is the fields inside the document
-    });
-    
-    return contactList; // Return the array of contacts
-}
 
 
 export async function updateContactInFirebase(contact) {

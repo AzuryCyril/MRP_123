@@ -3,7 +3,6 @@ import {
     fetchInternSubs,
     fetchExternSubs,
     fetchServiceDeskSubs,
-    fetchContactList,
     updateSubDescription,
     updateContactInfo,
     addIssueToFirestore,
@@ -101,12 +100,11 @@ function restoreState(index) {
 
 
 
-async function showDescription(subId, description, issues, parentType) {
+async function showDescription(subId, sub, parentType) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     const contactDiv = document.querySelector('.subContact');
     const contactInfoDiv = document.querySelector('.subContactInfo');
-
     if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv) return;
  
     // Hide subs and show description
@@ -118,7 +116,7 @@ async function showDescription(subId, description, issues, parentType) {
             <i class="fas fa-pencil-alt edit-icon"></i>
         </div>
         <div class="descriptionContent">
-            <div id="descText">${description || "No description available"}</div>
+            <div id="descText">${sub.description || "No description available"}</div>
         </div>
     `;
 
@@ -126,27 +124,22 @@ async function showDescription(subId, description, issues, parentType) {
 
 
     // Fetch the contact information based on the subId
-    const contactList = await fetchContactList();
-    const matchingContact = contactList.find(contact => contact.id === subId);
-
-    if (matchingContact) {
+ 
+    console.log(sub);
         contactInfoDiv.innerHTML = `
-            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${matchingContact.test || "No name available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${matchingContact.contactPerson || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${matchingContact.contactPersonEmail || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${matchingContact.contactPersonBackup || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${matchingContact.assignmentGroup || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${sub.contactList.name || "No name available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${sub.contactList.contactPerson || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
         `;
         contactDiv.style.display = "block";
 
         // Add event listener to edit icon for contact info
-        document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId));
-    } else {
-        contactInfoDiv.innerHTML = "<p>No contact information available for this sub.</p>";
-        contactDiv.style.display = "block";
-    }
+        document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId, parentType));
+  
 
-    showIssues(subId, issues, parentType);
+    showIssues(subId, sub.issues, parentType);
 
     // Add event listener to pencil icon for editing
     const editIcon = descriptionDiv.querySelector(".edit-icon");
@@ -282,7 +275,7 @@ async function showIssueInput(subId, issues, parentType) {
 }
 
 
-function enableContactEditing(subId) {
+async function enableContactEditing(subId ,parentType) {
     const contactInfoDiv = document.querySelector('.subContactInfo');
     const editIcon = document.getElementById('editContactIcon'); // Get the pencil icon
     const contactHeader = document.querySelector('.contactHeader'); // Get the container of the pencil icon
@@ -319,12 +312,12 @@ function enableContactEditing(subId) {
     saveButton.style.display = 'inline-block'; // Show the save button
 
     // Add event listener for saving changes
-    saveButton.addEventListener("click", () => saveContactInfo(subId, saveButton, editIcon));
+    saveButton.addEventListener("click", () => saveContactInfo(subId, saveButton, editIcon, parentType));
 }
 
 
 
-async function saveContactInfo(subId, saveButton, editIcon) {
+async function saveContactInfo(subId, saveButton, editIcon, parentType) {
     const newName = document.getElementById("editContactName").value.trim();
     const newPerson = document.getElementById("editContactPerson").value.trim();
     const newEmail = document.getElementById("editContactEmail").value.trim();
@@ -333,7 +326,7 @@ async function saveContactInfo(subId, saveButton, editIcon) {
 
     // Create an object with the updated data
     const updatedContactInfo = {
-        test: newName,
+        name: newName,
         contactPerson: newPerson,
         contactPersonEmail: newEmail,
         contactPersonBackup: newBackup,
@@ -341,7 +334,7 @@ async function saveContactInfo(subId, saveButton, editIcon) {
     };
 
     try {
-        await updateContactInfo(subId, updatedContactInfo); // Calls the update function (presumably a database operation)
+        await updateContactInfo(subId, updatedContactInfo, parentType); // Calls the update function (presumably a database operation)
 
         // Replace input fields back with text
         const contactInfoDiv = document.querySelector('.subContactInfo');
@@ -502,7 +495,7 @@ async function renderSubs(type, addToHistory = true) {
             const subContainer = document.createElement('div');
             subContainer.classList.add('sub-item');
             subContainer.style.cursor = "pointer"; // Make it clear it's clickable
-            subContainer.addEventListener('click', () => showDescription(sub.id, sub.description, sub.issues, type));
+            subContainer.addEventListener('click', () => showDescription(sub.id, sub, type));
 
             // Icon
             const iconContainer = document.createElement('div');
