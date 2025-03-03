@@ -12,12 +12,21 @@ import {
 let parentType;
 let subs = [];
 let currentSub = [];
+let historyTrail = [];
 
 // Event listener for buttons
 document.addEventListener("DOMContentLoaded", () => {
+
+
     document.querySelectorAll(".filter-btn").forEach(button => {
         button.addEventListener("click", () => {
+
+            updateTrail("Renault Support BE")
+
             parentType = button.dataset.type;
+
+            updateTrail(parentType)
+            
             renderSubs();
         });
     });
@@ -35,6 +44,7 @@ async function refetchData(){
 }
 
 async function renderSubs() {
+    console.log(historyTrail)
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     const buttonContainer = document.querySelector('.button-container');
@@ -52,7 +62,6 @@ async function renderSubs() {
 
         await refetchData();
 
-        console.log(subs)
         subsDiv.innerHTML = ''; // Clear existing content
 
         subs.forEach(sub => {
@@ -419,29 +428,28 @@ async function showIssues() {
 
     issuesDiv.appendChild(addIssueButton);
 
-    // document.querySelectorAll(".issueItem").forEach(item => {
-    //     item.addEventListener("click", () => {
-    //         const issueId = item.getAttribute("data-solution");
-    //         const issueName = item.getAttribute("data-name");
-    //         console.log(`Clicked issue: ${issueId}`);
-    //         const descriptionDiv = document.querySelector('.subDescription');
+    document.querySelectorAll(".issueItem").forEach(item => {
+        item.addEventListener("click", () => {
+            const issueId = item.getAttribute("data-solution");
+            const issueName = item.getAttribute("data-name");
+            console.log(`Clicked issue: ${issueId}`);
+            const descriptionDiv = document.querySelector('.subDescription');
             
-    //         descriptionDiv.innerHTML = `
-    //         <div class="descriptionHeader">
-    //             <h2 class="subTitle">${issueName}</h2>
-    //             <i class="fas fa-pencil-alt edit-icon"></i>
-    //         </div>
-    //         <div class="descriptionContent">
-    //             <div id="descText">${issueId || "No description available"}</div>
-    //         </div>
-    //     `;
+            descriptionDiv.innerHTML = `
+            <div class="descriptionHeader">
+                <h2 class="subTitle">${issueName}</h2>
+                <i class="fas fa-pencil-alt edit-icon"></i>
+            </div>
+            <div class="descriptionContent">
+                <div id="descText">${issueId || "No description available"}</div>
+            </div>
+        `;
 
-    //     const editIcon = descriptionDiv.querySelector(".edit-icon");
-    //     editIcon.addEventListener("click", () => enableEditing(subId));
-    //        // updateHistory(parentType, subId, issueName);
-    //         // Add your logic here (e.g., show issue details, edit issue, etc.)
-    //     });
-    // });
+        // const editIcon = descriptionDiv.querySelector(".edit-icon");
+        // editIcon.addEventListener("click", () => enableEditing());
+           
+        });
+    });
 
 }
 
@@ -485,3 +493,20 @@ async function showIssueInput() {
     });
 }
 
+
+async function updateTrail(trail){
+    historyTrail.push({trail})
+
+    const historyDiv = document.querySelector('.followHistory');
+    const followHeader = document.querySelector('.followHeader'); // Get the full-width container
+
+    followHeader.style.display = "block";
+
+    // Render history as clickable links
+    historyDiv.innerHTML = '';
+
+    historyTrail.forEach((entry) => {
+        historyDiv.insertAdjacentHTML('beforeend',`<span class="history-link">${entry.trail}</span>`)
+
+    });
+}

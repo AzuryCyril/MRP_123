@@ -12,85 +12,85 @@ import {
 
 
 
-// let historyTrail = []; // Start with an empty history
+let historyTrail = []; // Start with an empty history
 
-// function updateHistory(selection, type, issueName) {
-//     const historyDiv = document.querySelector('.followHistory');
-//     const followHeader = document.querySelector('.followHeader'); // Get the full-width container
+function updateHistory(selection, type, issueName) {
+    const historyDiv = document.querySelector('.followHistory');
+    const followHeader = document.querySelector('.followHeader'); // Get the full-width container
 
-//     if (!historyDiv || !followHeader) return;
+    if (!historyDiv || !followHeader) return;
 
-//     if (historyTrail.length === 0) {
-//         historyTrail.push({
-//             label: "Renault Support BE"
-//         }); // Add only once
-//     }
+    if (historyTrail.length === 0) {
+        historyTrail.push({
+            label: "Renault Support BE"
+        }); // Add only once
+    }
 
-//     let newLabel = issueName ? issueName : selection; // Use issueName directly if present
+    let newLabel = issueName ? issueName : selection; // Use issueName directly if present
 
-//     // Prevent duplicate entries when clicking the same item
-//     if (historyTrail[historyTrail.length - 1].label !== newLabel) {
-//         historyTrail.push({
-//             label: newLabel
-//         });
-//     }
-//     // Show the followHeader when history is added
-//     followHeader.style.display = "block";
+    // Prevent duplicate entries when clicking the same item
+    if (historyTrail[historyTrail.length - 1].label !== newLabel) {
+        historyTrail.push({
+            label: newLabel
+        });
+    }
+    // Show the followHeader when history is added
+    followHeader.style.display = "block";
 
-//     // Render history as clickable links
-//     historyDiv.innerHTML = '';
-//     historyTrail.forEach((entry, index) => {
-//         const historyLink = document.createElement('span');
-//         historyLink.textContent = entry.label;
-//         historyLink.classList.add('history-link');
+    // Render history as clickable links
+    historyDiv.innerHTML = '';
+    historyTrail.forEach((entry, index) => {
+        const historyLink = document.createElement('span');
+        historyLink.textContent = entry.label;
+        historyLink.classList.add('history-link');
 
-//         if (index < historyTrail.length - 1) {
-//             historyLink.style.cursor = 'pointer';
-//             historyLink.style.color = 'blue';
-//             historyLink.addEventListener('click', () => restoreState(index));
-//         }
+        if (index < historyTrail.length - 1) {
+            historyLink.style.cursor = 'pointer';
+            historyLink.style.color = 'blue';
+            historyLink.addEventListener('click', () => restoreState(index));
+        }
 
-//         historyDiv.appendChild(historyLink);
-//         if (index < historyTrail.length - 1) {
-//             historyDiv.appendChild(document.createTextNode("\u00A0>\u00A0"));
-//         }
-//     });
-// }
+        historyDiv.appendChild(historyLink);
+        if (index < historyTrail.length - 1) {
+            historyDiv.appendChild(document.createTextNode("\u00A0>\u00A0"));
+        }
+    });
+}
 
 
-// function restoreState(index) {
-//     const subsDiv = document.querySelector('.Subs');
-//     const descriptionDiv = document.querySelector('.subDescription');
-//     const contactDiv = document.querySelector('.subContact'); // Get the subContact div
-//     const buttonContainer = document.querySelector('.button-container');
-//     const followHeader = document.querySelector('.followHeader');
-//     const issuesContainer = document.querySelector('.subIssues');
+function restoreState(index) {
+    const subsDiv = document.querySelector('.Subs');
+    const descriptionDiv = document.querySelector('.subDescription');
+    const contactDiv = document.querySelector('.subContact'); // Get the subContact div
+    const buttonContainer = document.querySelector('.button-container');
+    const followHeader = document.querySelector('.followHeader');
+    const issuesContainer = document.querySelector('.subIssues');
 
-//     // Trim history to the selected point
-//     historyTrail = historyTrail.slice(0, index + 1);
-//     updateHistory(historyTrail[index].label, historyTrail[index].type);
-//     console.log(historyTrail[index])
-//     if (index === 0) {
-//         // If clicking "Renault Support BE", show buttons, hide everything else
-//         buttonContainer.style.display = "flex";
-//         subsDiv.innerHTML = '';
-//         descriptionDiv.innerHTML = '';
-//         descriptionDiv.style.display = "none"; // Hide description on reset
-//         subsDiv.style.display = "flex"; // Show subs
-//         contactDiv.style.display = "none"; // Hide contact info when going back to the main page
-//         issuesContainer.style.display = "none"; // Hide when navigating
-//         historyTrail = [];
-//         document.querySelector('.followHistory').innerHTML = '';
-//         followHeader.style.display = "none"; // Hide the header when history is cleared
-//     } else if (historyTrail[index].label == "Intern" || historyTrail[index].label ==  "Extern" || historyTrail[index].label ==  "Servicedesk") {
-//         // If clicking back to any category (like Intern), render the list again
-//         descriptionDiv.style.display = "none";
-//         subsDiv.style.display = "flex";
-//         contactDiv.style.display = "none"; // Hide the contact div when we're on the sub list
-//         issuesContainer.style.display = "none";
-//         renderSubs(historyTrail[index].label.toLowerCase(), false); // Fetch and show the selected type
-//     }
-// }
+    // Trim history to the selected point
+    historyTrail = historyTrail.slice(0, index + 1);
+    updateHistory(historyTrail[index].label, historyTrail[index].type);
+    console.log(historyTrail[index])
+    if (index === 0) {
+        // If clicking "Renault Support BE", show buttons, hide everything else
+        buttonContainer.style.display = "flex";
+        subsDiv.innerHTML = '';
+        descriptionDiv.innerHTML = '';
+        descriptionDiv.style.display = "none"; // Hide description on reset
+        subsDiv.style.display = "flex"; // Show subs
+        contactDiv.style.display = "none"; // Hide contact info when going back to the main page
+        issuesContainer.style.display = "none"; // Hide when navigating
+        historyTrail = [];
+        document.querySelector('.followHistory').innerHTML = '';
+        followHeader.style.display = "none"; // Hide the header when history is cleared
+    } else if (historyTrail[index].label == "Intern" || historyTrail[index].label ==  "Extern" || historyTrail[index].label ==  "Servicedesk") {
+        // If clicking back to any category (like Intern), render the list again
+        descriptionDiv.style.display = "none";
+        subsDiv.style.display = "flex";
+        contactDiv.style.display = "none"; // Hide the contact div when we're on the sub list
+        issuesContainer.style.display = "none";
+        renderSubs(historyTrail[index].label.toLowerCase(), false); // Fetch and show the selected type
+    }
+}
 
 
 
