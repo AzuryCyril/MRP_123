@@ -71,11 +71,25 @@ import {
 
 
 
-
-
-
-
-
+    export async function addNewSub(type, subName) {
+        console.log(`Adding new sub to ${type}: ${subName}`);
+    
+        // Firestore reference with the user-defined subName as the document ID
+        const subRef = doc(db, type, subName);
+    
+        try {
+            await setDoc(subRef, {
+                description: "",
+                issues: {}
+            });
+    
+            console.log("Sub added successfully:", subName);
+    
+            // Refresh the list
+        } catch (error) {
+            console.error("Error adding sub:", error);
+        }
+    }
 
 
   

@@ -37,7 +37,7 @@ header{
     box-shadow: 0 4px 8px 0 rgba(38, 40, 42, .3);
     background-color: #fff;
     letter-spacing: .1px;
-    color: #2c70a2;
+    color: white;
     transition: none;
     font-family: NouvelR;
 }
@@ -248,4 +248,14 @@ header{
     background-color: #222;
     box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .3);
     text-align: center;
+}
+.addSubButton{
+    justify-content: center;
+}
+.addSubButton .icon-container{
+    outline: 2px solid #fc3;
+    border: 2px solid white;
+}
+.addSubButton input{
+    width: 150px;
 }

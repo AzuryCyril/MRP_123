@@ -6,7 +6,8 @@ import {
     fetchContactList,
     updateSubDescription,
     updateContactInfo,
-    addIssueToFirestore
+    addIssueToFirestore,
+    addNewSub
 } from './database.js';
 
 
@@ -79,7 +80,7 @@ function restoreState(index) {
         subsDiv.innerHTML = '';
         descriptionDiv.innerHTML = '';
         descriptionDiv.style.display = "none"; // Hide description on reset
-        subsDiv.style.display = "block"; // Show subs
+        subsDiv.style.display = "flex"; // Show subs
         contactDiv.style.display = "none"; // Hide contact info when going back to the main page
         issuesContainer.style.display = "none"; // Hide when navigating
         historyTrail = [];
@@ -88,7 +89,7 @@ function restoreState(index) {
     } else if (historyTrail[index].type) {
         // If clicking back to any category (like Intern), render the list again
         descriptionDiv.style.display = "none";
-        subsDiv.style.display = "block";
+        subsDiv.style.display = "flex";
         contactDiv.style.display = "none"; // Hide the contact div when we're on the sub list
         issuesContainer.style.display = "none";
         renderSubs(historyTrail[index].type, false); // Fetch and show the selected type
@@ -107,7 +108,7 @@ async function showDescription(subId, description, issues, parentType) {
     const contactInfoDiv = document.querySelector('.subContactInfo');
 
     if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv) return;
-
+ 
     // Hide subs and show description
     subsDiv.style.display = "none";
 
@@ -158,8 +159,7 @@ async function showDescription(subId, description, issues, parentType) {
 
 
 async function showIssues(subId, issues, parentType) {
-
-    console.log(issues)
+  
     // Display possible issues
     const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
     const issuesContainer = document.querySelector('.subIssues');
@@ -205,7 +205,6 @@ async function showIssues(subId, issues, parentType) {
 
 async function showIssueInput(subId, issues, parentType) {
     const issuesDiv = document.querySelector('.possibleIssues');
-    console.log(parentType);
 
     // Remove existing input if any
     const existingInput = document.getElementById("newIssueInput");
@@ -234,7 +233,7 @@ async function showIssueInput(subId, issues, parentType) {
             errorMessage.style.display = "block"; // Show error message
             return;
         }
-        addIssueToFirestore(subId, inputField.value.trim(), parentType);
+        await addIssueToFirestore(subId, inputField.value.trim(), parentType);
 
         // Clean up input and buttons
         inputField.remove();
@@ -476,17 +475,21 @@ async function renderSubs(type, addToHistory = true) {
 
     try {
         let subs = [];
+        let parentType;
         let label = "";
 
         if (type === "intern") {
             subs = await fetchInternSubs();
             label = "Intern";
+            parentType = "supportIntern";
         } else if (type === "extern") {
             subs = await fetchExternSubs();
             label = "Extern";
+            parentType = "supportExtern";
         } else if (type === "servicedesk") {
             subs = await fetchServiceDeskSubs();
             label = "ServiceDesk";
+            parentType = "supportServiceDesk";
         }
 
         if (addToHistory) {
@@ -499,7 +502,6 @@ async function renderSubs(type, addToHistory = true) {
             const subContainer = document.createElement('div');
             subContainer.classList.add('sub-item');
             subContainer.style.cursor = "pointer"; // Make it clear it's clickable
-            // Click event to show description and add to history
             subContainer.addEventListener('click', () => showDescription(sub.id, sub.description, sub.issues, type));
 
             // Icon
@@ -533,16 +535,46 @@ async function renderSubs(type, addToHistory = true) {
             subsDiv.appendChild(subContainer);
         });
 
-        subsDiv.insertAdjacentHTML("beforeend", '<div class ="addSubButton">+</div>')
-        const addSubButton = document.querySelector(".addSubButton")
+        // Add "+" button to add a new sub
+        subsDiv.insertAdjacentHTML("beforeend", '<div class="addSubButton"><div class="icon-container">+</div></div>');
+
+        const addSubButton = subsDiv.querySelector(".addSubButton");
         addSubButton.addEventListener("click", () => {
-            addSubButton.insertAdjacentHTML("beforeend", '<div class ="inputSubButton"><input type ="text"><button>V</button><button>X</button></div>')
-        })
+            // Prevent multiple input fields from appearing
+            if (document.querySelector(".inputSubButton")) return;
+
+            addSubButton.insertAdjacentHTML(
+                "beforeend",
+                `<div class="inputSubButton">
+                    <input type="text" id="newSubInput" placeholder="Enter sub name">
+                    <button class="confirmSub">✔</button>
+                    <button class="cancelSub">✖</button>
+                </div>`
+            );
+
+            // Add event listeners for confirm & cancel buttons
+            document.querySelector(".confirmSub").addEventListener("click", () => {
+                const inputField = document.querySelector("#newSubInput");
+                if (inputField.value.trim() === "") {
+                    alert("Sub name cannot be empty!");
+                    return;
+                }
+                addNewSub(parentType, inputField.value.trim());
+                document.querySelector(".inputSubButton").remove();
+                renderSubs(type, false);
+            });
+
+            document.querySelector(".cancelSub").addEventListener("click", () => {
+                document.querySelector(".inputSubButton").remove();
+            });
+        });
+
     } catch (error) {
         console.error("Error fetching subscriptions:", error);
         subsDiv.innerHTML = '<p>Error loading data.</p>';
     }
 }
+
 
 // Event listener for buttons
 document.addEventListener("DOMContentLoaded", () => {
