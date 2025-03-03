@@ -20,24 +20,8 @@ import {
    
     export async function addIssueToFirestore(subId, inputFieldValue, parentType) {
 
-        let collectionName = ""; 
-
-    // Determine which collection to update
-    if (parentType === "intern") {
-        collectionName = "supportIntern";
-    } else if (parentType === "extern") {
-        collectionName = "supportExtern";
-    } else if (parentType === "servicedesk") {
-        collectionName = "supportServiceDesk";
-    }
-
-    if (!collectionName) {
-        console.error("Invalid collection type");
-        return;
-    }
-
         try {
-            const docRef = doc(db, collectionName, subId); // Reference to document
+            const docRef = doc(db, parentType, subId); // Reference to document
             const docSnap = await getDoc(docRef);
     
             let existingIssues = [];
@@ -72,7 +56,7 @@ import {
 
 
     export async function addNewSub(type, subName) {
-        console.log(`Adding new sub to ${type}: ${subName}`);
+       
     
         // Firestore reference with the user-defined subName as the document ID
         const subRef = doc(db, type, subName);
@@ -111,29 +95,14 @@ export async function fetchServiceDeskSubs() {
 }
 
 export async function updateSubDescription(subId, newDescription, parentType) {
-    let collectionName = ""; 
 
-    // Determine which collection to update
-    if (parentType === "intern") {
-        collectionName = "supportIntern";
-    } else if (parentType === "extern") {
-        collectionName = "supportExtern";
-    } else if (parentType === "servicedesk") {
-        collectionName = "supportServiceDesk";
-    }
-
-    if (!collectionName) {
-        console.error("Invalid collection type");
-        return;
-    }
-
-    const subRef = doc(db, collectionName, subId); // Correct Firestore path
+    const subRef = doc(db, parentType, subId); // Correct Firestore path
 
     try {
         await updateDoc(subRef, {
             description: newDescription
         });
-        console.log(`Description updated in ${collectionName}`);
+        console.log(`Description updated in ${parentType}`);
     } catch (error) {
         console.error("Error updating Firestore:", error);
     }
@@ -144,24 +113,8 @@ export async function updateSubDescription(subId, newDescription, parentType) {
 export async function updateContactInfo(subId, updatedInfo, parentType) {
 
 
-    let collectionName = ""; 
-
-    // Determine which collection to update
-    if (parentType === "intern") {
-        collectionName = "supportIntern";
-    } else if (parentType === "extern") {
-        collectionName = "supportExtern";
-    } else if (parentType === "servicedesk") {
-        collectionName = "supportServiceDesk";
-    }
-
-    if (!collectionName) {
-        console.error("Invalid collection type");
-        return;
-    }
-
     try {
-        const contactRef = doc(db, collectionName, subId);  // Reference to document
+        const contactRef = doc(db, parentType, subId);  // Reference to document
         await updateDoc(contactRef,{
             contactList: updatedInfo
         } );  
