@@ -12,100 +12,94 @@ import {
 
 
 
-let historyTrail = []; // Start with an empty history
+// let historyTrail = []; // Start with an empty history
 
-function updateHistory(selection, type) {
-    const historyDiv = document.querySelector('.followHistory');
-    const followHeader = document.querySelector('.followHeader'); // Get the full-width container
+// function updateHistory(selection, type, issueName) {
+//     const historyDiv = document.querySelector('.followHistory');
+//     const followHeader = document.querySelector('.followHeader'); // Get the full-width container
 
-    if (!historyDiv || !followHeader) return;
+//     if (!historyDiv || !followHeader) return;
 
-    if (historyTrail.length === 0) {
-        historyTrail.push({
-            label: "Renault Support BE",
-            type: null
-        }); // Add only once
-    }
+//     if (historyTrail.length === 0) {
+//         historyTrail.push({
+//             label: "Renault Support BE"
+//         }); // Add only once
+//     }
 
-    // Prevent duplicate entries when clicking the same item
-    if (historyTrail[historyTrail.length - 1].label !== selection) {
-        historyTrail.push({
-            label: selection,
-            type
-        });
-    }
+//     let newLabel = issueName ? issueName : selection; // Use issueName directly if present
 
-    // Show the followHeader when history is added
-    followHeader.style.display = "block";
+//     // Prevent duplicate entries when clicking the same item
+//     if (historyTrail[historyTrail.length - 1].label !== newLabel) {
+//         historyTrail.push({
+//             label: newLabel
+//         });
+//     }
+//     // Show the followHeader when history is added
+//     followHeader.style.display = "block";
 
-    // Render history as clickable links
-    historyDiv.innerHTML = '';
-    historyTrail.forEach((entry, index) => {
-        const historyLink = document.createElement('span');
-        historyLink.textContent = entry.label;
-        historyLink.classList.add('history-link');
+//     // Render history as clickable links
+//     historyDiv.innerHTML = '';
+//     historyTrail.forEach((entry, index) => {
+//         const historyLink = document.createElement('span');
+//         historyLink.textContent = entry.label;
+//         historyLink.classList.add('history-link');
 
-        if (index < historyTrail.length - 1) {
-            historyLink.style.cursor = 'pointer';
-            historyLink.style.color = 'blue';
-            historyLink.addEventListener('click', () => restoreState(index));
-        }
+//         if (index < historyTrail.length - 1) {
+//             historyLink.style.cursor = 'pointer';
+//             historyLink.style.color = 'blue';
+//             historyLink.addEventListener('click', () => restoreState(index));
+//         }
 
-        historyDiv.appendChild(historyLink);
-        if (index < historyTrail.length - 1) {
-            historyDiv.appendChild(document.createTextNode("\u00A0>\u00A0"));
-        }
-    });
-}
-
+//         historyDiv.appendChild(historyLink);
+//         if (index < historyTrail.length - 1) {
+//             historyDiv.appendChild(document.createTextNode("\u00A0>\u00A0"));
+//         }
+//     });
+// }
 
 
+// function restoreState(index) {
+//     const subsDiv = document.querySelector('.Subs');
+//     const descriptionDiv = document.querySelector('.subDescription');
+//     const contactDiv = document.querySelector('.subContact'); // Get the subContact div
+//     const buttonContainer = document.querySelector('.button-container');
+//     const followHeader = document.querySelector('.followHeader');
+//     const issuesContainer = document.querySelector('.subIssues');
 
-function restoreState(index) {
-    const subsDiv = document.querySelector('.Subs');
-    const descriptionDiv = document.querySelector('.subDescription');
-    const contactDiv = document.querySelector('.subContact'); // Get the subContact div
-    const buttonContainer = document.querySelector('.button-container');
-    const followHeader = document.querySelector('.followHeader');
-    const issuesContainer = document.querySelector('.subIssues');
-
-    // Trim history to the selected point
-    historyTrail = historyTrail.slice(0, index + 1);
-    updateHistory(historyTrail[index].label, historyTrail[index].type);
-
-    if (index === 0) {
-        // If clicking "Renault Support BE", show buttons, hide everything else
-        buttonContainer.style.display = "flex";
-        subsDiv.innerHTML = '';
-        descriptionDiv.innerHTML = '';
-        descriptionDiv.style.display = "none"; // Hide description on reset
-        subsDiv.style.display = "flex"; // Show subs
-        contactDiv.style.display = "none"; // Hide contact info when going back to the main page
-        issuesContainer.style.display = "none"; // Hide when navigating
-        historyTrail = [];
-        document.querySelector('.followHistory').innerHTML = '';
-        followHeader.style.display = "none"; // Hide the header when history is cleared
-    } else if (historyTrail[index].type) {
-        // If clicking back to any category (like Intern), render the list again
-        descriptionDiv.style.display = "none";
-        subsDiv.style.display = "flex";
-        contactDiv.style.display = "none"; // Hide the contact div when we're on the sub list
-        issuesContainer.style.display = "none";
-        renderSubs(historyTrail[index].type, false); // Fetch and show the selected type
-    }
-}
+//     // Trim history to the selected point
+//     historyTrail = historyTrail.slice(0, index + 1);
+//     updateHistory(historyTrail[index].label, historyTrail[index].type);
+//     console.log(historyTrail[index])
+//     if (index === 0) {
+//         // If clicking "Renault Support BE", show buttons, hide everything else
+//         buttonContainer.style.display = "flex";
+//         subsDiv.innerHTML = '';
+//         descriptionDiv.innerHTML = '';
+//         descriptionDiv.style.display = "none"; // Hide description on reset
+//         subsDiv.style.display = "flex"; // Show subs
+//         contactDiv.style.display = "none"; // Hide contact info when going back to the main page
+//         issuesContainer.style.display = "none"; // Hide when navigating
+//         historyTrail = [];
+//         document.querySelector('.followHistory').innerHTML = '';
+//         followHeader.style.display = "none"; // Hide the header when history is cleared
+//     } else if (historyTrail[index].label == "Intern" || historyTrail[index].label ==  "Extern" || historyTrail[index].label ==  "Servicedesk") {
+//         // If clicking back to any category (like Intern), render the list again
+//         descriptionDiv.style.display = "none";
+//         subsDiv.style.display = "flex";
+//         contactDiv.style.display = "none"; // Hide the contact div when we're on the sub list
+//         issuesContainer.style.display = "none";
+//         renderSubs(historyTrail[index].label.toLowerCase(), false); // Fetch and show the selected type
+//     }
+// }
 
 
 
 
-
-
+//ShowDescription
 async function showDescription(subId, sub, parentType) {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
-    const contactDiv = document.querySelector('.subContact');
-    const contactInfoDiv = document.querySelector('.subContactInfo');
-    if (!subsDiv || !descriptionDiv || !contactDiv || !contactInfoDiv) return;
+    if (!subsDiv || !descriptionDiv) return;
  
     // Hide subs and show description
     subsDiv.style.display = "none";
@@ -122,35 +116,35 @@ async function showDescription(subId, sub, parentType) {
 
     descriptionDiv.style.display = "block";
 
-
-    // Fetch the contact information based on the subId
- 
-    console.log(sub);
-        contactInfoDiv.innerHTML = `
-            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${sub.contactList.name || "No name available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${sub.contactList.contactPerson || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
-        `;
-        contactDiv.style.display = "block";
-
-        // Add event listener to edit icon for contact info
-        document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId, parentType));
-  
-
-    showIssues(subId, sub.issues, parentType);
-
     // Add event listener to pencil icon for editing
     const editIcon = descriptionDiv.querySelector(".edit-icon");
     editIcon.addEventListener("click", () => enableEditing(subId));
 
     // Add to follow history
-    updateHistory(subId, parentType);
+    //updateHistory(subId, parentType);
+}
+
+//ShowContacts
+async function showContacts(subId, sub, parentType){
+    const contactDiv = document.querySelector('.subContact');
+    const contactInfoDiv = document.querySelector('.subContactInfo');
+    if (!contactDiv || !contactInfoDiv) return;
+    // Fetch the contact information based on the subId
+    contactInfoDiv.innerHTML = `
+    <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${sub.contactList.name || "No name available"}</p></div>
+    <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${sub.contactList.contactPerson || "No phone available"}</p></div>
+    <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
+    <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
+    <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
+    `;
+    contactDiv.style.display = "block";
+
+    // Add event listener to edit icon for contact info
+    document.getElementById("editContactIcon").addEventListener("click", () => enableContactEditing(subId, parentType));
 }
 
 
-
+//ShowIssues
 async function showIssues(subId, issues, parentType) {
   
     // Display possible issues
@@ -172,7 +166,7 @@ async function showIssues(subId, issues, parentType) {
                     solutionText = solutionText.substring(0, maxLength) + "...";
                 }
 
-                return `<div class="issueItem">
+                return `<div class="issueItem" data-solution="${issue.solution}" data-name="${issue.name}">
                      <div class="icon-container"><i class="fas fa-file-alt"></i></div>
                      <div class="preview__text">
                          <h4>${issue.name}:</h4> 
@@ -186,6 +180,8 @@ async function showIssues(subId, issues, parentType) {
         issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
     }
 
+    
+
     // Add "Add Issue" button at the bottom
     const addIssueButton = document.createElement("button");
     addIssueButton.textContent = "+ Add Issue";
@@ -193,6 +189,31 @@ async function showIssues(subId, issues, parentType) {
     addIssueButton.addEventListener("click", () => showIssueInput(subId, issues, parentType));
 
     issuesDiv.appendChild(addIssueButton);
+
+    document.querySelectorAll(".issueItem").forEach(item => {
+        item.addEventListener("click", () => {
+            const issueId = item.getAttribute("data-solution");
+            const issueName = item.getAttribute("data-name");
+            console.log(`Clicked issue: ${issueId}`);
+            const descriptionDiv = document.querySelector('.subDescription');
+            
+            descriptionDiv.innerHTML = `
+            <div class="descriptionHeader">
+                <h2 class="subTitle">${issueName}</h2>
+                <i class="fas fa-pencil-alt edit-icon"></i>
+            </div>
+            <div class="descriptionContent">
+                <div id="descText">${issueId || "No description available"}</div>
+            </div>
+        `;
+
+        const editIcon = descriptionDiv.querySelector(".edit-icon");
+        editIcon.addEventListener("click", () => enableEditing(subId));
+           // updateHistory(parentType, subId, issueName);
+            // Add your logic here (e.g., show issue details, edit issue, etc.)
+        });
+    });
+
 }
 
 
@@ -486,7 +507,7 @@ async function renderSubs(type, addToHistory = true) {
         }
 
         if (addToHistory) {
-            updateHistory(label, type);
+           // updateHistory(label, type);
         }
 
         subsDiv.innerHTML = ''; // Clear existing content
@@ -495,7 +516,11 @@ async function renderSubs(type, addToHistory = true) {
             const subContainer = document.createElement('div');
             subContainer.classList.add('sub-item');
             subContainer.style.cursor = "pointer"; // Make it clear it's clickable
-            subContainer.addEventListener('click', () => showDescription(sub.id, sub, type));
+            subContainer.addEventListener('click', () => {
+                showDescription(sub.id, sub, type)
+                showContacts(sub.id, sub, type);
+                showIssues(sub.id, sub.issues, type);
+            });
 
             // Icon
             const iconContainer = document.createElement('div');

@@ -261,3 +261,6 @@ header{
 .addSubButton input{
     width: 150px;
 }
+.sub-description{
+    color: black;
+}
