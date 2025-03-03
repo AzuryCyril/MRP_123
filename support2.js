@@ -23,6 +23,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+
+async function refetchData(){
+    if (parentType === "supportIntern") {
+        subs = await fetchInternSubs();        
+    } else if (parentType === "supportExtern") {
+        subs = await fetchExternSubs();    
+    } else if (parentType === "supportServiceDesk") {
+        subs = await fetchServiceDeskSubs();
+    }
+}
+
 async function renderSubs() {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
@@ -39,13 +50,8 @@ async function renderSubs() {
 
     try {
 
-        if (parentType === "supportIntern") {
-            subs = await fetchInternSubs();        
-        } else if (parentType === "supportExtern") {
-            subs = await fetchExternSubs();    
-        } else if (parentType === "supportServiceDesk") {
-            subs = await fetchServiceDeskSubs();
-        }
+        await refetchData();
+
         console.log(subs)
         subsDiv.innerHTML = ''; // Clear existing content
 
@@ -448,46 +454,34 @@ async function showIssueInput() {
     if (existingInput) return; // Prevent multiple inputs
 
     // Create input field
-    issuesDiv.insertAdjacentHTML('beforeend',`<input type = "text" id="newIssueInput" class="issue-input" placeholder = "Enter issue name...">`)
-    issuesDiv.insertAdjacentHTML('beforeend',`<button class="confirm-btn">Confirm</button>`)
+    issuesDiv.insertAdjacentHTML('afterend',`<div id="newIssueDiv">
+        <input type = "text" class="issue-input" placeholder = "Enter issue name...">
+        <button class="confirm-btn">Confirm</button>
+        <button class="cancel-btn">Cancel</button>
+        </div>`)
 
     document.querySelector(".confirm-btn").addEventListener("click", async () => {
         if (document.querySelector(".issue-input").value.trim() === "") {
+            alert("Please enter a name")
             return;
         }
         await addIssueToFirestore(currentSub.id, document.querySelector(".issue-input").value.trim(), parentType);
 
-    //     // Clean up input and buttons
-    //     inputField.remove();
-    //     confirmBtn.remove();
-    //     cancelBtn.remove();
-    //     errorMessage.remove();
+        document.getElementById("newIssueDiv").remove()
 
-    //     issues.forEach(sub => {
-    //         if (sub.id == currentSub.id) {
-    //             issues = sub.issues
-    //         }
-    //     })
-    //    // showIssues(subId, issues, parentType)
+        await refetchData()
+        subs.forEach(sub => {
+            if (sub.id == currentSub.id) {
+                currentSub = sub
+            }
+        })
+        
+         await showIssues()
     });
 
     // Create cancel button
-    const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "Cancel";
-    cancelBtn.classList.add("cancel-btn");
-    cancelBtn.addEventListener("click", () => {
-        inputField.remove();
-        confirmBtn.remove();
-        cancelBtn.remove();
-        errorMessage.remove();
+    document.querySelector(".cancel-btn").addEventListener("click", () => {
+        document.getElementById("newIssueDiv").remove()
     });
-
-    // Append elements
-    
-    // issuesDiv.appendChild(errorMessage);
-    // issuesDiv.appendChild(confirmBtn);
-    // issuesDiv.appendChild(cancelBtn);
-
-   
 }
 
