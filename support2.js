@@ -18,12 +18,19 @@ let targetPage = 0;
 
 // Event listener for buttons
 document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
 
+async function init() {
+    updateTrail("Renault Support BE")
 
     document.querySelectorAll(".filter-btn").forEach(button => {
         button.addEventListener("click", () => {
+            const followHeader = document.querySelector('.followHeader'); // Get the full-width container
 
-            updateTrail("Renault Support BE")
+            followHeader.style.display = "block";
+
+            
 
             targetPage = 1;
             parentType = button.dataset.type;
@@ -33,8 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
             renderSubs();
         });
     });
-});
-
+}
 
 async function refetchData(){
     if (parentType === "supportIntern") {
@@ -529,9 +535,7 @@ async function updateTrail(trail){
 async function updateHistory() {
 
     const historyDiv = document.querySelector('.followHistory');
-    const followHeader = document.querySelector('.followHeader'); // Get the full-width container
-
-    followHeader.style.display = "block";
+    console.log(historyTrail.length)
     historyDiv.innerHTML = '';
     for(let i = 0; i< historyTrail.length; i++ ){
         historyDiv.insertAdjacentHTML('beforeend',`<span class="history-link" data-id ="${i}">${historyTrail[i].trail}</span> ` + "\u00A0>\u00A0")
@@ -547,6 +551,23 @@ async function updateHistory() {
             console.log(targetIndex)
             // Remove all items after the clicked index
             if(targetIndex != targetPage ){historyTrail.splice(targetIndex + 1); targetPage--}
+            
+            if(targetIndex == 0){
+                document.querySelector('.button-container').style.display = "flex";
+                document.querySelector('.Subs').innerHTML ='';
+                document.querySelector('.Subs').style.display = "block";
+                document.querySelector('.subDescription').style.display = "none";
+                document.querySelector('.subContact').style.display = "none";
+                document.querySelector('.subIssues').style.display = "none";
+                document.querySelector('.followHeader').style.display = "none";
+            }
+
+            if(targetIndex == 1){
+                document.querySelector('.Subs').style.display = "block";
+                document.querySelector('.subDescription').style.display = "none";
+                document.querySelector('.subContact').style.display = "none";
+                document.querySelector('.subIssues').style.display = "none";
+            }
             
            if(targetIndex == 2){
             showDescription();
