@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             updateTrail("Renault Support BE")
 
-            targetPage++;
+            targetPage = 1;
             parentType = button.dataset.type;
 
             updateTrail(parentType)
@@ -71,7 +71,7 @@ async function renderSubs() {
             subContainer.classList.add('sub-item');
             subContainer.style.cursor = "pointer"; // Make it clear it's clickable
             subContainer.addEventListener('click', () => {
-                targetPage++;
+                targetPage = 2;
                 currentSub = sub;
                 updateTrail(currentSub.id)
                 showDescription()
@@ -452,7 +452,7 @@ async function showIssues() {
             const issueId = item.getAttribute("data-solution");
             const issueName = item.getAttribute("data-name");
 
-            if(targetPage < 3){targetPage++;}
+            targetPage = 3;
             
             if(historyTrail.length > 3){historyTrail.splice(3); updateTrail(issueName)}else{updateTrail(issueName)}
             
