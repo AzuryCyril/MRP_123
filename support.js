@@ -183,16 +183,7 @@ async function showDescription() {
  
     // Hide subs and show description
     subsDiv.style.display = "none";
-
-    descriptionDiv.innerHTML = `
-        <div class="descriptionHeader">
-            <h2 class="subTitle">${currentSub.id}</h2>
-            <i class="fas fa-pencil-alt edit-icon"></i>
-        </div>
-        <div class="descriptionContent">
-            <div id="descText">${currentSub.description || "No description available"}</div>
-        </div>
-    `;
+    getDescription(currentSub.id);
 
     descriptionDiv.style.display = "block";
 
@@ -266,7 +257,7 @@ function enableEditing() {
 // Function to save updated description
 async function saveDescription(saveButton, editIcon) {
     const descriptionDiv = document.querySelector('.subDescription');
-    const newDesc = document.getElementById('descInput').value;
+    let newDesc = document.getElementById('descInput').value;
 
     if (!descriptionDiv || !newDesc) return;
 
@@ -275,15 +266,28 @@ async function saveDescription(saveButton, editIcon) {
     // Call updateSubDescription to save the new description
     try {
         if(targetPage == 2 ){
+            newDesc = newDesc.replace(
+                /<a href="(.*?)">(.*?)<\/a>/g,
+                '<a href="#" onclick="window.getDescription(\'$1\')\">$2</a>'
+            );
+            console.log(newDesc);
             currentSub.description = newDesc;
             await updateSubDescription(currentSub.id, newDesc, parentType);
         }
         if(targetPage == 3 ){
 
             for(let i = 0; i < currentSub.issues.length ; i++){
-                if(currentSub.issues[i].name == historyTrail[3].trail){currentSub.issues[i].solution = newDesc;}
+
+                if(currentSub.issues[i].name == historyTrail[3].trail){
+                    newDesc = newDesc.replace(
+                        /<a href="(.*?)">(.*?)<\/a>/g,
+                        `<a href="#" onclick="window.getDescription(\'$1\')\">$2</a>`
+                    );
+                    
+                    currentSub.issues[i].solution = newDesc;
+                
+                }
             }
-            console.log(currentSub)
             showIssues()
           
             await updateIssueDescription(currentSub.id, newDesc, parentType, historyTrail[3].trail);
@@ -422,7 +426,7 @@ async function showIssues() {
         issuesDiv.innerHTML = issueArray
             .map(issue => {
                 let solutionText = issue.solution;
-
+                
                 // Limit characters to roughly 2 lines (adjust as needed)
                 const maxLength = 120; // Adjust based on font and layout
                 if (solutionText.length > maxLength) {
@@ -465,15 +469,7 @@ async function showIssues() {
             console.log(`Clicked issue: ${issueId}`);
             const descriptionDiv = document.querySelector('.subDescription');
             
-            descriptionDiv.innerHTML = `
-            <div class="descriptionHeader">
-                <h2 class="subTitle">${issueName}</h2>
-                <i class="fas fa-pencil-alt edit-icon"></i>
-            </div>
-            <div class="descriptionContent">
-                <div id="descText">${issueId || "No description available"}</div>
-            </div>
-        `;
+            getDescription(issueName)
 
         const editIcon = descriptionDiv.querySelector(".edit-icon");
         editIcon.addEventListener("click", () => enableEditing());
@@ -535,7 +531,6 @@ async function updateTrail(trail){
 async function updateHistory() {
 
     const historyDiv = document.querySelector('.followHistory');
-    console.log(historyTrail.length)
     historyDiv.innerHTML = '';
     for(let i = 0; i< historyTrail.length; i++ ){
         historyDiv.insertAdjacentHTML('beforeend',`<span class="history-link" data-id ="${i}">${historyTrail[i].trail}</span> ` + "\u00A0>\u00A0")
@@ -581,3 +576,35 @@ async function updateHistory() {
     })
     
 }
+
+window.getDescription = async function(id) {
+    subs.forEach(sub => {
+        if(sub.id == id){
+            const descriptionDiv = document.querySelector('.subDescription');
+            descriptionDiv.innerHTML = `
+                <div class="descriptionHeader">
+                    <h2 class="subTitle">${sub.id}</h2>
+                    <i class="fas fa-pencil-alt edit-icon"></i>
+                </div>
+                <div class="descriptionContent">
+                    <div id="descText">${sub.description || "No description available"}</div>
+                </div>
+            `;
+        } else {
+            for(let i = 0; i < sub.issues.length; i++) {
+                if(sub.issues[i].name == id){
+                    const descriptionDiv = document.querySelector('.subDescription');
+                    descriptionDiv.innerHTML = `
+                        <div class="descriptionHeader">
+                            <h2 class="subTitle">${sub.issues[i].name}</h2>
+                            <i class="fas fa-pencil-alt edit-icon"></i>
+                        </div>
+                        <div class="descriptionContent">
+                            <div id="descText">${sub.issues[i].solution || "No description available"}</div>
+                        </div>
+                    `;
+                }
+            }
+        }
+    });
+};
