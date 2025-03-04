@@ -88,7 +88,9 @@ header{
     color: #333;
 }
 
-
+.history-link{
+    color: grey;
+}
 .history-link:hover {
     text-decoration: underline;
 }

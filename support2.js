@@ -6,13 +6,15 @@ import {
     updateSubDescription,
     updateContactInfo,
     addIssueToFirestore,
-    addNewSub
+    addNewSub,
+    updateIssueDescription
 } from './database.js';
 
 let parentType;
 let subs = [];
 let currentSub = [];
 let historyTrail = [];
+let targetPage = 0;
 
 // Event listener for buttons
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             updateTrail("Renault Support BE")
 
+            targetPage++;
             parentType = button.dataset.type;
 
             updateTrail(parentType)
@@ -44,7 +47,6 @@ async function refetchData(){
 }
 
 async function renderSubs() {
-    console.log(historyTrail)
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     const buttonContainer = document.querySelector('.button-container');
@@ -69,7 +71,9 @@ async function renderSubs() {
             subContainer.classList.add('sub-item');
             subContainer.style.cursor = "pointer"; // Make it clear it's clickable
             subContainer.addEventListener('click', () => {
+                targetPage++;
                 currentSub = sub;
+                updateTrail(currentSub.id)
                 showDescription()
                 showContacts();
                 showIssues();
@@ -166,7 +170,7 @@ async function renderSubs() {
 
 //ShowDescription
 async function showDescription() {
-    console.log(currentSub)
+    console.log(currentSub.description)
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     if (!subsDiv || !descriptionDiv) return;
@@ -264,7 +268,22 @@ async function saveDescription(saveButton, editIcon) {
  
     // Call updateSubDescription to save the new description
     try {
-        await updateSubDescription(currentSub.id, newDesc, parentType);
+        if(targetPage == 2 ){
+            currentSub.description = newDesc;
+            await updateSubDescription(currentSub.id, newDesc, parentType);
+        }
+        if(targetPage == 3 ){
+
+            for(let i = 0; i < currentSub.issues.length ; i++){
+                if(currentSub.issues[i].name == historyTrail[3].trail){currentSub.issues[i].solution = newDesc;}
+            }
+            console.log(currentSub)
+            showIssues()
+          
+            await updateIssueDescription(currentSub.id, newDesc, parentType, historyTrail[3].trail);
+        }
+        
+        
 
         // Replace input field with updated description text
         descriptionDiv.querySelector('.descriptionContent').innerHTML = `
@@ -432,6 +451,11 @@ async function showIssues() {
         item.addEventListener("click", () => {
             const issueId = item.getAttribute("data-solution");
             const issueName = item.getAttribute("data-name");
+
+            if(targetPage < 3){targetPage++;}
+            
+            if(historyTrail.length > 3){historyTrail.splice(3); updateTrail(issueName)}else{updateTrail(issueName)}
+            
             console.log(`Clicked issue: ${issueId}`);
             const descriptionDiv = document.querySelector('.subDescription');
             
@@ -445,8 +469,8 @@ async function showIssues() {
             </div>
         `;
 
-        // const editIcon = descriptionDiv.querySelector(".edit-icon");
-        // editIcon.addEventListener("click", () => enableEditing());
+        const editIcon = descriptionDiv.querySelector(".edit-icon");
+        editIcon.addEventListener("click", () => enableEditing());
            
         });
     });
@@ -494,19 +518,45 @@ async function showIssueInput() {
 }
 
 
+
+
 async function updateTrail(trail){
     historyTrail.push({trail})
+    // Render history as clickable links
+    await updateHistory()
+}
+
+async function updateHistory() {
 
     const historyDiv = document.querySelector('.followHistory');
     const followHeader = document.querySelector('.followHeader'); // Get the full-width container
 
     followHeader.style.display = "block";
-
-    // Render history as clickable links
     historyDiv.innerHTML = '';
+    for(let i = 0; i< historyTrail.length; i++ ){
+        historyDiv.insertAdjacentHTML('beforeend',`<span class="history-link" data-id ="${i}">${historyTrail[i].trail}</span> ` + "\u00A0>\u00A0")
+    }
+    // historyTrail.forEach((entry) => {
+        
 
-    historyTrail.forEach((entry) => {
-        historyDiv.insertAdjacentHTML('beforeend',`<span class="history-link">${entry.trail}</span>`)
-
-    });
+    // });
+    document.querySelectorAll(".history-link").forEach(item => {
+        item.addEventListener("click", async () => {
+            let targetIndex = parseInt(item.getAttribute("data-id"));
+            console.log(targetPage)
+            console.log(targetIndex)
+            // Remove all items after the clicked index
+            if(targetIndex != targetPage ){historyTrail.splice(targetIndex + 1); targetPage--}
+            
+           if(targetIndex == 2){
+            showDescription();
+           }
+            
+            await updateHistory()
+          
+            // Re-render the updated trail
+            
+        })
+    })
+    
 }
