@@ -429,7 +429,7 @@ async function showIssues() {
                     solutionText = solutionText.substring(0, maxLength) + "...";
                 }
 
-                return `<div class="issueItem" data-solution="${issue.solution}" data-name="${issue.name}">
+                return `<div class="issueItem" data-solution='${issue.solution}' data-name="${issue.name}">
                      <div class="icon-container"><i class="fa-solid fa-book-open"></i></i></div>
                      <div class="preview__text">
                          <h4>${issue.name}:</h4> 
