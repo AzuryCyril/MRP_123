@@ -176,7 +176,7 @@ async function renderSubs() {
 
 //ShowDescription
 async function showDescription() {
-    console.log(currentSub.description)
+
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     if (!subsDiv || !descriptionDiv) return;
@@ -270,7 +270,7 @@ async function saveDescription(saveButton, editIcon) {
                 /<a(.*?)href="(.*?)"(.*?)>/g,
                 `<a$1href="$2"$3 onclick="event.preventDefault(); window.getDescription(\'$2\')">`
             );
-            console.log(newDesc);
+          
             currentSub.description = newDesc;
             await updateSubDescription(currentSub.id, newDesc, parentType);
         }
@@ -462,19 +462,12 @@ async function showIssues() {
             const issueName = item.getAttribute("data-name");
 
             targetPage = 3;
-
-            if (historyTrail.length > 3) {
+            
+            if (historyTrail.length > 3) {             
                 historyTrail.splice(3);
-                updateTrail(issueName)
-            } else {
-                updateTrail(issueName)
-            }
-
-            const descriptionDiv = document.querySelector('.subDescription');
+            } 
 
             getDescription(issueName)
-
-           
 
         });
     });
@@ -533,7 +526,7 @@ async function updateTrail(trail) {
 }
 
 async function updateHistory() {
-    console.log('ok')
+ 
     const historyDiv = document.querySelector('.followHistory');
     historyDiv.innerHTML = '';
     for (let i = 0; i < historyTrail.length; i++) {
@@ -546,8 +539,7 @@ async function updateHistory() {
     document.querySelectorAll(".history-link").forEach(item => {
         item.addEventListener("click", async () => {
             let targetIndex = parseInt(item.getAttribute("data-id"));
-            console.log(targetPage)
-            console.log(targetIndex)
+
             // Remove all items after the clicked index
             if (targetIndex != targetPage) {
                 historyTrail.splice(targetIndex + 1);
