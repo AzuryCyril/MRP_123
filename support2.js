@@ -14,21 +14,23 @@ async function Page0() {
     await displayCategories()
 }
 
-async function displayCategories(){
+async function displayCategories() {
 
     document.querySelectorAll(".filter-btn").forEach(category => {
+        if (!category.hasAttribute("data-listener-attached")) {
+            category.addEventListener("click", async () => {
         
-        category.addEventListener("click", async () => {
-            console.log('test OK')
-            await trailHistory(category.dataset.type)
-            
-            targetPage = 1
-            await updatePages();
+                await trailHistory(category.dataset.type);
 
-        },{ once: true });
+                targetPage = 1;
+                await updatePages();
+            });
+
+            category.setAttribute("data-listener-attached", "true"); // Prevent duplicate listeners
+        }
     });
-
 }
+
 
 
 
