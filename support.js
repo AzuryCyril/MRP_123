@@ -280,9 +280,9 @@ async function saveDescription(saveButton, editIcon) {
 
                 if(currentSub.issues[i].name == historyTrail[3].trail){
                     newDesc = newDesc.replace(
-                        /<a href="#">(.*?)<\/a>/g,
-                        `<a href="#" onclick="getDescription(${currentSub.issues[i].name})">$1</a>`
-                    );
+                /<a href="(.*?)">(.*?)<\/a>/g,
+                '<a href="#" onclick="window.getDescription(\'$1\')\">$2</a>'
+            );
                     currentSub.issues[i].solution = newDesc;
                 
                 }
@@ -432,7 +432,7 @@ async function showIssues() {
                     solutionText = solutionText.substring(0, maxLength) + "...";
                 }
 
-                return `<div class="issueItem" data-solution='${issue.solution}' data-name="${issue.name}">
+                return `<div class="issueItem" data-name="${issue.name}">
                      <div class="icon-container"><i class="fa-solid fa-book-open"></i></i></div>
                      <div class="preview__text">
                          <h4>${issue.name}:</h4> 
@@ -458,14 +458,12 @@ async function showIssues() {
 
     document.querySelectorAll(".issueItem").forEach(item => {
         item.addEventListener("click", () => {
-            const issueId = item.getAttribute("data-solution");
             const issueName = item.getAttribute("data-name");
 
             targetPage = 3;
             
             if(historyTrail.length > 3){historyTrail.splice(3); updateTrail(issueName)}else{updateTrail(issueName)}
             
-            console.log(`Clicked issue: ${issueId}`);
             const descriptionDiv = document.querySelector('.subDescription');
             
             getDescription(issueName)
