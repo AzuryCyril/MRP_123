@@ -30,23 +30,23 @@ async function init() {
 
             followHeader.style.display = "block";
 
-            
+
 
             targetPage = 1;
             parentType = button.dataset.type;
 
             updateTrail(parentType)
-            
+
             renderSubs();
         });
     });
 }
 
-async function refetchData(){
+async function refetchData() {
     if (parentType === "supportIntern") {
-        subs = await fetchInternSubs();        
+        subs = await fetchInternSubs();
     } else if (parentType === "supportExtern") {
-        subs = await fetchExternSubs();    
+        subs = await fetchExternSubs();
     } else if (parentType === "supportServiceDesk") {
         subs = await fetchServiceDeskSubs();
     }
@@ -121,25 +121,25 @@ async function renderSubs() {
 
         const addSubButton = subsDiv.querySelector(".addSubButton");
         addSubButton.addEventListener("click", () => {
-            
+
             // Prevent multiple input fields
             if (document.querySelector(".inputSubButton")) return;
-        
+
             // Append the input field and buttons outside of addSubButton
             addSubButton.insertAdjacentHTML(
-                "beforeend", 
+                "beforeend",
                 `<div class="inputSubButton">
                     <input type="text" id="newSubInput" placeholder="Enter sub name">
                     <button class="confirmSub">✔</button>
                     <button class="cancelSub">✖</button>
                 </div>`
             );
-        
+
             // Select elements after insertion
             const inputField = document.querySelector("#newSubInput");
             const confirmBtn = document.querySelector(".confirmSub");
             const cancelBtn = document.querySelector(".cancelSub");
-        
+
             // Confirm button event listener
             confirmBtn.addEventListener("click", async (event) => {
                 event.stopPropagation();
@@ -147,23 +147,23 @@ async function renderSubs() {
                     alert("Sub name cannot be empty!");
                     return;
                 }
-        
+
                 // Call the function to add the new sub
                 await addNewSub(parentType, inputField.value.trim());
-        
+
                 // Remove the input form after confirming
                 document.querySelector(".inputSubButton").remove();
-        
+
                 // Re-render subscriptions
                 await renderSubs();
             });
-        
+
             // Cancel button event listener
             cancelBtn.addEventListener("click", (event) => {
                 event.stopPropagation();
                 // Remove the input form when cancel is clicked
                 document.querySelector(".inputSubButton").remove();
-               
+
             });
         });
 
@@ -180,7 +180,7 @@ async function showDescription() {
     const subsDiv = document.querySelector('.Subs');
     const descriptionDiv = document.querySelector('.subDescription');
     if (!subsDiv || !descriptionDiv) return;
- 
+
     // Hide subs and show description
     subsDiv.style.display = "none";
     getDescription(currentSub.id);
@@ -262,37 +262,37 @@ async function saveDescription(saveButton, editIcon) {
     if (!descriptionDiv || !newDesc) return;
 
     // Determine parent type (intern, extern, servicedesk)
- 
+
     // Call updateSubDescription to save the new description
     try {
-        if(targetPage == 2 ){
+        if (targetPage == 2) {
             newDesc = newDesc.replace(
-                /<a href="(.*?)">(.*?)<\/a>/g,
-                '<a class ="link" onclick="window.getDescription(\'$1\')\">$2</a>'
+                /<a(.*?)href="(.*?)"(.*?)>/g,
+                `<a$1href="$2"$3 onclick="event.preventDefault(); window.getDescription(\'$2\')">`
             );
             console.log(newDesc);
             currentSub.description = newDesc;
             await updateSubDescription(currentSub.id, newDesc, parentType);
         }
-        if(targetPage == 3 ){
+        if (targetPage == 3) {
 
-            for(let i = 0; i < currentSub.issues.length ; i++){
+            for (let i = 0; i < currentSub.issues.length; i++) {
 
-                if(currentSub.issues[i].name == historyTrail[3].trail){
-            //         newDesc = newDesc.replace(
-            //     /<a href="(.*?)">(.*?)<\/a>/g,
-            //     '<a class="link" onclick="window.getDescription(\'$1\')\">$2</a>'
-            // );
+                if (currentSub.issues[i].name == historyTrail[3].trail) {
+                    newDesc = newDesc.replace(
+                        /<a(.*?)href="(.*?)"(.*?)>/g,
+                        `<a$1href="$2"$3 onclick="event.preventDefault(); window.getDescription(\'$2\')">`
+                    );
                     currentSub.issues[i].solution = newDesc;
-                
+
                 }
             }
             showIssues()
-          
+
             await updateIssueDescription(currentSub.id, newDesc, parentType, historyTrail[3].trail);
         }
-        
-        
+
+
 
         // Replace input field with updated description text
         descriptionDiv.querySelector('.descriptionContent').innerHTML = `
@@ -311,7 +311,7 @@ async function saveDescription(saveButton, editIcon) {
 
 
 //ShowContacts
-async function showContacts(){
+async function showContacts() {
     const contactDiv = document.querySelector('.subContact');
     const contactInfoDiv = document.querySelector('.subContactInfo');
     if (!contactDiv || !contactInfoDiv) return;
@@ -412,7 +412,8 @@ async function saveContactInfo(saveButton, editIcon) {
 
 
 async function showIssues() {
-  
+    
+
     // Display possible issues
     const issuesDiv = document.querySelector('.possibleIssues'); // Select the issues div
     const issuesContainer = document.querySelector('.subIssues');
@@ -446,7 +447,7 @@ async function showIssues() {
         issuesDiv.innerHTML = "<p>No known issues for this sub.</p>";
     }
 
-    
+
 
     // Add "Add Issue" button at the bottom
     const addIssueButton = document.createElement("button");
@@ -461,16 +462,20 @@ async function showIssues() {
             const issueName = item.getAttribute("data-name");
 
             targetPage = 3;
-            
-            if(historyTrail.length > 3){historyTrail.splice(3); updateTrail(issueName)}else{updateTrail(issueName)}
-            
+
+            if (historyTrail.length > 3) {
+                historyTrail.splice(3);
+                updateTrail(issueName)
+            } else {
+                updateTrail(issueName)
+            }
+
             const descriptionDiv = document.querySelector('.subDescription');
-            
+
             getDescription(issueName)
 
-        const editIcon = descriptionDiv.querySelector(".edit-icon");
-        editIcon.addEventListener("click", () => enableEditing());
            
+
         });
     });
 
@@ -485,7 +490,7 @@ async function showIssueInput() {
     if (existingInput) return; // Prevent multiple inputs
 
     // Create input field
-    issuesDiv.insertAdjacentHTML('afterend',`<div id="newIssueDiv">
+    issuesDiv.insertAdjacentHTML('afterend', `<div id="newIssueDiv">
         <input type = "text" class="issue-input" placeholder = "Enter issue name...">
         <button class="confirm-btn">Confirm</button>
         <button class="cancel-btn">Cancel</button>
@@ -506,8 +511,8 @@ async function showIssueInput() {
                 currentSub = sub
             }
         })
-        
-         await showIssues()
+
+        await showIssues()
     });
 
     // Create cancel button
@@ -519,21 +524,23 @@ async function showIssueInput() {
 
 
 
-async function updateTrail(trail){
-    historyTrail.push({trail})
+async function updateTrail(trail) {
+    historyTrail.push({
+        trail
+    })
     // Render history as clickable links
     await updateHistory()
 }
 
 async function updateHistory() {
-
+    console.log('ok')
     const historyDiv = document.querySelector('.followHistory');
     historyDiv.innerHTML = '';
-    for(let i = 0; i< historyTrail.length; i++ ){
-        historyDiv.insertAdjacentHTML('beforeend',`<span class="history-link" data-id ="${i}">${historyTrail[i].trail}</span> ` + "\u00A0>\u00A0")
+    for (let i = 0; i < historyTrail.length; i++) {
+        historyDiv.insertAdjacentHTML('beforeend', `<span class="history-link" data-id ="${i}">${historyTrail[i].trail}</span> ` + "\u00A0>\u00A0")
     }
     // historyTrail.forEach((entry) => {
-        
+
 
     // });
     document.querySelectorAll(".history-link").forEach(item => {
@@ -542,42 +549,48 @@ async function updateHistory() {
             console.log(targetPage)
             console.log(targetIndex)
             // Remove all items after the clicked index
-            if(targetIndex != targetPage ){historyTrail.splice(targetIndex + 1); targetPage--}
-            
-            if(targetIndex == 0){
+            if (targetIndex != targetPage) {
+                historyTrail.splice(targetIndex + 1);
+                targetPage--
+            }
+
+            if (targetIndex == 0) {
                 document.querySelector('.button-container').style.display = "flex";
-                document.querySelector('.Subs').innerHTML ='';
-                document.querySelector('.Subs').style.display = "block";
+                document.querySelector('.Subs').innerHTML = '';
+                document.querySelector('.Subs').style.display = "flex";
                 document.querySelector('.subDescription').style.display = "none";
                 document.querySelector('.subContact').style.display = "none";
                 document.querySelector('.subIssues').style.display = "none";
                 document.querySelector('.followHeader').style.display = "none";
             }
 
-            if(targetIndex == 1){
-                document.querySelector('.Subs').style.display = "block";
+            if (targetIndex == 1) {
+                document.querySelector('.Subs').style.display = "flex";
                 document.querySelector('.subDescription').style.display = "none";
                 document.querySelector('.subContact').style.display = "none";
                 document.querySelector('.subIssues').style.display = "none";
             }
-            
-           if(targetIndex == 2){
-            showDescription();
-           }
-            
+
+            if (targetIndex == 2) {
+                showDescription();
+            }
+
             await updateHistory()
-          
+
             // Re-render the updated trail
-            
+
         })
     })
-    
+
 }
 
-window.getDescription = async function(id) {
-    subs.forEach(sub => {
-        if(sub.id == id){
-            const descriptionDiv = document.querySelector('.subDescription');
+window.getDescription = async function (id) {
+
+    const descriptionDiv = document.querySelector('.subDescription');
+    
+    subs.forEach(sub =>  {
+        if (sub.id == id) {
+            
             descriptionDiv.innerHTML = `
                 <div class="descriptionHeader">
                     <h2 class="subTitle">${sub.id}</h2>
@@ -587,10 +600,14 @@ window.getDescription = async function(id) {
                     <div id="descText">${sub.description || "No description available"}</div>
                 </div>
             `;
+            
+            targetPage = 2;
+            historyTrail.splice(3);
+            updateHistory();
         } else {
-            for(let i = 0; i < sub.issues.length; i++) {
-                if(sub.issues[i].name == id){
-                    const descriptionDiv = document.querySelector('.subDescription');
+            for (let i = 0; i < sub.issues.length; i++) {
+                if (sub.issues[i].name == id) {
+                    
                     descriptionDiv.innerHTML = `
                         <div class="descriptionHeader">
                             <h2 class="subTitle">${sub.issues[i].name}</h2>
@@ -600,8 +617,15 @@ window.getDescription = async function(id) {
                             <div id="descText">${sub.issues[i].solution || "No description available"}</div>
                         </div>
                     `;
+
+                    targetPage = 3;
+                    
+                    updateTrail(sub.issues[i].name);
                 }
             }
         }
     });
+
+    const editIcon = descriptionDiv.querySelector(".edit-icon");
+    editIcon.addEventListener("click", () => enableEditing());
 };
