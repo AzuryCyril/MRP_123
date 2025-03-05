@@ -268,7 +268,7 @@ async function saveDescription(saveButton, editIcon) {
         if(targetPage == 2 ){
             newDesc = newDesc.replace(
                 /<a href="(.*?)">(.*?)<\/a>/g,
-                '<a href="#" onclick="window.getDescription(\'$1\')\">$2</a>'
+                '<a class ="link" onclick="window.getDescription(\'$1\')\">$2</a>'
             );
             console.log(newDesc);
             currentSub.description = newDesc;
@@ -279,10 +279,10 @@ async function saveDescription(saveButton, editIcon) {
             for(let i = 0; i < currentSub.issues.length ; i++){
 
                 if(currentSub.issues[i].name == historyTrail[3].trail){
-                    newDesc = newDesc.replace(
-                /<a href="(.*?)">(.*?)<\/a>/g,
-                '<a href="#" onclick="window.getDescription(\'$1\')\">$2</a>'
-            );
+            //         newDesc = newDesc.replace(
+            //     /<a href="(.*?)">(.*?)<\/a>/g,
+            //     '<a class="link" onclick="window.getDescription(\'$1\')\">$2</a>'
+            // );
                     currentSub.issues[i].solution = newDesc;
                 
                 }
