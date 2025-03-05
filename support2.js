@@ -1,7 +1,19 @@
 "use strict";
 
+import {
+    fetchInternSubs,
+    fetchExternSubs,
+    fetchServiceDeskSubs,
+    updateSubDescription,
+    updateContactInfo,
+    addIssueToFirestore,
+    addNewSub,
+    updateIssueDescription
+} from './database.js';
+
 let trailArray= ["Renault Support BE"];
 let targetPage = 0;
+let data;
 updatePages();
 
 
@@ -32,16 +44,61 @@ async function displayCategories() {
 }
 
 
-
-
-
 ////PAGE 1 SUBS
 async function Page1() {
     targetPage = 1;
 
-   // await displaySubs()
+    await displaySubs()
 
 }
+
+
+async function displaySubs() {
+    await fetchData(trailArray[1])
+
+    console.log(data)
+
+    const subsDiv = document.querySelector('.Subs');
+    data.forEach(sub =>  {
+
+        //description too long
+        // let descriptionText = sub.id || "No description available";
+        //     if (descriptionText.length > 20) {
+        //         descriptionText = descriptionText.substring(0, 20) + "...";
+        // }
+
+        subsDiv.insertAdjacentHTML('beforeend', `<div class="sub-item">
+            <div class="icon-container"><i class="fas fa-file-alt"></i></div>
+            
+            <div class="text-container"><p class="sub-id">${sub.id}</p><p class="sub-description">${sub.id}</p></div>
+            </div>`)
+    })
+    
+    subsDiv.insertAdjacentHTML("beforeend", '<div class="addSubButton"><div class="icon-container">+</div></div>');
+
+    const addSubButton = subsDiv.querySelector(".addSubButton");
+    addSubButton.addEventListener("click", () => {
+
+        addSubButton.insertAdjacentHTML(
+            "beforeend",
+            `<div class="inputSubButton">
+                <input type="text" id="newSubInput" placeholder="Enter sub name">
+                <button class="confirmSub">✔</button>
+                <button class="cancelSub">✖</button>
+            </div>`
+        );
+
+    });
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -156,7 +213,15 @@ async function updatePages() {
 
 
 
-
+async function fetchData(parentType) {
+    if (parentType === "supportIntern") {
+        data = await fetchInternSubs();
+    } else if (parentType === "supportExtern") {
+        data = await fetchExternSubs();
+    } else if (parentType === "supportServiceDesk") {
+        data = await fetchServiceDeskSubs();
+    }
+}
 
 
 

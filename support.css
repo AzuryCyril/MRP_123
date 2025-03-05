@@ -29,6 +29,7 @@ header{
 }
 .sub-item, .addSubButton{
     display: inline-flex;
+    cursor: pointer;
     align-items: center;
     width: 100%;
     max-width: 290px;
