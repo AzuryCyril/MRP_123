@@ -280,10 +280,9 @@ async function saveDescription(saveButton, editIcon) {
 
                 if(currentSub.issues[i].name == historyTrail[3].trail){
                     newDesc = newDesc.replace(
-                        /<a href="(.*?)">(.*?)<\/a>/g,
-                        `<a href="#" onclick="window.getDescription(\'$1\')\">$2</a>`
+                        /<a href="#">(.*?)<\/a>/g,
+                        `<a href="#" onclick="getDescription(${currentSub.issues[i].name})">$1</a>`
                     );
-                    
                     currentSub.issues[i].solution = newDesc;
                 
                 }
@@ -426,7 +425,7 @@ async function showIssues() {
         issuesDiv.innerHTML = issueArray
             .map(issue => {
                 let solutionText = issue.solution;
-                
+
                 // Limit characters to roughly 2 lines (adjust as needed)
                 const maxLength = 120; // Adjust based on font and layout
                 if (solutionText.length > maxLength) {
