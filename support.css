@@ -272,3 +272,7 @@ header{
     color: #0056b3;
     cursor: pointer;
 }
+
+.save-btn{
+    display: inline-block;
+}
