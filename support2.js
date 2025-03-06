@@ -153,7 +153,7 @@ async function Page2() {
     targetPage = 2;
 
     await filterDescription(trailArray[2])
-    await getIssues(trailArray[2])
+   // await getIssues(trailArray[2])
     await getContacts(trailArray[2])
 }
 
@@ -265,27 +265,26 @@ async function Page3() {
 
 
 window.filterDescription = async function (name) {
-    
+
     data.forEach(sub => {
 
         if (sub.id == name) {
 
-            targetPage = 2;
-            
-            trailArray.splice(3);
-            trailHistory();
-
-            console.log(trailArray)
             getDescription(sub.id, sub.description)
+
+            trailArray.splice(2)
+            filterHistory(sub.id);
+            getIssues(trailArray[2])
+
 
         } else {
 
             for (let i = 0; i < sub.issues.length; i++) {
 
-                if (sub.issues[i].name == name) {  
+                if (sub.issues[i].name == name) {
 
-                    targetPage = 3;
                     filterHistory(sub.issues[i].name)
+                    
                     getDescription(sub.issues[i].name, sub.issues[i].solution)
                 }
 
@@ -298,7 +297,7 @@ window.filterDescription = async function (name) {
 
 
 async function getDescription(name, description) {
-    console.log(targetPage)
+
     const descriptionDiv = document.querySelector('.subDescription');
 
     descriptionDiv.innerHTML = `
@@ -347,16 +346,16 @@ async function getDescription(name, description) {
                 });
             }
         });
-        
+
         descriptionDiv.querySelector('.descriptionHeader').insertAdjacentHTML("beforeend", '<button class="save-btn">Save</button>');
         editIcon.style.display = 'none';
 
         document.querySelector(".save-btn").addEventListener("click", async () => {
 
             let newDesc = document.getElementById('descInput').value;
-            
-            if (targetPage == 2 && trailArray.length == 3) {
-                console.log(targetPage)
+
+            if (targetPage == 2) {
+
                 newDesc = newDesc.replace(
                     /<a(.*?)href="(.*?)"(.*?)>/g,
                     `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription(\'$2\')">`
@@ -370,8 +369,8 @@ async function getDescription(name, description) {
 
             }
 
-            if (targetPage == 3 && trailArray.length == 4) {
-              
+            if (targetPage == 3) {
+
                 newDesc = newDesc.replace(
                     /<a(.*?)href="(.*?)"(.*?)>/g,
                     `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription(\'$2\')">`
