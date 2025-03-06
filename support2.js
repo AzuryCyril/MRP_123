@@ -146,21 +146,17 @@ async function displaySubs() {
 }
 
 
-
-
-
-
-
-
 ////PAGE 2 CONTENT
 
 async function Page2() {
 
     targetPage = 2;
 
-    await getDescription(trailArray[2])
+    await filterDescription(trailArray[2])
     await getIssues(trailArray[2])
+    await getContacts(trailArray[2])
 }
+
 
 async function getIssues() {
 
@@ -174,20 +170,37 @@ async function getIssues() {
 
             for (let i = 0; i < sub.issues.length; i++) {
 
-                issuesDiv.insertAdjacentHTML('beforeend', `
-                <div class="issueItem">
+                const issueContainer = document.createElement('div');
+                issueContainer.classList.add('issueItem');
+
+                issueContainer.insertAdjacentHTML('beforeend', `
                      <div class="icon-container"><i class="fa-solid fa-book-open"></i></i></div>
                      <div class="preview__text">
                          <h4>${sub.issues[i].name}:</h4> 
                          <p>Category: ${sub.id}</p></br>
                          <p>${sub.issues[i].solution}</p>
                      </div>
-                 </div>`)
+                 `)
+
+                issueContainer.addEventListener('click', async () => {
+
+                    await filterHistory(sub.issues[i].name);
+
+                    targetPage = 3;
+
+                    await updatePages();
+
+                });
+
+
+                issuesDiv.appendChild(issueContainer);
+
             }
 
         }
 
     })
+
 
     issuesDiv.insertAdjacentHTML("beforeend", '<button class="add-issue-btn">+ Add Issue</button>');
 
@@ -228,68 +241,8 @@ async function getIssues() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-async function filterHistory(historyItem) {
-    trailArray.push(historyItem);
-
-    trailHistory();
-}
-//OTHERS
-async function trailHistory() {
-
-    const historyDiv = document.querySelector('.followHistory');
-    historyDiv.innerHTML = '';
-
-    for (let i = 0; i < trailArray.length; i++) {
-        historyDiv.insertAdjacentHTML('beforeend', `<span class="history-link" data-id ="${i}">${trailArray[i]}</span> ` + "\u00A0>\u00A0")
-    }
-
-
-    document.querySelectorAll(".history-link").forEach(item => {
-        item.addEventListener("click", async () => {
-
-            let targetIndex = parseInt(item.getAttribute("data-id"));
-
-            //  console.log(targetIndex);
-
-            if (targetIndex != targetPage) {
-
-                trailArray.splice(targetIndex + 1);
-
-                targetPage = targetIndex
-
-                await trailHistory();
-
-                await updatePages();
-
-
-            }
-
-
-
-
-
-        })
-    })
-
+async function getContacts(){
+    console.log("ok")
 }
 
 
@@ -299,100 +252,40 @@ async function trailHistory() {
 
 
 
+/////// PAGE 3 issues
+async function Page3() {
 
+    targetPage = 3;
 
+    await filterDescription(trailArray[3])
 
-
-
-
-
-
-
-
-
-
-
-
-async function updatePages() {
-    if (targetPage == 0) {
-
-        document.querySelector('.button-container').style.display = "flex";
-        document.querySelector('.Subs').innerHTML = '';
-        document.querySelector('.Subs').style.display = "flex";
-        document.querySelector('.subDescription').style.display = "none";
-        document.querySelector('.subContact').style.display = "none";
-        document.querySelector('.subIssues').style.display = "none";
-        document.querySelector('.followHeader').style.display = "none";
-
-        await Page0();
-
-    }
-
-    if (targetPage == 1) {
-
-        document.querySelector('.Subs').style.display = "flex";
-        document.querySelector('.subDescription').style.display = "none";
-        document.querySelector('.subContact').style.display = "none";
-        document.querySelector('.subIssues').style.display = "none";
-        document.querySelector('.button-container').style.display = "none";
-        document.querySelector('.followHeader').style.display = "block";
-
-        await Page1();
-    }
-
-    if (targetPage == 2) {
-        document.querySelector('.subDescription').style.display = "block";
-        document.querySelector('.subContact').style.display = "block";
-        document.querySelector('.subIssues').style.display = "block";
-        document.querySelector('.Subs').style.display = "none";
-
-        await Page2();
-    }
-}
-
-
-
-
-
-
-
-async function fetchData(parentType) {
-    if (parentType === "supportIntern") {
-        data = await fetchInternSubs();
-    } else if (parentType === "supportExtern") {
-        data = await fetchExternSubs();
-    } else if (parentType === "supportServiceDesk") {
-        data = await fetchServiceDeskSubs();
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
 
 
 
 
 window.filterDescription = async function (name) {
+    
     data.forEach(sub => {
 
         if (sub.id == name) {
+
+            targetPage = 2;
+            
+            trailArray.splice(3);
+            trailHistory();
+
+            console.log(trailArray)
             getDescription(sub.id, sub.description)
+
         } else {
 
             for (let i = 0; i < sub.issues.length; i++) {
 
-                if (sub.issues[i].name == name) {
+                if (sub.issues[i].name == name) {  
+
+                    targetPage = 3;
+                    filterHistory(sub.issues[i].name)
                     getDescription(sub.issues[i].name, sub.issues[i].solution)
                 }
 
@@ -405,7 +298,7 @@ window.filterDescription = async function (name) {
 
 
 async function getDescription(name, description) {
-
+    console.log(targetPage)
     const descriptionDiv = document.querySelector('.subDescription');
 
     descriptionDiv.innerHTML = `
@@ -454,20 +347,19 @@ async function getDescription(name, description) {
                 });
             }
         });
-
+        
         descriptionDiv.querySelector('.descriptionHeader').insertAdjacentHTML("beforeend", '<button class="save-btn">Save</button>');
         editIcon.style.display = 'none';
 
         document.querySelector(".save-btn").addEventListener("click", async () => {
 
             let newDesc = document.getElementById('descInput').value;
-            console.log(targetPage)
-
-            if (targetPage == 2) {
-
+            
+            if (targetPage == 2 && trailArray.length == 3) {
+                console.log(targetPage)
                 newDesc = newDesc.replace(
                     /<a(.*?)href="(.*?)"(.*?)>/g,
-                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.getDescription(\'$2\')">`
+                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription(\'$2\')">`
                 );
 
                 await updateSubDescription(trailArray[2], newDesc, trailArray[1]);
@@ -478,8 +370,143 @@ async function getDescription(name, description) {
 
             }
 
+            if (targetPage == 3 && trailArray.length == 4) {
+              
+                newDesc = newDesc.replace(
+                    /<a(.*?)href="(.*?)"(.*?)>/g,
+                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription(\'$2\')">`
+                );
+
+                await updateIssueDescription(trailArray[2], newDesc, trailArray[1], trailArray[3]);
+
+                await fetchData(trailArray[1]);
+
+                await filterDescription(trailArray[3])
+
+                await getIssues();
+
+            }
+
         })
 
     });
 
 };
+
+
+
+
+
+
+
+
+//OTHERS
+
+async function filterHistory(historyItem) {
+
+    if (trailArray.length < 4) {
+        trailArray.push(historyItem);
+    }else{
+        trailArray.splice(3)
+        trailArray.push(historyItem);
+    }
+
+
+    trailHistory();
+}
+
+async function trailHistory() {
+
+    const historyDiv = document.querySelector('.followHistory');
+    historyDiv.innerHTML = '';
+
+    for (let i = 0; i < trailArray.length; i++) {
+        historyDiv.insertAdjacentHTML('beforeend', `<span class="history-link" data-id ="${i}">${trailArray[i]}</span> ` + "\u00A0>\u00A0")
+    }
+
+
+    document.querySelectorAll(".history-link").forEach(item => {
+        item.addEventListener("click", async () => {
+
+            let targetIndex = parseInt(item.getAttribute("data-id"));
+
+            //  console.log(targetIndex);
+
+            if (targetIndex != targetPage) {
+
+                trailArray.splice(targetIndex + 1);
+
+                targetPage = targetIndex
+
+                await trailHistory();
+
+                await updatePages();
+
+
+            }
+
+
+
+
+
+        })
+    })
+
+}
+
+
+
+async function updatePages() {
+    if (targetPage == 0) {
+
+        document.querySelector('.button-container').style.display = "flex";
+        document.querySelector('.Subs').innerHTML = '';
+        document.querySelector('.Subs').style.display = "flex";
+        document.querySelector('.subDescription').style.display = "none";
+        document.querySelector('.subContact').style.display = "none";
+        document.querySelector('.subIssues').style.display = "none";
+        document.querySelector('.followHeader').style.display = "none";
+
+        await Page0();
+
+    }
+
+    if (targetPage == 1) {
+
+        document.querySelector('.Subs').style.display = "flex";
+        document.querySelector('.subDescription').style.display = "none";
+        document.querySelector('.subContact').style.display = "none";
+        document.querySelector('.subIssues').style.display = "none";
+        document.querySelector('.button-container').style.display = "none";
+        document.querySelector('.followHeader').style.display = "block";
+
+        await Page1();
+    }
+
+    if (targetPage == 2) {
+        document.querySelector('.subDescription').style.display = "block";
+        document.querySelector('.subContact').style.display = "block";
+        document.querySelector('.subIssues').style.display = "block";
+        document.querySelector('.Subs').style.display = "none";
+
+        await Page2();
+    }
+
+    if (targetPage == 3) {
+
+        await Page3();
+
+    }
+}
+
+
+async function fetchData(parentType) {
+    if (parentType === "supportIntern") {
+        data = await fetchInternSubs();
+    } else if (parentType === "supportExtern") {
+        data = await fetchExternSubs();
+    } else if (parentType === "supportServiceDesk") {
+        data = await fetchServiceDeskSubs();
+    }
+}
+
