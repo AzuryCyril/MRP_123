@@ -155,7 +155,7 @@ async function Page2() {
     targetPage = 2;
 
     await filterDescription(trailArray[2])
-    
+
 }
 
 
@@ -244,12 +244,90 @@ async function getIssues() {
 
 async function getContacts() {
 
+    data.forEach(sub => {
+
+        if (sub.id == trailArray[2]) {
+         
+            document.querySelector('.subContactInfo').innerHTML = `
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${sub.contactList.name || "No name available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${sub.contactList.contactPerson || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
+            `;
+
+            document.getElementById("editContactIcon").addEventListener("click", async () => {
+                
+
+                // Store current values
+                const name = document.getElementById("contactName").textContent.trim();
+                const person = document.getElementById("contactPerson").textContent.trim();
+                const email = document.getElementById("contactEmail").textContent.trim();
+                const backup = document.getElementById("contactBackup").textContent.trim();
+                const group = document.getElementById("assignmentGroup").textContent.trim();
+
+                console.log(name)
+                document.querySelector('.subContactInfo').innerHTML = `
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><input id="editContactName" type="text" value="${name}"></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><input id="editContactPerson" type="text" value="${person}"></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><input id="editContactEmail" type="email" value="${email}"></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><input id="editContactBackup" type="text" value="${backup}"></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><input id="editAssignmentGroup" type="text" value="${group}"></div>
+            `;
+
+                const saveButton = document.createElement('button');
+                saveButton.classList.add("save-btn");
+                saveButton.textContent = "Save";
+
+                document.querySelector('.contactHeader').appendChild(saveButton)
+
+                document.getElementById("editContactIcon").style.display = 'none';
+
+                saveButton.addEventListener("click", async () => {
+
+                    const newName = document.getElementById("editContactName").value.trim();
+                    const newPerson = document.getElementById("editContactPerson").value.trim();
+                    const newEmail = document.getElementById("editContactEmail").value.trim();
+                    const newBackup = document.getElementById("editContactBackup").value.trim();
+                    const newGroup = document.getElementById("editAssignmentGroup").value.trim();
+
+                    const updatedContactInfo = {
+                        name: newName,
+                        contactPerson: newPerson,
+                        contactPersonEmail: newEmail,
+                        contactPersonBackup: newBackup,
+                        assignmentGroup: newGroup
+                    };
+
+
+                    await updateContactInfo(trailArray[2], updatedContactInfo, trailArray[1]);
+
+                    await fetchData(trailArray[1])
+
+
+
+                    document.querySelector('.subContactInfo').innerHTML = `
+                <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
+                <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
+                <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
+                <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
+                <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
+                `;
+
+                    
+                    document.getElementById("editContactIcon").style.display = 'inline-block';
+                    saveButton.style.display = "none";
+
+                });
+
+
+            });
+
+        }
+
+    })
+
 }
-
-
-
-
-
 
 
 
@@ -258,11 +336,7 @@ async function Page3() {
 
     targetPage = 3;
 
-   // await filterDescription(trailArray[3])
-
 };
-
-
 
 
 window.filterDescription = async function (name) {
@@ -277,7 +351,7 @@ window.filterDescription = async function (name) {
             targetPage = 2;
 
             namePath.push(name)
-            
+
             trailArray.splice(2)
 
             filterHistory(namePath[0])
@@ -312,7 +386,6 @@ window.filterDescription = async function (name) {
 
     })
 
-    //console.log(namePath);
 }
 
 
@@ -367,10 +440,14 @@ async function getDescription(name, description) {
             }
         });
 
-        descriptionDiv.querySelector('.descriptionHeader').insertAdjacentHTML("beforeend", '<button class="save-btn">Save</button>');
+        const saveButton = document.createElement('button');
+        saveButton.classList.add("save-btn");
+        saveButton.textContent = "Save";
+
+        descriptionDiv.querySelector('.descriptionHeader').appendChild(saveButton);
         editIcon.style.display = 'none';
 
-        document.querySelector(".save-btn").addEventListener("click", async () => {
+        saveButton.addEventListener("click", async () => {
 
             let newDesc = document.getElementById('descInput').value;
 
@@ -402,7 +479,7 @@ async function getDescription(name, description) {
 
                 await filterDescription(trailArray[3])
 
-                await getIssues();
+                //await getIssues();
 
             }
 
@@ -498,6 +575,7 @@ async function updatePages() {
         document.querySelector('.subContact').style.display = "block";
         document.querySelector('.subIssues').style.display = "block";
         document.querySelector('.Subs').style.display = "none";
+
 
         await Page2();
     }
