@@ -20,16 +20,6 @@
         "__collections__": {}
       }
     },
-    "contactList2": {
-      "CSB": {
-        "assignmentGroup": "test",
-        "contactPerson": "test",
-        "contactPersonEmail": "test",
-        "contactPersonBackup": "test",
-        "test": "testttaaa",
-        "__collections__": {}
-      }
-    },
     "materialAmount": {
       "charger": {
         "count": 8,
@@ -86,36 +76,78 @@
       }
     },
     "supportExtern": {
-      "VPN": {
-        "description": "<p>aaaaasssssssssss<em>sssssss</em></p>",
+      "test": {
+        "contactList": {
+          "name": "test",
+          "contactPerson": "No phone available",
+          "contactPersonEmail": "No phone available",
+          "contactPersonBackup": "No phone available",
+          "assignmentGroup": "No email available"
+        },
+        "issues": [],
+        "description": "<p>werk</p>\n<p>PORN</p>",
         "__collections__": {}
       }
     },
     "supportIntern": {
       "As400": {
-        "description": "ssssssssssssssss",
-        "__collections__": {}
-      },
-      "CSB": {
-        "description": "<p>1111<em>1111</em></p>\n<p><em>hhhhhhh</em></p>\n<p><em>hhhh</em>hhhhhhh</p>\n<p> </p>\n<ul>\n<li>stes</li>\n</ul>",
-        "issues": {
-          "issue1": {
-            "name": "User cannot login",
-            "solution": "Remove cache and cookies"
+        "description": "<p><a href=\"wow\" onclick=\"event.preventDefault(); window.filterDescription('wow')\">wow</a><br><a href=\"CSB\" onclick=\"event.preventDefault(); window.filterDescription('CSB')\">CSB</a></p>\n<p><a href=\"As400\" onclick=\"event.preventDefault(); window.filterDescription('As400')\">As400</a><br><a href=\"porn\" onclick=\"event.preventDefault(); window.filterDescription('porn')\">porn</a></p>",
+        "issues": [
+          {
+            "solution": "<p><a href=\"wow\" onclick=\"event.preventDefault(); window.filterDescription('wow')\">wow</a><br><a href=\"CSB\" onclick=\"event.preventDefault(); window.filterDescription('CSB')\">CSB</a></p>\n<p><a href=\"As400\" onclick=\"event.preventDefault(); window.filterDescription('As400')\">As400</a><br><a href=\"porn\" onclick=\"event.preventDefault(); window.filterDescription('porn')\">porn</a></p>",
+            "name": "porn"
           }
+        ],
+        "contactList": {
+          "name": "adzad",
+          "contactPerson": "dzdz",
+          "contactPersonEmail": "nigger",
+          "contactPersonBackup": "azdad",
+          "assignmentGroup": "nqnnnn"
         },
         "__collections__": {}
       },
-      "Laptop": {
-        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin venenatis nulla in purus faucibus, et placerat dui suscipit. Suspendisse efficitur, ante nec aliquet lacinia, felis nunc porta diam, eu imperdiet leo odio id neque. Curabitur porta sapien vel eros sollicitudin, a consectetur nibh lobortis. Aliquam ultrices aliquam augue non efficitur. Proin eu lacus eu enim convallis dapibus id quis quam. Maecenas feugiat bibendum nunc in malesuada. In ultrices interdum volutpat.",
+      "CSB": {
+        "description": "<p><a href=\"wow\" onclick=\"event.preventDefault(); window.filterDescription('wow')\">wow</a><br><a href=\"CSB\" onclick=\"event.preventDefault(); window.filterDescription('CSB')\">CSB</a></p>\n<p><a href=\"As400\" onclick=\"event.preventDefault(); window.filterDescription('As400')\">As400</a><br><a href=\"porn\" onclick=\"event.preventDefault(); window.filterDescription('porn')\">porn</a></p>",
+        "contactList": {
+          "name": "test",
+          "contactPerson": "test",
+          "contactPersonEmail": "test",
+          "contactPersonBackup": "test",
+          "assignmentGroup": "VOILAAA"
+        },
+        "issues": [
+          {
+            "name": "wow",
+            "solution": "<p><a href=\"wow\" onclick=\"event.preventDefault(); window.filterDescription('wow')\" onclick=\"event.preventDefault(); window.filterDescription('wow')\">wow</a><br><a href=\"CSB\" onclick=\"event.preventDefault(); window.filterDescription('CSB')\" onclick=\"event.preventDefault(); window.filterDescription('CSB')\">CSB</a></p>\n<p><a href=\"As400\" onclick=\"event.preventDefault(); window.filterDescription('As400')\" onclick=\"event.preventDefault(); window.filterDescription('As400')\">As400</a><br><a href=\"porn\" onclick=\"event.preventDefault(); window.filterDescription('porn')\" onclick=\"event.preventDefault(); window.filterDescription('porn')\">porn</a></p>"
+          }
+        ],
         "__collections__": {}
       }
     },
     "supportServiceDesk": {
-      "BLA": {
+      "ok": {
+        "description": "",
+        "issues": {},
+        "contactList": {
+          "contactPerson": "",
+          "contactPersonEmail": "",
+          "contactPersonBackup": "",
+          "assignmentGroup": "",
+          "name": ""
+        },
         "__collections__": {}
       },
-      "VPN": {
+      "test": {
+        "description": "",
+        "issues": {},
+        "contactList": {
+          "contactPerson": "",
+          "contactPersonEmail": "",
+          "contactPersonBackup": "",
+          "assignmentGroup": "",
+          "name": ""
+        },
         "__collections__": {}
       }
     }
