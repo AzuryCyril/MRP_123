@@ -133,7 +133,9 @@ async function displaySubs() {
 
             await addNewSub(trailArray[1], inputField.value.trim());
 
-            updatePages();
+            await fetchData(trailArray[1]);
+
+            await updatePages();
         });
 
         document.querySelector(".cancelSub").addEventListener("click", (event) => {
@@ -153,8 +155,7 @@ async function Page2() {
     targetPage = 2;
 
     await filterDescription(trailArray[2])
-   // await getIssues(trailArray[2])
-    await getContacts(trailArray[2])
+    
 }
 
 
@@ -184,7 +185,7 @@ async function getIssues() {
 
                 issueContainer.addEventListener('click', async () => {
 
-                    await filterHistory(sub.issues[i].name);
+                    await filterDescription(sub.issues[i].name)
 
                     targetPage = 3;
 
@@ -241,8 +242,8 @@ async function getIssues() {
 }
 
 
-async function getContacts(){
-    console.log("ok")
+async function getContacts() {
+
 }
 
 
@@ -257,7 +258,7 @@ async function Page3() {
 
     targetPage = 3;
 
-    await filterDescription(trailArray[3])
+   // await filterDescription(trailArray[3])
 
 };
 
@@ -266,16 +267,24 @@ async function Page3() {
 
 window.filterDescription = async function (name) {
 
+    let namePath = [];
+
+
     data.forEach(sub => {
 
         if (sub.id == name) {
 
-            getDescription(sub.id, sub.description)
+            targetPage = 2;
 
+            namePath.push(name)
+            
             trailArray.splice(2)
-            filterHistory(sub.id);
-            getIssues(trailArray[2])
 
+            filterHistory(namePath[0])
+
+            getIssues(trailArray[2])
+            getContacts(trailArray[2])
+            getDescription(sub.id, sub.description)
 
         } else {
 
@@ -283,8 +292,17 @@ window.filterDescription = async function (name) {
 
                 if (sub.issues[i].name == name) {
 
-                    filterHistory(sub.issues[i].name)
-                    
+                    targetPage = 3;
+
+                    namePath.push(sub.id);
+                    namePath.push(sub.issues[i].name);
+
+                    trailArray.splice(2)
+                    filterHistory(namePath[0])
+                    filterHistory(namePath[1])
+
+                    getIssues(trailArray[2])
+                    getContacts(trailArray[2])
                     getDescription(sub.issues[i].name, sub.issues[i].solution)
                 }
 
@@ -293,6 +311,8 @@ window.filterDescription = async function (name) {
         }
 
     })
+
+    //console.log(namePath);
 }
 
 
@@ -405,9 +425,6 @@ async function filterHistory(historyItem) {
 
     if (trailArray.length < 4) {
         trailArray.push(historyItem);
-    }else{
-        trailArray.splice(3)
-        trailArray.push(historyItem);
     }
 
 
@@ -415,7 +432,7 @@ async function filterHistory(historyItem) {
 }
 
 async function trailHistory() {
-
+    console.log("Ok")
     const historyDiv = document.querySelector('.followHistory');
     historyDiv.innerHTML = '';
 
@@ -429,8 +446,6 @@ async function trailHistory() {
 
             let targetIndex = parseInt(item.getAttribute("data-id"));
 
-            //  console.log(targetIndex);
-
             if (targetIndex != targetPage) {
 
                 trailArray.splice(targetIndex + 1);
@@ -443,10 +458,6 @@ async function trailHistory() {
 
 
             }
-
-
-
-
 
         })
     })
@@ -508,4 +519,3 @@ async function fetchData(parentType) {
         data = await fetchServiceDeskSubs();
     }
 }
-
