@@ -237,6 +237,11 @@ async function getIssues() {
 
         });
 
+        // Create cancel button
+        document.querySelector(".cancel-btn").addEventListener("click", () => {
+            document.getElementById("newIssueDiv").remove()
+        });
+
 
     });
 }
