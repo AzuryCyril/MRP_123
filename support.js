@@ -77,9 +77,9 @@ async function displaySubs() {
     data.forEach(sub => {
 
         //description too long
-        // let descriptionText = sub.id || "No description available";
-        //     if (descriptionText.length > 20) {
-        //         descriptionText = descriptionText.substring(0, 20) + "...";
+        // let descriptionText = sub.description || "No description available";
+        // if (descriptionText.length > 20) {
+        //     descriptionText = descriptionText.substring(0, 25) + "...";
         // }
 
         const subContainer = document.createElement('div');
@@ -88,7 +88,7 @@ async function displaySubs() {
         subContainer.insertAdjacentHTML('beforeend', `
             <div class="icon-container"><i class="fas fa-file-alt"></i></div>
             
-            <div class="text-container"><p class="sub-id">${sub.id}</p><p class="sub-description">${sub.id}</p></div>
+            <div class="text-container"><p class="sub-id">${sub.id}</p><div class="sub-description">${sub.id}</div></div>
             `)
 
         subContainer.addEventListener('click', async () => {
@@ -174,12 +174,17 @@ async function getIssues() {
                 const issueContainer = document.createElement('div');
                 issueContainer.classList.add('issueItem');
 
+                let solutionText = sub.issues[i].solution || "No description available";
+                if (solutionText.length > 20) {
+                    solutionText = solutionText.substring(0, 250) + "...";
+                }
+
                 issueContainer.insertAdjacentHTML('beforeend', `
                      <div class="icon-container"><i class="fa-solid fa-book-open"></i></i></div>
                      <div class="preview__text">
                          <h4>${sub.issues[i].name}:</h4> 
                          <p>Category: ${sub.id}</p></br>
-                         <p>${sub.issues[i].solution}</p>
+                         <p>${solutionText}</p>
                      </div>
                  `)
 
@@ -409,7 +414,7 @@ async function getDescription(name, description) {
 
     descriptionDiv.innerHTML = `
                 <div class="descriptionHeader">
-                    <h2 class="subTitle">${name}</h2>
+                    <h4 class="subTitle">${name}</h4>
                     <i class="fas fa-pencil-alt edit-icon"></i>
                 </div>
                 <div class="descriptionContent">
@@ -441,11 +446,18 @@ async function getDescription(name, description) {
         // Re-initialize TinyMCE on the new textarea
         tinymce.init({
             selector: '#descInput', // Apply TinyMCE to the textarea
-            height: descriptionHeight + 150,
+            height: descriptionHeight + 250,
             width: descriptionWidth,
             menubar: false, // Optional: Hide the menu bar
-            plugins: 'advlist autolink lists link image charmap print preview anchor',
-            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | ' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help | link image',
             setup: function (editor) {
                 editor.on('change', function () {
                     // Automatically update the content inside the textarea as the user types
