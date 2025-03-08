@@ -234,7 +234,9 @@ header{
     background-color: #fff;
     box-shadow: 0 2px 8px 0 rgba(38, 40, 42, .3);
 }
-
+.preview__text{
+    width: fit-content;
+}
 .preview__text h4{
     margin: 10px 0;
     font-size: 16px;
