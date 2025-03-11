@@ -284,3 +284,6 @@ header{
 .save-btn{
     display: inline-block;
 }
+.tox{
+    max-height: 700px;
+}
