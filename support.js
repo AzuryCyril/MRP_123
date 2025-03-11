@@ -271,6 +271,7 @@ async function getContacts() {
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="IRN">${sub.contactList.IRN || "No email available"}</p></div>
             `;
 
             document.getElementById("editContactIcon").addEventListener("click", async () => {
@@ -282,6 +283,7 @@ async function getContacts() {
                 const email = document.getElementById("contactEmail").textContent.trim();
                 const backup = document.getElementById("contactBackup").textContent.trim();
                 const group = document.getElementById("assignmentGroup").textContent.trim();
+                const IRN = document.getElementById("IRN").textContent.trim();
 
                 document.querySelector('.subContactInfo').innerHTML = `
             <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><input id="editContactName" type="text" value="${name}"></div>
@@ -289,6 +291,7 @@ async function getContacts() {
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><input id="editContactEmail" type="email" value="${email}"></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><input id="editContactBackup" type="text" value="${backup}"></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><input id="editAssignmentGroup" type="text" value="${group}"></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><input id="editIRN" type="text" value="${IRN}"></div>
             `;
 
                 const saveButton = document.createElement('button'); // Create the save button
@@ -308,13 +311,15 @@ async function getContacts() {
                     const newEmail = document.getElementById("editContactEmail").value.trim();
                     const newBackup = document.getElementById("editContactBackup").value.trim();
                     const newGroup = document.getElementById("editAssignmentGroup").value.trim();
+                    const newIRN = document.getElementById("editIRN").value.trim();
 
                     const updatedContactInfo = {
                         name: newName,
                         contactPerson: newPerson,
                         contactPersonEmail: newEmail,
                         contactPersonBackup: newBackup,
-                        assignmentGroup: newGroup
+                        assignmentGroup: newGroup,
+                        IRN: newIRN
                     };
 
 
@@ -322,19 +327,21 @@ async function getContacts() {
 
                     await fetchData(trailArray[1])
 
+                    await getContacts();
 
 
-                    document.querySelector('.subContactInfo').innerHTML = `
-                <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
-                <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
-                <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
-                <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
-                <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
-                `;
+                //     document.querySelector('.subContactInfo').innerHTML = `
+                // <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
+                // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
+                // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
+                // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
+                // <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
+                // <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="assignmentGroup">${newIRN}</p></div>
+                // `;
 
 
-                    document.getElementById("editContactIcon").style.display = 'inline-block';
-                    saveButton.style.display = 'none';
+                //     document.getElementById("editContactIcon").style.display = 'inline-block';
+                //     saveButton.style.display = 'none';
 
 
                 });
@@ -414,7 +421,7 @@ async function getDescription(name, description) {
 
     descriptionDiv.innerHTML = `
                 <div class="descriptionHeader">
-                    <h4 class="subTitle">${name}</h4>
+                    <h3 class="subTitle">${name}</h3>
                     <i class="fas fa-pencil-alt edit-icon"></i>
                 </div>
                 <div class="descriptionContent">
@@ -452,7 +459,7 @@ async function getDescription(name, description) {
             plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                'insertdatetime', 'media', 'table', 'help', 'wordcount', 'textcolor', 'colorpicker'
             ],
             toolbar: 'undo redo | blocks | ' +
                 'bold italic backcolor | alignleft aligncenter ' +
