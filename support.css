@@ -167,6 +167,7 @@ header{
 }
 .contactInfoRow p{
     font-family: NouvelRBold;
+    margin: 0;
 }
 .contactInfoRow input{
     font-family: NouvelRBold;
@@ -238,6 +239,9 @@ header{
 }
 .preview__text{
     width: fit-content;
+}
+.preview__text p {
+    margin: 0;
 }
 .preview__text h4{
     margin: 10px 0;

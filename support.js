@@ -459,12 +459,12 @@ async function getDescription(name, description) {
             plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'help', 'wordcount', 'textcolor', 'colorpicker'
+                'insertdatetime', 'media', 'table', 'wordcount', 'textcolor', 'colorpicker'
             ],
             toolbar: 'undo redo | blocks | ' +
-                'bold italic backcolor | alignleft aligncenter ' +
+                'bold italic backcolor forecolor link image | alignleft aligncenter ' +
                 'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help | link image',
+                'removeformat',
             setup: function (editor) {
                 editor.on('change', function () {
                     // Automatically update the content inside the textarea as the user types
