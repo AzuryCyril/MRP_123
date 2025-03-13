@@ -462,7 +462,7 @@ async function getDescription(name, description) {
                 'insertdatetime', 'media', 'table', 'wordcount', 'textcolor', 'colorpicker'
             ],
             toolbar: 'undo redo | blocks | ' +
-                'bold italic backcolor forecolor link image | alignleft aligncenter ' +
+                'bold italic backcolor forecolor link anchor image | alignleft aligncenter ' +
                 'alignright alignjustify | bullist numlist outdent indent | ' +
                 'removeformat',
             setup: function (editor) {
@@ -487,8 +487,8 @@ async function getDescription(name, description) {
             if (targetPage == 2) {
 
                 newDesc = newDesc.replace(
-                    /<a(.*?)href="(.*?)"(.*?)>/g,
-                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription(\'$2\')">`
+                    /<a(.*?)href="((?!#).*?)"(.*?)>/g,
+                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription('$2')">`
                 );
 
                 await updateSubDescription(trailArray[2], newDesc, trailArray[1]);
@@ -502,8 +502,8 @@ async function getDescription(name, description) {
             if (targetPage == 3) {
 
                 newDesc = newDesc.replace(
-                    /<a(.*?)href="(.*?)"(.*?)>/g,
-                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription(\'$2\')">`
+                    /<a(.*?)href="((?!#).*?)"(.*?)>/g,
+                    `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription('$2')">`
                 );
 
                 await updateIssueDescription(trailArray[2], newDesc, trailArray[1], trailArray[3]);
