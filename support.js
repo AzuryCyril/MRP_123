@@ -330,18 +330,18 @@ async function getContacts() {
                     await getContacts();
 
 
-                //     document.querySelector('.subContactInfo').innerHTML = `
-                // <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
-                // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
-                // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
-                // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
-                // <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
-                // <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="assignmentGroup">${newIRN}</p></div>
-                // `;
+                    //     document.querySelector('.subContactInfo').innerHTML = `
+                    // <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
+                    // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
+                    // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
+                    // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
+                    // <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
+                    // <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="assignmentGroup">${newIRN}</p></div>
+                    // `;
 
 
-                //     document.getElementById("editContactIcon").style.display = 'inline-block';
-                //     saveButton.style.display = 'none';
+                    //     document.getElementById("editContactIcon").style.display = 'inline-block';
+                    //     saveButton.style.display = 'none';
 
 
                 });
@@ -422,12 +422,18 @@ async function getDescription(name, description) {
     descriptionDiv.innerHTML = `
                 <div class="descriptionHeader">
                     <h3 class="subTitle">${name}</h3>
-                    <i class="fas fa-pencil-alt edit-icon"></i>
+                   <div class="descriptionHeaderOptions"> <button id="generatePdfBtn" class="pdf-btn">PDF</button>
+                    <i class="fas fa-pencil-alt edit-icon"></i> </div>
                 </div>
                 <div class="descriptionContent">
                     <div id="descText">${description || "No description available"}</div>
                 </div>
             `;
+
+    // Add event listener for the PDF button
+    document.getElementById("generatePdfBtn").addEventListener("click", () => {
+        generatePDF(name, description);
+    });
 
     const editIcon = descriptionDiv.querySelector(".edit-icon");
     editIcon.addEventListener("click", async () => {
@@ -477,7 +483,7 @@ async function getDescription(name, description) {
         saveButton.classList.add("save-btn");
         saveButton.textContent = "Save";
 
-        descriptionDiv.querySelector('.descriptionHeader').appendChild(saveButton);
+        descriptionDiv.querySelector('.descriptionHeaderOptions').appendChild(saveButton);
         editIcon.style.display = 'none';
 
         saveButton.addEventListener("click", async () => {
@@ -522,7 +528,59 @@ async function getDescription(name, description) {
 
 };
 
+// Function to generate PDF with html2pdf.js and handle images
+function generatePDF(title, content) {
+    const element = document.createElement("div");
+    element.innerHTML = `
+        <div class="descriptionHeader">
+            <h3 class="subTitle">${title}</h3>
+        </div>
+        <div class="descriptionContent">
+            <div id="descText">${content || "No description available"}</div>
+        </div>
+    `;
 
+    // Styling the element that will be converted to PDF (you can customize the styles as needed)
+    element.style.padding = '20px';
+    element.style.fontFamily = 'Arial, sans-serif';
+    
+    // Wait for images to load
+    const images = element.querySelectorAll("img");
+    let imagesLoaded = 0;
+    
+    images.forEach((img) => {
+        if (img.complete) {
+            imagesLoaded++;
+        } else {
+            img.onload = () => {
+                imagesLoaded++;
+                if (imagesLoaded === images.length) {
+                    // All images loaded, generate PDF
+                    generatePdfFromElement(title, element);
+                }
+            };
+        }
+    });
+
+    // If no images, directly generate the PDF
+    if (images.length === 0 || imagesLoaded === images.length) {
+        generatePdfFromElement(title, element);
+    }
+}
+
+// Function to generate the PDF after image load
+function generatePdfFromElement(title, element) {
+    html2pdf(element, {
+        filename: `${title}.pdf`, // Set the filename of the PDF
+        margin: [10, 10, 10, 10],  // PDF margins
+        html2canvas: { 
+            scale: 2,  // Increase resolution of the screenshot
+            logging: true, // Enable logging for debugging
+            useCORS: true, // Use Cross-Origin Resource Sharing to handle images from other domains
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // PDF format
+    });
+}
 
 //OTHERS
 

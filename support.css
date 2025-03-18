@@ -288,3 +288,17 @@ header{
 .tox{
     max-height: 700px;
 }
+
+.pdf-btn {
+    background: #fc3;
+    color: white;
+    padding: 5px 10px;
+    font-family: NouvelRBold;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+.pdf-btn:hover {
+    background: #fc3;
+}
