@@ -493,7 +493,7 @@ async function getDescription(name, description) {
             if (targetPage == 2) {
 
                 newDesc = newDesc.replace(
-                    /<a(.*?)href="((?!#).*?)"(.*?)>/g,
+                    /<a(.*?)href="((?!#|http).*?)"(.*?)>/g,
                     `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription('$2')">`
                 );
 
@@ -508,7 +508,7 @@ async function getDescription(name, description) {
             if (targetPage == 3) {
 
                 newDesc = newDesc.replace(
-                    /<a(.*?)href="((?!#).*?)"(.*?)>/g,
+                    /<a(.*?)href="((?!#|http).*?)"(.*?)>/g,
                     `<a$1href="$2"$3 onclick="event.preventDefault(); window.filterDescription('$2')">`
                 );
 
