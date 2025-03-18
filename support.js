@@ -595,7 +595,6 @@ async function filterHistory(historyItem) {
 }
 
 async function trailHistory() {
-    console.log("Ok")
     const historyDiv = document.querySelector('.followHistory');
     historyDiv.innerHTML = '';
 
