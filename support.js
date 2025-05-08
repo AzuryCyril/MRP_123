@@ -272,6 +272,7 @@ async function getContacts() {
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="IRN">${sub.contactList.IRN || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Scope:</p><p id="scope">${sub.contactList.Scope || "No email available"}</p></div>
             `;
 
             document.getElementById("editContactIcon").addEventListener("click", async () => {
@@ -284,6 +285,7 @@ async function getContacts() {
                 const backup = document.getElementById("contactBackup").textContent.trim();
                 const group = document.getElementById("assignmentGroup").textContent.trim();
                 const IRN = document.getElementById("IRN").textContent.trim();
+                const Scope = document.getElementById("scope").textContent.trim();
 
                 document.querySelector('.subContactInfo').innerHTML = `
             <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><input id="editContactName" type="text" value="${name}"></div>
@@ -292,6 +294,14 @@ async function getContacts() {
             <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><input id="editContactBackup" type="text" value="${backup}"></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><input id="editAssignmentGroup" type="text" value="${group}"></div>
             <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><input id="editIRN" type="text" value="${IRN}"></div>
+            <div class="contactInfoRow">
+                <p class="contactInfoTitle">Scope:</p>
+                <select id="editScope">
+                    <option value="Intern" ${Scope === 'Intern' ? 'selected' : ''}>Intern</option>
+                    <option value="Extern" ${Scope === 'Extern' ? 'selected' : ''}>Extern</option>
+                    <option value="Other" ${Scope === 'Other' ? 'selected' : ''}>Other</option>
+                </select>
+            </div>
             `;
 
                 const saveButton = document.createElement('button'); // Create the save button
@@ -312,6 +322,7 @@ async function getContacts() {
                     const newBackup = document.getElementById("editContactBackup").value.trim();
                     const newGroup = document.getElementById("editAssignmentGroup").value.trim();
                     const newIRN = document.getElementById("editIRN").value.trim();
+                    const newScope = document.getElementById("editScope").value.trim();
 
                     const updatedContactInfo = {
                         name: newName,
@@ -319,7 +330,8 @@ async function getContacts() {
                         contactPersonEmail: newEmail,
                         contactPersonBackup: newBackup,
                         assignmentGroup: newGroup,
-                        IRN: newIRN
+                        IRN: newIRN,
+                        Scope: newScope
                     };
 
 
@@ -543,11 +555,11 @@ function generatePDF(title, content) {
     // Styling the element that will be converted to PDF (you can customize the styles as needed)
     element.style.padding = '20px';
     element.style.fontFamily = 'Arial, sans-serif';
-    
+
     // Wait for images to load
     const images = element.querySelectorAll("img");
     let imagesLoaded = 0;
-    
+
     images.forEach((img) => {
         if (img.complete) {
             imagesLoaded++;
@@ -572,13 +584,17 @@ function generatePDF(title, content) {
 function generatePdfFromElement(title, element) {
     html2pdf(element, {
         filename: `${title}.pdf`, // Set the filename of the PDF
-        margin: [10, 10, 10, 10],  // PDF margins
-        html2canvas: { 
-            scale: 2,  // Increase resolution of the screenshot
+        margin: [10, 10, 10, 10], // PDF margins
+        html2canvas: {
+            scale: 2, // Increase resolution of the screenshot
             logging: true, // Enable logging for debugging
             useCORS: true, // Use Cross-Origin Resource Sharing to handle images from other domains
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // PDF format
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+        } // PDF format
     });
 }
 
