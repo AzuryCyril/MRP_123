@@ -24,9 +24,10 @@ header{
     color: #edf6fb;
 }
 
-/* .SubsIntern,.SubsExtern,.SubsOther{
-    width: 100%;  
-} */
+.Subs > p{
+    font-family: NouvelR;
+    margin: 25px 0 10px 0;
+}
 
 .sub-item, .addSubButton{
     display: inline-flex;
