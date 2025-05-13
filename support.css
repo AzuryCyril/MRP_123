@@ -11,7 +11,7 @@ header{
     max-width: 1070px;
     width: 100%;
     margin: 0 auto;
-    display: flex;
+
     -ms-flex-pack: justify;
     justify-content: space-between;
     -ms-flex-align: center;
@@ -23,10 +23,11 @@ header{
     line-height: normal;
     color: #edf6fb;
 }
-.Subs{
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-}
+
+/* .SubsIntern,.SubsExtern,.SubsOther{
+    width: 100%;  
+} */
+
 .sub-item, .addSubButton{
     display: inline-flex;
     cursor: pointer;
@@ -45,7 +46,6 @@ header{
 .icon-container {
     width: 40px;
     height: 40px;
-    background-color: #fc3;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -58,11 +58,30 @@ header{
     font-size: 16px;
     font-size: 20px;
 }
+.SubsIntern .icon-container{
+    background-color: #fc3;
+}
+.SubsExtern .icon-container{
+    background-color: #222;
+}
+.SubsOther .icon-container{
+    background-color: rgb(51, 65, 255);
+}
+
 
 .sub-id {
     font-weight: bold;
     margin: 0;
+    
+}
+.SubsIntern .sub-id{
     color: #fc3;
+}
+.SubsExtern .sub-id{
+    color: #222;
+}
+.SubsOther .sub-id{
+    color: rgb(51, 65, 255);
 }
 
 .sub-label {
@@ -128,6 +147,9 @@ header{
     border-radius: 2px;
     font-family: NouvelR;
     line-height: 1.5;
+}
+.subInfo{
+    display: flex;
 }
 
 .subContact{
@@ -267,12 +289,11 @@ header{
     justify-content: center;
 }
 .addSubButton .icon-container{
-    outline: 2px solid #fc3;
-    border: 2px solid white;
+    outline: 2px solid #222;
+    color: #222;
+    /* font-size: 10px; */
 }
-.addSubButton input{
-    width: 150px;
-}
+
 .sub-description{
     color: black;
 }

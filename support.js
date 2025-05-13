@@ -64,7 +64,7 @@ async function Page1() {
     targetPage = 1;
 
     await displaySubs()
-
+    
 }
 
 
@@ -72,7 +72,13 @@ async function displaySubs() {
 
     const subsDiv = document.querySelector('.Subs');
 
-    subsDiv.innerHTML = '';
+    const subsDivIntern = document.querySelector('.SubsIntern');
+    const subsDivExtern = document.querySelector('.SubsExtern');
+    const subsDivOther = document.querySelector('.SubsOther');
+
+    subsDivIntern.innerHTML = '';
+    subsDivExtern.innerHTML = '';
+    subsDivOther.innerHTML = '';
 
     data.forEach(sub => {
 
@@ -99,12 +105,19 @@ async function displaySubs() {
             await updatePages();
 
         });
+        
 
-        subsDiv.appendChild(subContainer);
+        if(sub.contactList.Scope == "Intern"){
+            subsDivIntern.appendChild(subContainer);
+        }else if(sub.contactList.Scope == "Extern"){
+            subsDivExtern.appendChild(subContainer);
+        }else{
+            subsDivOther.appendChild(subContainer);
+        }
+
+ 
     })
 
-
-    subsDiv.insertAdjacentHTML("beforeend", '<div class="addSubButton"><div class="icon-container">+</div></div>');
 
     const addSubButton = subsDiv.querySelector(".addSubButton");
     addSubButton.addEventListener("click", async () => {
@@ -136,6 +149,8 @@ async function displaySubs() {
             await fetchData(trailArray[1]);
 
             await updatePages();
+
+            document.querySelector(".inputSubButton").remove();
         });
 
         document.querySelector(".cancelSub").addEventListener("click", (event) => {
@@ -648,8 +663,10 @@ async function updatePages() {
     if (targetPage == 0) {
 
         document.querySelector('.button-container').style.display = "flex";
-        document.querySelector('.Subs').innerHTML = '';
-        document.querySelector('.Subs').style.display = "flex";
+        document.querySelector('.SubsIntern').innerHTML = "";
+        document.querySelector('.SubsExtern').innerHTML = "";
+        document.querySelector('.SubsOther').innerHTML = "";
+        document.querySelector('.addSubButton').style.display = "none"
         document.querySelector('.subDescription').style.display = "none";
         document.querySelector('.subContact').style.display = "none";
         document.querySelector('.subIssues').style.display = "none";
@@ -661,8 +678,11 @@ async function updatePages() {
 
     if (targetPage == 1) {
 
-        document.querySelector('.Subs').style.display = "flex";
+        await fetchData(trailArray[1]);
+        
         document.querySelector('.subDescription').style.display = "none";
+        document.querySelector('.Subs').style.display = "block";
+        document.querySelector('.addSubButton').style.display = "inline-flex";
         document.querySelector('.subContact').style.display = "none";
         document.querySelector('.subIssues').style.display = "none";
         document.querySelector('.button-container').style.display = "none";

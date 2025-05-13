@@ -65,7 +65,7 @@ import {
             await setDoc(subRef, {
                 description: "",
                 issues: {},
-                contactList: {contactPerson: "",contactPersonEmail: "",contactPersonBackup:"",assignmentGroup: "", name:"" }
+                contactList: {contactPerson: "",contactPersonEmail: "",contactPersonBackup:"",assignmentGroup: "", name:"", Scope:"Other" }
             });
     
             console.log("Sub added successfully:", subName);
