@@ -663,9 +663,7 @@ async function updatePages() {
     if (targetPage == 0) {
 
         document.querySelector('.button-container').style.display = "flex";
-        document.querySelector('.SubsIntern').innerHTML = "";
-        document.querySelector('.SubsExtern').innerHTML = "";
-        document.querySelector('.SubsOther').innerHTML = "";
+        document.querySelector('.Subs').style.display = "none";
         document.querySelector('.addSubButton').style.display = "none"
         document.querySelector('.subDescription').style.display = "none";
         document.querySelector('.subContact').style.display = "none";
