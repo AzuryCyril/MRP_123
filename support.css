@@ -56,8 +56,10 @@ header{
 
 .icon-container i {
     color: white;
-    font-size: 16px;
     font-size: 20px;
+}
+.issueItem .icon-container{
+    background-color: #fc3;
 }
 .SubsIntern .icon-container{
     background-color: #fc3;
@@ -323,4 +325,50 @@ header{
 }
 .pdf-btn:hover {
     background: #fc3;
+}
+
+.search_form{
+    background-color: #222;
+}
+.form-group{
+    position: relative;
+    margin: 0 auto;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    max-width: 752px;
+}
+
+.form-group input{
+    width: 100%;
+    padding: 17px 16px 17px 56px;
+    background-color: #fff;
+    border-color: transparent;
+    font-size: 14px;
+    transition: all .3s ease;
+}
+.form-group .icon-search{
+    padding: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 24px;
+    display: flex;
+    margin: auto;
+    align-items: center;
+}
+.form-group .icon-search i{
+    font-size: 20px;
+}
+
+.searchContent{
+    max-width: 752px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.searchContent article{
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #fff;
 }

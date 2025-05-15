@@ -14,6 +14,7 @@ import {
 let trailArray = ["Renault Support BE"];
 let targetPage = 0;
 let data;
+
 updatePages();
 
 
@@ -64,6 +65,8 @@ async function Page1() {
     targetPage = 1;
 
     await displaySubs()
+
+    await searchBar()
     
 }
 
@@ -161,6 +164,42 @@ async function displaySubs() {
 
     });
 }
+
+
+
+async function searchBar(){
+
+    const searchBar = document.getElementById("issueSearch");
+
+    searchBar.addEventListener("input", (event) => {
+
+        console.log(data)
+        const query = event.target.value.toLowerCase();
+        const filteredIssues = data.filter(issue => issue.id.toLowerCase().includes(query));
+        searchIssues(filteredIssues);
+    });
+
+}
+
+    
+async function searchIssues(filteredIssues){
+
+    const searchContent = document.querySelector(".searchContent");
+    searchContent.innerHTML = "";
+     filteredIssues.forEach(issue => {
+
+            let issueDiv = `
+                <article class='c1'>
+                    ${issue.id}
+                   
+                </article>
+            `;
+
+            searchContent.insertAdjacentHTML("beforeend", issueDiv);
+        });
+}
+
+
 
 
 ////PAGE 2 CONTENT
@@ -666,6 +705,7 @@ async function updatePages() {
         document.querySelector('.Subs').style.display = "none";
         document.querySelector('.addSubButton').style.display = "none"
         document.querySelector('.subDescription').style.display = "none";
+        document.querySelector(".search_form").style.display = "none";
         document.querySelector('.subContact').style.display = "none";
         document.querySelector('.subIssues').style.display = "none";
         document.querySelector('.followHeader').style.display = "none";
@@ -680,6 +720,7 @@ async function updatePages() {
         
         document.querySelector('.subDescription').style.display = "none";
         document.querySelector('.Subs').style.display = "block";
+        document.querySelector(".search_form").style.display = "block";
         document.querySelector('.addSubButton').style.display = "inline-flex";
         document.querySelector('.subContact').style.display = "none";
         document.querySelector('.subIssues').style.display = "none";
