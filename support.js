@@ -184,9 +184,14 @@ async function searchBar(){
     
 async function searchIssues(filteredIssues){
 
+    const searchBarInput = document.getElementById("issueSearch");
     const searchContent = document.querySelector(".searchContent");
+    
     searchContent.innerHTML = "";
-     filteredIssues.forEach(issue => {
+    
+    if(searchBarInput.value !== ""){
+        console.log(searchBarInput.value)
+        filteredIssues.forEach(issue => {
 
             let issueDiv = `
                 <article class='c1'>
@@ -196,7 +201,10 @@ async function searchIssues(filteredIssues){
             `;
 
             searchContent.insertAdjacentHTML("beforeend", issueDiv);
-        });
+    });
+
+    }
+    
 }
 
 
@@ -720,6 +728,8 @@ async function updatePages() {
         
         document.querySelector('.subDescription').style.display = "none";
         document.querySelector('.Subs').style.display = "block";
+        document.querySelector(".searchContent").innerHTML = "";
+        document.getElementById("issueSearch").value = "";
         document.querySelector(".search_form").style.display = "block";
         document.querySelector('.addSubButton').style.display = "inline-flex";
         document.querySelector('.subContact').style.display = "none";
@@ -735,12 +745,17 @@ async function updatePages() {
         document.querySelector('.subContact').style.display = "block";
         document.querySelector('.subIssues').style.display = "block";
         document.querySelector('.Subs').style.display = "none";
-
+        document.querySelector(".searchContent").innerHTML = "";
+        document.getElementById("issueSearch").value = "";
+        
 
         await Page2();
     }
 
     if (targetPage == 3) {
+
+        document.querySelector(".searchContent").innerHTML = "";
+        document.getElementById("issueSearch").value = "";
 
         await Page3();
 

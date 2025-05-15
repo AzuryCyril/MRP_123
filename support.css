@@ -22,6 +22,7 @@ header{
     font-weight: 900;
     line-height: normal;
     color: #edf6fb;
+    cursor: pointer;
 }
 
 .Subs > p{
@@ -328,7 +329,9 @@ header{
 }
 
 .search_form{
+    margin-top: 10px;
     background-color: #222;
+    font-family: NouvelR;
 }
 .form-group{
     position: relative;
