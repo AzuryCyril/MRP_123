@@ -13,8 +13,8 @@ header{
 
 .goUp{
     position: fixed;
-    bottom: 5%;
-    right: 5%;
+    bottom: 10%;
+    right: 2%;
     background-color: #eeeeee;
     color: #222;
     border: solid 1px #222;
