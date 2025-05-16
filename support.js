@@ -67,7 +67,7 @@ async function Page1() {
     await displaySubs()
 
     await searchBar()
-    
+
 }
 
 
@@ -108,17 +108,17 @@ async function displaySubs() {
             await updatePages();
 
         });
-        
 
-        if(sub.contactList.Scope == "Intern"){
+
+        if (sub.contactList.Scope == "Intern") {
             subsDivIntern.appendChild(subContainer);
-        }else if(sub.contactList.Scope == "Extern"){
+        } else if (sub.contactList.Scope == "Extern") {
             subsDivExtern.appendChild(subContainer);
-        }else{
+        } else {
             subsDivOther.appendChild(subContainer);
         }
 
- 
+
     })
 
 
@@ -167,44 +167,66 @@ async function displaySubs() {
 
 
 
-async function searchBar(){
+async function searchBar() {
 
     const searchBar = document.getElementById("issueSearch");
 
     searchBar.addEventListener("input", (event) => {
 
-        console.log(data)
+
         const query = event.target.value.toLowerCase();
-        const filteredIssues = data.filter(issue => issue.id.toLowerCase().includes(query));
-        searchIssues(filteredIssues);
+        const filteredSubs = [];
+
+        for (let i = 0; i < data.length; i++) {
+
+            if (data[i].id.toLowerCase().includes(query)) {
+                filteredSubs.push(data[i].id)
+            }
+
+            for (let j = 0; j < data[i].issues.length; j++) {
+
+                if (data[i].issues[j].name.toLowerCase().includes(query)) {
+                    filteredSubs.push(data[i].issues[j].name)
+                }
+
+            }
+        }
+        console.log(filteredSubs)
+        searchIssues(filteredSubs);
     });
 
 }
 
-    
-async function searchIssues(filteredIssues){
+
+async function searchIssues(filteredSubs) {
 
     const searchBarInput = document.getElementById("issueSearch");
     const searchContent = document.querySelector(".searchContent");
-    
+
     searchContent.innerHTML = "";
-    
-    if(searchBarInput.value !== ""){
-        console.log(searchBarInput.value)
-        filteredIssues.forEach(issue => {
 
-            let issueDiv = `
-                <article class='c1'>
-                    ${issue.id}
-                   
-                </article>
-            `;
+    if (searchBarInput.value !== "") {
 
-            searchContent.insertAdjacentHTML("beforeend", issueDiv);
-    });
+        console.log(searchBarInput.value);
+        filteredSubs.forEach(issue => {
+            // Create the element
+            let issueDiv = document.createElement('article');
+            issueDiv.className = 'c1';
+            issueDiv.innerHTML = issue;
 
+            // Add the click event listener
+            issueDiv.addEventListener('click', async () => {
+
+                await filterDescription(issueDiv.textContent)
+
+                await updatePages();
+            });
+
+            // Append the element to the container
+            searchContent.appendChild(issueDiv);
+        });
     }
-    
+
 }
 
 
@@ -725,7 +747,7 @@ async function updatePages() {
     if (targetPage == 1) {
 
         await fetchData(trailArray[1]);
-        
+
         document.querySelector('.subDescription').style.display = "none";
         document.querySelector('.Subs').style.display = "block";
         document.querySelector(".searchContent").innerHTML = "";
@@ -747,13 +769,17 @@ async function updatePages() {
         document.querySelector('.Subs').style.display = "none";
         document.querySelector(".searchContent").innerHTML = "";
         document.getElementById("issueSearch").value = "";
-        
+
 
         await Page2();
     }
 
     if (targetPage == 3) {
 
+        document.querySelector('.subDescription').style.display = "block";
+        document.querySelector('.subContact').style.display = "block";
+        document.querySelector('.subIssues').style.display = "none";
+        document.querySelector('.Subs').style.display = "none";
         document.querySelector(".searchContent").innerHTML = "";
         document.getElementById("issueSearch").value = "";
 
