@@ -47,18 +47,6 @@ async function displayCategories() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ////PAGE 1 SUBS
 async function Page1() {
 
