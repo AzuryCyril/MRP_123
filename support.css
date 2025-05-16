@@ -6,7 +6,12 @@ header{
     border-bottom: 1px solid #92a8b6;
     background-color: #222;
     font-family: NouvelR;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 999;
 }
+
 .contr{
     max-width: 1070px;
     width: 100%;
@@ -115,6 +120,7 @@ header{
 
 .history-link{
     color: grey;
+    cursor: pointer;
 }
 .history-link:hover {
     text-decoration: underline;
@@ -125,6 +131,7 @@ header{
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    margin-top: 50px;
 }
 
 .filter-btn {
@@ -329,7 +336,7 @@ header{
 }
 
 .search_form{
-    margin-top: 10px;
+    margin-top: 100px;
     background-color: #222;
     font-family: NouvelR;
 }
