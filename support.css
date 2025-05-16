@@ -1,5 +1,4 @@
 body{
-  min-height: 100vh;
   background-color: #eeeeee;
 }
 header{
@@ -10,6 +9,21 @@ header{
     width: 100%;
     top: 0;
     z-index: 999;
+}
+
+.goUp{
+    position: fixed;
+    bottom: 5%;
+    right: 5%;
+    background-color: #eeeeee;
+    color: #222;
+    border: solid 1px #222;
+    cursor: pointer;
+    border-radius: 50px;
+    overflow: hidden;
+    font-size: 20px;
+    padding: 20px;
+
 }
 
 .contr{
