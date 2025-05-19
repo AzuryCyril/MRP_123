@@ -783,7 +783,7 @@ async function fetchData(parentType) {
         data = await fetchInternSubs();
     } else if (parentType === "supportExtern") {
         data = await fetchExternSubs();
-    } else if (parentType === "supportServiceDesk") {
+    } else if (parentType === "supportSupport") {
         data = await fetchServiceDeskSubs();
     }
 }
