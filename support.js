@@ -3,7 +3,7 @@
 import {
     fetchInternSubs,
     fetchExternSubs,
-    fetchServiceDeskSubs,
+    fetchSupportSubs,
     updateSubDescription,
     updateContactInfo,
     addIssueToFirestore,
@@ -784,6 +784,6 @@ async function fetchData(parentType) {
     } else if (parentType === "supportExtern") {
         data = await fetchExternSubs();
     } else if (parentType === "supportSupport") {
-        data = await fetchServiceDeskSubs();
+        data = await fetchSupportSubs();
     }
 }

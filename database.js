@@ -89,8 +89,8 @@ export async function fetchExternSubs() {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-export async function fetchServiceDeskSubs() {
-    const querySnapshot = await getDocs(collection(db, "supportServiceDesk"));
+export async function fetchSupportSubs() {
+    const querySnapshot = await getDocs(collection(db, "supportSupport"));
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 

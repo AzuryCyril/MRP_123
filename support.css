@@ -55,16 +55,19 @@ header{
     cursor: pointer;
     align-items: center;
     width: 100%;
-    max-width: 290px;
+    max-width: 324px;
     margin: 16px;
     padding: 16px;
     box-shadow: 0 4px 8px 0 rgba(38, 40, 42, .3);
     background-color: #fff;
     letter-spacing: .1px;
     color: white;
-    transition: none;
     font-family: NouvelR;
+    box-sizing: border-box;
+    border-right: 0px solid;
+    transition: all 0.5s;
 }
+
 .icon-container {
     width: 40px;
     height: 40px;
@@ -92,12 +95,27 @@ header{
     background-color: rgb(51, 65, 255);
 }
 
+.SubsIntern .sub-item:hover{
+    border-right: 7px solid #fc3;
+}
+
+.SubsExtern .sub-item:hover{
+    border-right: 7px solid #222;
+}
+
+.SubsOther .sub-item:hover{
+    border-right: 7px solid rgb(51, 65, 255);
+}
 
 .sub-id {
     font-weight: bold;
     margin: 0;
-    
+    width: 230px;
+    white-space: nowrap;
+    overflow-x: clip;
+    text-overflow: ellipsis;
 }
+
 .SubsIntern .sub-id{
     color: #fc3;
 }
@@ -106,10 +124,6 @@ header{
 }
 .SubsOther .sub-id{
     color: rgb(51, 65, 255);
-    width: 230px; 
-    white-space: nowrap;
-    overflow-x: clip;
-    text-overflow: ellipsis;
 }
 
 .sub-label {
@@ -162,6 +176,7 @@ header{
     border-radius: 5px;
     cursor: pointer;
 }
+
 .filter-btn:hover {
     background-color: #0056b3;
 }
