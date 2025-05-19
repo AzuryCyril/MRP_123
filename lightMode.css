@@ -1,0 +1,62 @@
+body{
+  background-color: #eeeeee;
+}
+
+header{
+     background-color: #222;
+}
+
+.sub-item{
+    background-color: #fff;
+}
+
+.SubsIntern .sub-id{
+    color: #fc3;
+}
+.SubsExtern .sub-id{
+    color: #222;
+}
+.SubsOther .sub-id{
+    color: rgb(51, 65, 255);
+}
+
+.search_form{
+    background-color: #222;
+}
+
+.form-group input{
+     background-color: #fff;
+
+}
+
+.SubsIntern .icon-container{
+    background-color: #fc3;
+}
+.SubsExtern .icon-container{
+    background-color: #222;
+}
+.SubsOther .icon-container{
+    background-color: rgb(51, 65, 255);
+}
+
+.blackTheme{
+    width: 15px;
+    height: 15px;
+    background-color: #fc3;
+    border: 1px solid grey;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.themeChange{
+    width: 40px;
+    height: 40px;
+    background-color: #222;
+    position: fixed;
+     cursor: pointer;
+    right: 0;
+    top: 15%;
+      border-radius: 50% 0 0 50%;
+}

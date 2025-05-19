@@ -25,6 +25,7 @@ async function Page0() {
     targetPage = 0;
 
     await displayCategories()
+    await themes()
 }
 
 async function displayCategories() {
@@ -56,8 +57,27 @@ async function Page1() {
 
     await searchBar()
 
+ 
+
 }
 
+async function themes(){
+    document.querySelector(".themeChange").addEventListener("click", async () => {
+        // document.head.innerHTML += '<link rel="stylesheet" href="darkMode.css" type="text/css"/>';
+        // console.log("ok")
+
+         // Select the <link> element
+            let theme = document.getElementById('theme');
+
+            // Toggle between light.css and dark.css
+            if (theme.getAttribute('href') == 'lightMode.css') {
+                theme.setAttribute('href', 'darkMode.css');
+            } else {
+                theme.setAttribute('href', 'lightMode.css');
+            }
+    })
+  
+}
 
 async function displaySubs() {
 

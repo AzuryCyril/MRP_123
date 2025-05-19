@@ -1,0 +1,71 @@
+body{
+    background-color: #222 !important;
+}
+
+header{
+    background: linear-gradient(90deg,rgba(255, 204, 51, 1) 0%, rgba(255, 193, 5, 1) 100%) !important;
+}
+
+.sub-item{
+    background: linear-gradient(90deg,rgba(255, 204, 51, 1) 0%, rgba(255, 193, 5, 1) 100%) !important;
+    border-radius: 12px;
+}
+
+.sub-id{
+    color: white !important;
+}
+.search_form{
+    background-color: none !important;
+}
+
+.Subs > p{
+    color: white !important;
+}
+
+.form-group input{
+   background-color: #151515 !important;
+   color: white !important;
+   border-radius: 12px;
+}
+
+.form-group .icon-search i{
+    color: white !important;
+}
+
+::placeholder{
+    color: white;
+}
+.icon-container{
+    background-color: rgb(224 176 17) !important;
+}
+
+.addSubButton .icon-container {
+    color: white !important;
+    outline: 2px solid grey;
+}
+
+.sub-description{
+        background: linear-gradient(90deg,rgba(255, 204, 51, 1) 0%, rgba(255, 193, 5, 1) 100%) !important;
+}
+
+.blackTheme{
+    width: 15px;
+    height: 15px;
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.themeChange{
+    width: 40px;
+    height: 40px;
+    background-color: #fc3;
+     cursor: pointer;
+    position: fixed;
+    right: 0;
+    top: 15%;
+     border-radius: 50% 0 0 50%;
+}
