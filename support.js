@@ -161,64 +161,65 @@ async function searchBar() {
 
     searchBar.addEventListener("input", (event) => {
 
+        //const searchBarInput = document.getElementById("issueSearch");
+
+        const searchContent = document.querySelector(".searchContent");
+        searchContent.innerHTML = "";
 
         const query = event.target.value.toLowerCase();
         const filteredSubs = [];
 
+        if (query !== "") {
+
         for (let i = 0; i < data.length; i++) {
 
             if (data[i].id.toLowerCase().includes(query)) {
-                filteredSubs.push(data[i].id)
+
+                let issueDiv = document.createElement('article');
+                issueDiv.innerHTML = `${data[i].id}
+                <p>${trailArray[0]} => ${trailArray[1]}
+                `;
+
+                issueDiv.addEventListener('click', async () => {
+
+                    await filterDescription(issueDiv.textContent)
+
+                    await updatePages();
+                });
+
+                searchContent.appendChild(issueDiv);
+
+                // filteredSubs.push(data[i].id)
             }
 
             for (let j = 0; j < data[i].issues.length; j++) {
 
                 if (data[i].issues[j].name.toLowerCase().includes(query)) {
-                    filteredSubs.push(data[i].issues[j].name)
+                    
+                    let issueDiv = document.createElement('article');
+                    issueDiv.innerHTML = `${data[i].issues[j].name}
+                    <p>${trailArray[0]} => ${trailArray[1]} => ${data[i].id}
+                    `;
+
+                    issueDiv.addEventListener('click', async () => {
+
+                        await filterDescription(issueDiv.textContent)
+
+                        await updatePages();
+                    });
+
+                    //filteredSubs.push(data[i].issues[j].name)
+                    searchContent.appendChild(issueDiv);
                 }
 
             }
         }
-        console.log(filteredSubs)
-        searchIssues(filteredSubs);
+
+    }
+
     });
 
 }
-
-
-async function searchIssues(filteredSubs) {
-
-    const searchBarInput = document.getElementById("issueSearch");
-    const searchContent = document.querySelector(".searchContent");
-
-    searchContent.innerHTML = "";
-
-    if (searchBarInput.value !== "") {
-
-        console.log(searchBarInput.value);
-        filteredSubs.forEach(issue => {
-            // Create the element
-            let issueDiv = document.createElement('article');
-            issueDiv.className = 'c1';
-            issueDiv.innerHTML = issue;
-
-            // Add the click event listener
-            issueDiv.addEventListener('click', async () => {
-
-                await filterDescription(issueDiv.textContent)
-
-                await updatePages();
-            });
-
-            // Append the element to the container
-            searchContent.appendChild(issueDiv);
-        });
-    }
-
-}
-
-
-
 
 ////PAGE 2 CONTENT
 

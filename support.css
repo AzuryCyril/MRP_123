@@ -410,3 +410,7 @@ header{
     margin-top: 10px;
     background-color: #fff;
 }
+.searchContent article p{
+    margin: 2px 0;
+    font-size: 10px;
+}
