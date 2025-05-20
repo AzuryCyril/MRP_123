@@ -1,97 +1,130 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-    getFirestore, getDoc, doc, setDoc, collection, getDocs, updateDoc, deleteDoc, addDoc
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getFirestore,
+    getDoc,
+    doc,
+    setDoc,
+    collection,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyAt0x4UEocfK2skKuABAwym2fG_o4nP1bs",
     authDomain: "test-1aaff.firebaseapp.com",
     projectId: "test-1aaff",
     storageBucket: "test-1aaff.firebasestorage.app",
     messagingSenderId: "153349488252",
     appId: "1:153349488252:web:c6339f2c475d79d1f093f9"
-  };
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 
 
-   
-    export async function addIssueToFirestore(subId, inputFieldValue, parentType) {
 
-        try {
-            const docRef = doc(db, parentType, subId); // Reference to document
-            const docSnap = await getDoc(docRef);
-    
-            let existingIssues = [];
-    
-            if (docSnap.exists()) {
-                const docData = docSnap.data();
-                existingIssues = Array.isArray(docData.issues) ? docData.issues : []; // Ensure it's an array
+export async function addIssueToFirestore(subId, inputFieldValue, parentType) {
+
+    try {
+        const docRef = doc(db, parentType, subId); // Reference to document
+        const docSnap = await getDoc(docRef);
+
+        let existingIssues = [];
+
+        if (docSnap.exists()) {
+            const docData = docSnap.data();
+            existingIssues = Array.isArray(docData.issues) ? docData.issues : []; // Ensure it's an array
+        }
+
+        // Create new issue object
+        const newIssue = {
+            name: inputFieldValue,
+            solution: "solution here"
+        };
+
+        // Append new issue
+        const updatedIssues = [...existingIssues, newIssue];
+
+        // Update Firestore
+        await updateDoc(docRef, {
+            issues: updatedIssues
+        });
+
+        console.log("Issue added successfully!");
+    } catch (error) {
+        console.error("Error adding issue:", error);
+    }
+}
+
+
+export async function changeState(subID, newIconClass, parentType) {
+    const docRef = doc(db, parentType, subID); // adjust to your collection
+    await updateDoc(docRef, {
+        icon: newIconClass
+    });
+}
+
+
+
+
+export async function addNewSub(type, subName) {
+
+
+    // Firestore reference with the user-defined subName as the document ID
+    const subRef = doc(db, type, subName);
+
+    try {
+        await setDoc(subRef, {
+            description: "",
+            issues: {},
+            contactList: {
+                contactPerson: "",
+                contactPersonEmail: "",
+                contactPersonBackup: "",
+                assignmentGroup: "",
+                name: "",
+                Scope: "Other"
             }
-    
-            // Create new issue object
-            const newIssue = {
-                name: inputFieldValue,
-                solution: "solution here"
-            };
-    
-            // Append new issue
-            const updatedIssues = [...existingIssues, newIssue];
-    
-            // Update Firestore
-            await updateDoc(docRef, { issues: updatedIssues });
-    
-            console.log("Issue added successfully!");
-        } catch (error) {
-            console.error("Error adding issue:", error);
-        }
+        });
+
+        console.log("Sub added successfully:", subName);
+
+        // Refresh the list
+    } catch (error) {
+        console.error("Error adding sub:", error);
     }
-    
+}
 
 
 
-
-
-
-    export async function addNewSub(type, subName) {
-       
-    
-        // Firestore reference with the user-defined subName as the document ID
-        const subRef = doc(db, type, subName);
-    
-        try {
-            await setDoc(subRef, {
-                description: "",
-                issues: {},
-                contactList: {contactPerson: "",contactPersonEmail: "",contactPersonBackup:"",assignmentGroup: "", name:"", Scope:"Other" }
-            });
-    
-            console.log("Sub added successfully:", subName);
-    
-            // Refresh the list
-        } catch (error) {
-            console.error("Error adding sub:", error);
-        }
-    }
-
-
-  
 
 export async function fetchInternSubs() {
     const querySnapshot = await getDocs(collection(db, "supportIntern"));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
 }
 
 export async function fetchExternSubs() {
     const querySnapshot = await getDocs(collection(db, "supportExtern"));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
 }
 
 export async function fetchSupportSubs() {
     const querySnapshot = await getDocs(collection(db, "supportSupport"));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
 }
 
 export async function updateSubDescription(subId, newDescription, parentType) {
@@ -108,8 +141,8 @@ export async function updateSubDescription(subId, newDescription, parentType) {
     }
 }
 
-export async function updateIssueDescription(subId, newDescription, parentType, issueName){
-    
+export async function updateIssueDescription(subId, newDescription, parentType, issueName) {
+
     try {
         const subRef = doc(db, parentType, subId); // Get document reference
 
@@ -131,14 +164,19 @@ export async function updateIssueDescription(subId, newDescription, parentType, 
         }
 
         // Get the issue object and create an updated version
-        let updatedIssue = { ...currentSub.issues[issueIndex], solution: newDescription };
+        let updatedIssue = {
+            ...currentSub.issues[issueIndex],
+            solution: newDescription
+        };
 
         // Remove the old issue and add the updated issue
         let updatedIssues = [...currentSub.issues];
         updatedIssues[issueIndex] = updatedIssue; // Replace the old issue
 
         // Update the document with the modified issues array
-        await updateDoc(subRef, { issues: updatedIssues });
+        await updateDoc(subRef, {
+            issues: updatedIssues
+        });
 
         console.log(`Solution updated in ${parentType}`);
     } catch (error) {
@@ -154,10 +192,10 @@ export async function updateContactInfo(subId, updatedInfo, parentType) {
 
 
     try {
-        const contactRef = doc(db, parentType, subId);  // Reference to document
-        await updateDoc(contactRef,{
+        const contactRef = doc(db, parentType, subId); // Reference to document
+        await updateDoc(contactRef, {
             contactList: updatedInfo
-        } );  
+        });
         console.log("Contact info updated successfully!");
     } catch (error) {
         console.error("Error updating contact info:", error);
@@ -277,7 +315,7 @@ export async function updateContactInfo(subId, updatedInfo, parentType) {
 
 
 
-  // Generic function to fetch dynamic count for any material
+// Generic function to fetch dynamic count for any material
 // export const getMaterialDynamicCount = async (materialName) => {
 //     try {
 //         const docRef = doc(db, "materialAmount", materialName); // Material name determines the document

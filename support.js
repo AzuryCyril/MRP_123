@@ -8,7 +8,8 @@ import {
     updateContactInfo,
     addIssueToFirestore,
     addNewSub,
-    updateIssueDescription
+    updateIssueDescription,
+    changeState
 } from './database.js';
 
 let trailArray = ["Renault Support BE"];
@@ -57,26 +58,26 @@ async function Page1() {
 
     await searchBar()
 
- 
+
 
 }
 
-async function themes(){
+async function themes() {
     document.querySelector(".themeChange").addEventListener("click", async () => {
         // document.head.innerHTML += '<link rel="stylesheet" href="darkMode.css" type="text/css"/>';
         // console.log("ok")
 
-         // Select the <link> element
-            let theme = document.getElementById('theme');
+        // Select the <link> element
+        let theme = document.getElementById('theme');
 
-            // Toggle between light.css and dark.css
-            if (theme.getAttribute('href') == 'lightMode.css') {
-                theme.setAttribute('href', 'darkMode.css');
-            } else {
-                theme.setAttribute('href', 'lightMode.css');
-            }
+        // Toggle between light.css and dark.css
+        if (theme.getAttribute('href') == 'lightMode.css') {
+            theme.setAttribute('href', 'darkMode.css');
+        } else {
+            theme.setAttribute('href', 'lightMode.css');
+        }
     })
-  
+
 }
 
 async function displaySubs() {
@@ -105,8 +106,17 @@ async function displaySubs() {
         subContainer.insertAdjacentHTML('beforeend', `
             <div class="icon-container"><i class="fas fa-file-alt"></i></div>
             
-            <div class="text-container"><p class="sub-id">${sub.id}</p><div class="sub-description">${sub.id}</div></div>
+            <div class="text-container"><p class="sub-id">${sub.id}</p><div class="sub-description">${sub.id}</div>
+
+            <div class="shapeStatus">
+                <div class="triangleShape"></div>
+                <i class="fas ${sub.icon}"></i>
+            </div>
+
+            </div>
             `)
+
+
 
         subContainer.addEventListener('click', async () => {
 
@@ -117,6 +127,30 @@ async function displaySubs() {
 
         });
 
+        
+        const icons = ['fa-refresh', 'fa-check-circle', 'fa-times-circle'];
+        let index = 0;
+
+        subContainer.querySelector(".shapeStatus").addEventListener("click", async (event) => {
+
+            event.stopPropagation();
+
+            const icon = subContainer.querySelector('.shapeStatus i');
+            icon.classList.remove(icons[index]);
+
+            index = (index + 1) % icons.length;
+            const newIcon = icons[index];
+            icon.classList.add(newIcon);
+
+            try {
+                await changeState(sub.id, newIcon, trailArray[1]); // 🔥 update Firestore
+                console.log(`Icon updated to ${newIcon}`);
+            } catch (err) {
+                console.error("Firestore update failed:", err);
+            }
+
+        })
+
 
         if (sub.contactList.Scope == "Intern") {
             subsDivIntern.appendChild(subContainer);
@@ -125,6 +159,7 @@ async function displaySubs() {
         } else {
             subsDivOther.appendChild(subContainer);
         }
+
 
 
     })
@@ -191,35 +226,14 @@ async function searchBar() {
 
         if (query !== "") {
 
-        for (let i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
 
-            if (data[i].id.toLowerCase().includes(query)) {
+                if (data[i].id.toLowerCase().includes(query)) {
 
-                let issueDiv = document.createElement('article');
-                issueDiv.innerHTML = `${data[i].id}
+                    let issueDiv = document.createElement('article');
+                    issueDiv.innerHTML = `${data[i].id}
                 <p>${trailArray[0]} => ${trailArray[1]}
                 `;
-
-                issueDiv.addEventListener('click', async () => {
-
-                    await filterDescription(issueDiv.textContent)
-
-                    await updatePages();
-                });
-
-                searchContent.appendChild(issueDiv);
-
-                // filteredSubs.push(data[i].id)
-            }
-
-            for (let j = 0; j < data[i].issues.length; j++) {
-
-                if (data[i].issues[j].name.toLowerCase().includes(query)) {
-                    
-                    let issueDiv = document.createElement('article');
-                    issueDiv.innerHTML = `${data[i].issues[j].name}
-                    <p>${trailArray[0]} => ${trailArray[1]} => ${data[i].id}
-                    `;
 
                     issueDiv.addEventListener('click', async () => {
 
@@ -228,14 +242,35 @@ async function searchBar() {
                         await updatePages();
                     });
 
-                    //filteredSubs.push(data[i].issues[j].name)
                     searchContent.appendChild(issueDiv);
+
+                    // filteredSubs.push(data[i].id)
                 }
 
-            }
-        }
+                for (let j = 0; j < data[i].issues.length; j++) {
 
-    }
+                    if (data[i].issues[j].name.toLowerCase().includes(query)) {
+
+                        let issueDiv = document.createElement('article');
+                        issueDiv.innerHTML = `${data[i].issues[j].name}
+                    <p>${trailArray[0]} => ${trailArray[1]} => ${data[i].id}
+                    `;
+
+                        issueDiv.addEventListener('click', async () => {
+
+                            await filterDescription(issueDiv.textContent)
+
+                            await updatePages();
+                        });
+
+                        //filteredSubs.push(data[i].issues[j].name)
+                        searchContent.appendChild(issueDiv);
+                    }
+
+                }
+            }
+
+        }
 
     });
 
