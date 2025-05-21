@@ -106,7 +106,7 @@ async function displaySubs() {
         subContainer.insertAdjacentHTML('beforeend', `
             <div class="icon-container"><i class="fas fa-file-alt"></i></div>
             
-            <div class="text-container"><p class="sub-id">${sub.id}</p><div class="sub-description">${sub.id}</div>
+            <div class="text-container"><p class="sub-id" title="${sub.id}" >${sub.id}</p><div class="sub-description" title="${sub.id}">${sub.id}</div>
 
             <div class="shapeStatus">
                 <div class="triangleShape"></div>
@@ -394,13 +394,13 @@ async function getContacts() {
             `;
 
             document.querySelector('.subContactInfo').innerHTML = `
-            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${sub.contactList.name || "No name available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${sub.contactList.contactPerson || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${sub.contactList.assignmentGroup || "No email available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="IRN">${sub.contactList.IRN || "No email available"}</p></div>
-            <div class="contactInfoRow"><p class="contactInfoTitle">Scope:</p><p id="scope">${sub.contactList.Scope || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName" title="${sub.contactList.name || "No name available"}">${sub.contactList.name || "No name available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson" title="${sub.contactList.contactPerson || "No name available"}">${sub.contactList.contactPerson || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail" title="${sub.contactList.contactPersonEmail || "No name available"}">${sub.contactList.contactPersonEmail || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup" title="${sub.contactList.contactPersonBackup || "No name available"}">${sub.contactList.contactPersonBackup || "No phone available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup" title="${sub.contactList.assignmentGroup || "No name available"}">${sub.contactList.assignmentGroup || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="IRN" title="${sub.contactList.IRN || "No name available"}">${sub.contactList.IRN || "No email available"}</p></div>
+            <div class="contactInfoRow"><p class="contactInfoTitle">Scope:</p><p id="scope" title="${sub.contactList.Scope || "No name available"}">${sub.contactList.Scope || "No email available"}</p></div>
             `;
 
             document.getElementById("editContactIcon").addEventListener("click", async () => {
@@ -468,20 +468,6 @@ async function getContacts() {
                     await fetchData(trailArray[1])
 
                     await getContacts();
-
-
-                    //     document.querySelector('.subContactInfo').innerHTML = `
-                    // <div class="contactInfoRow"><p class="contactInfoTitle">Name:</p><p id="contactName">${newName}</p></div>
-                    // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Person:</p><p id="contactPerson">${newPerson}</p></div>
-                    // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Email:</p><p id="contactEmail">${newEmail}</p></div>
-                    // <div class="contactInfoRow"><p class="contactInfoTitle">Contact Backup:</p><p id="contactBackup">${newBackup}</p></div>
-                    // <div class="contactInfoRow"><p class="contactInfoTitle">Assignment Group:</p><p id="assignmentGroup">${newGroup}</p></div>
-                    // <div class="contactInfoRow"><p class="contactInfoTitle">IRN:</p><p id="assignmentGroup">${newIRN}</p></div>
-                    // `;
-
-
-                    //     document.getElementById("editContactIcon").style.display = 'inline-block';
-                    //     saveButton.style.display = 'none';
 
 
                 });
