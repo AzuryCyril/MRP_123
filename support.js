@@ -312,7 +312,7 @@ async function getIssues() {
                      <div class="preview__text">
                          <h4>${sub.issues[i].name}:</h4> 
                          <p>Category: ${sub.id}</p></br>
-                         <p>${solutionText}</p>
+                         
                      </div>
                  `)
 
