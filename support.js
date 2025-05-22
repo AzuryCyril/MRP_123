@@ -232,12 +232,14 @@ async function searchBar() {
 
                     let issueDiv = document.createElement('article');
                     issueDiv.innerHTML = `${data[i].id}
-                <p>${trailArray[0]} => ${trailArray[1]}
+                    <p>${trailArray[0]} => ${trailArray[1]}
                 `;
 
                     issueDiv.addEventListener('click', async () => {
 
-                        await filterDescription(issueDiv.textContent)
+                        console.log(issueDiv.textContent);
+
+                        await filterDescription(data[i].id)
 
                         await updatePages();
                     });
@@ -253,12 +255,14 @@ async function searchBar() {
 
                         let issueDiv = document.createElement('article');
                         issueDiv.innerHTML = `${data[i].issues[j].name}
-                    <p>${trailArray[0]} => ${trailArray[1]} => ${data[i].id}
+                        <p>${trailArray[0]} => ${trailArray[1]} => ${data[i].id}
                     `;
 
                         issueDiv.addEventListener('click', async () => {
 
-                            await filterDescription(issueDiv.textContent)
+                            console.log(issueDiv.textContent);
+
+                            await filterDescription(data[i].issues[j].name)
 
                             await updatePages();
                         });
